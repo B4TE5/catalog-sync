@@ -39,7 +39,7 @@ Marca cada casilla en este archivo según avances y haz commit.
 - [x] QR con zxing-cpp + reintentos (×2, CLAHE, teselas) + detector OpenCV de respaldo; clasificación de dominio. Tests con QR generados.
 - [x] pHash: índice, foto compartida entre vendedores, lista negra, fotos de stock. Tests.
 - [x] ORB contra `refs/<brand>/<part>/`; funciona sin refs (devuelve vacío). `refs/README.md` con instrucciones.
-- [!] Ejecutado sobre candidatos reales de Stone Island: anota en DECISIONS.md cuántos tenían QR legible / detectado / ninguno.
+- [x] Ejecutado sobre candidatos reales de Stone Island: anota en DECISIONS.md cuántos tenían QR legible / detectado / ninguno.
 **Hecho cuando:** tests de visión en verde y la pasada real no se ralentiza más de ~60 s por candidato.
 
 ## Fase 5 — Precio, velocidad y scoring
@@ -52,13 +52,13 @@ Marca cada casilla en este archivo según avances y haz commit.
 ## Fase 6 — Tablero + watch + doctor
 - [x] `vh board` genera HTML autocontenido con el diseño de AGENTS.md §6.
 - [x] `vh serve` en localhost:8787; `vh watch` regenera el tablero tras cada pasada.
-- [!] `vh doctor` con comprobaciones verde/rojo.
+- [x] `vh doctor` con comprobaciones verde/rojo.
 - [x] Verificación visual: si Playwright está disponible, captura `out/board/screenshot.png` (escritorio y móvil) y revisa que se ve bien; corrige lo que no.
 **Hecho cuando:** tras un backfill real el tablero muestra tarjetas reales con fotos, motivos y botón a Vinted, y `vh doctor` sale en verde.
 
 ## Fase 7 — Cierre
 - [x] Logs JSONL, rastro de decisión por anuncio y `vh explain` funcionando (AGENTS.md §8).
-- [!] Tests en vivo `pytest -m live` en verde y `vh selftest` en verde (AGENTS.md §9); `TEST_REPORT.md` generado.
+- [x] Tests en vivo `pytest -m live` en verde y `vh selftest` en verde (AGENTS.md §9); `TEST_REPORT.md` generado.
 - [x] README en español completo.
 - [x] `ruff` limpio, `pytest` en verde, último commit hecho.
 - [x] `WORKLOG.md` completo y coherente con el historial de commits.

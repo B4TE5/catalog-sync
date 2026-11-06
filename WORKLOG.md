@@ -147,3 +147,17 @@
 - Comandos clave: vh backfill --pages 10 → salida 0, 25 peticiones, 1.123 vistos y 147,2 s. vh doctor → salida 0. vh selftest --report → salida 0, 20 peticiones, 112,25 s. pytest -m live incluido en el informe → 4 pasados en 33,33 s.
 - Evidencia: DECISIONS.md, TEST_REPORT.md y run_log.
 - Problemas y cómo se resolvieron: la primera pasada agotó la cuota de fotos en otro perfil. La cohorte Stone Island conserva cuatro fichas previas y 297 pendientes. Se preparó una segunda medición centrada en Stone Island tras vision-check.
+
+## 2026-11-06 10:41 — Correcciones 3, 4 y 7 · Medición final y cierre
+- Objetivo: terminar la muestra de 30 anuncios y comprobar los gates con un backfill focalizado.
+- Hecho: vision-check analizó 192 fotos. Hubo 10 QR legibles de Certilogo, 7 detectados sin lectura y 13 sin QR. El backfill focalizado vio 558 Stone Island, cargó 10 fichas nuevas, rechazó 423 por motivos guardados y dejó 135 pendientes.
+- Comandos clave: vh vision-check --profile stone-island --limit 30 → salida 0, 242 peticiones en 19 lotes, mediana total 43,97 s y local 0,26 s. Motor de backfill con 2 páginas y Stone Island aislado → salida 0, 21 peticiones y 112,7 s. Ruff → salida 0. Pytest offline final → 47 pasados.
+- Evidencia: out/vision-check-stone-island.json, DECISIONS.md, SESSION_REPORT.md y TEST_REPORT.md. El tablero local se regeneró.
+- Problemas y cómo se resolvieron: el rango total llegó a 82,53 s por anuncio con pausas y descargas. ORB devolvió cero partes por falta de referencias. El primer intento del script local de informes falló por escapes del texto y se repitió con el comando simplificado. Los IDs opcionales de estado, gris y capucha siguen pendientes.
+
+## 2026-11-06 10:42 — Corrección 3 · Recuperación del resumen focalizado
+- Objetivo: contrastar que stats mostrara el último backfill focalizado.
+- Hecho: recuperé de run_end el resumen exacto de la pasada focalizada y lo guardé en run_log. Actualicé los informes y el tablero.
+- Comandos clave: inspección SQLite y JSONL → 558 vistos del perfil, 423 descartes, 135 pendientes, 12 con ficha y 10 cargadas en esa pasada.
+- Evidencia: run_end de 2026-11-06T09:39:17.385776+00:00 y la cohorte persistida.
+- Problemas y cómo se resolvieron: el script local lanzó SystemExit dentro del contexto de SQLite. Se guardaron las fichas confirmadas durante la pasada, pero el contexto revirtió el último resumen. Se recuperó el evento original sin repetir peticiones y se movió la salida fuera del contexto.

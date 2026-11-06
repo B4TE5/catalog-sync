@@ -1,5 +1,19 @@
 # Informe de sesión · Vinted Hunter
 
+## Sesión de corrección
+
+2026-11-06T10:41:37.257582+01:00
+
+- **Tallas.** L = 209 y XL = 210, grupo MEN-DE. Vinted devolvió 96 Stone Island de cada talla. Las dos capturas se guardaron como fixtures.
+- **Gates.** Talla, capucha, color y estado se deciden con la ficha. Una ausencia queda como no confirmada. Las tarjetas antiguas afectadas se reabren al reaparecer.
+- **Embudo.** El backfill general de diez páginas registró 1.022 Stone Island, 725 descartados y 297 pendientes. Los motivos e IDs están en [DECISIONS.md](DECISIONS.md).
+- **Contraste focalizado.** 558 Stone Island, 423 descartados, 12 con ficha y 10 fichas nuevas. Tiers {'rejected': 423, 'pending': 135}.
+- **Visión.** 30/30 anuncios, 192 fotos, 10 legibles, 7 detectados sin leer y 13 sin QR. Mediana de 43.97 s por anuncio, rango 11.42–82.53 s. Visión local con mediana de 0.26 s. El JSON local conserva el resultado y los tiempos por anuncio.
+- **Heat.** Favoritos divididos por la edad con un mínimo configurable de cinco minutos. Se comprobó la invariancia ante visitas y el tratamiento de favoritos ausentes.
+- **Cierre.** Doctor salió 0. Selftest con informe completó 8/8 etapas y su suite en vivo pasó 4/4. La comprobación offline final pasó 47 pruebas. [TEST_REPORT.md](TEST_REPORT.md)
+
+## Primera sesión (histórico)
+
 2026-11-06 09:20 +0100
 
 ## Resultado

@@ -27,7 +27,8 @@ En Linux, la variable equivalente es `export UV_CACHE_DIR="$PWD/.uv-cache"`.
 | `uv run vh backfill --pages 10` | Recorre hasta diez páginas de la búsqueda principal y dedica la cuota restante a otras búsquedas. Guarda resultados sin contarlos como nuevos. |
 | `uv run vh board` | Genera `out/board/index.html`. Ábrelo con doble clic. |
 | `uv run vh serve` | Sirve el tablero local en [localhost:8787](http://localhost:8787). Puedes ejecutar `watch` en otra terminal. |
-| `uv run vh stats` | Resume precios observados, percentiles de plausibles, niveles y descartes. |
+| `uv run vh stats` | Muestra precios y el embudo por perfil, con el inventario y la cohorte del último backfill. |
+| `uv run vh vision-check --profile stone-island --limit 30` | Mide QR, pHash y ORB en los anuncios recientes de la marca y categoría, con cualquier talla y precio. Guarda los tiempos por anuncio en `out/vision-check-stone-island.json`. |
 | `uv run vh explain 123` | Muestra los gates y señales de un anuncio guardado. |
 | `uv run vh label 123 fake` | Etiqueta un anuncio e incorpora a la lista negra las huellas de sus fotos guardadas. También admite `good` y `meh`. |
 | `uv run vh doctor` | Comprueba la salud persistida, la sesión pública, el parser y los filtros. |
@@ -50,7 +51,7 @@ observadas y las bajadas de precio alimentan el contador de nuevos.
   en cada pasada y las demás rotan con un cursor persistente.
 - Añade IDs a `config/vinted_ids.yaml` solo después de comprobar la URL y sus
   resultados reales. Los perfiles sin un ID verificado siguen buscándose por texto.
-  El filtro local comprueba la talla cuando la URL carece de un ID válido.
+  Los gates de talla, capucha, color y estado esperan a la ficha. Un atributo ausente queda como no confirmado.
 - Usa `config/scoring.yaml` para ajustar palabras, pesos, umbrales, presupuesto y
   estimaciones. El total usa la protección publicada por Vinted cuando existe y suma
   el envío estimado configurado. En su defecto se estima la protección con la fórmula

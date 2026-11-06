@@ -211,3 +211,60 @@ Cada ID aparece una sola vez. Para abrir el rastro individual, usa `vh explain I
 ```
 
 </details>
+
+## 2026-11-06 · Visión Stone Island sin gates
+
+El comando analizó 30/30 anuncios y 192 fotos. 10 legibles, 7 detectados sin leer y 13 sin QR. Mediana de 43.97 s por anuncio, rango 11.42–82.53 s. Visión local con mediana de 0.26 s. El tiempo total incluye red, pausas y análisis. Los 10 QR de Certilogo se clasificaron por dominio.
+
+Muestra de anuncios recientes de Stone Island de la categoría 267, sin filtros de talla, precio, vendedor o condición. 242 peticiones en 19 lotes con el límite configurado. pHash se calcula por foto. El proyecto carecía de referencias ORB, por lo que devolvió cero partes.
+
+| Anuncio | Fotos | QR | Tiempo total | Visión local |
+| --- | ---: | --- | ---: | ---: |
+| [10685568298](https://www.vinted.es/items/10685568298-sweat-stone-island) | 10 | ninguno | 55.16 s | 0.66 s |
+| [10685373502](https://www.vinted.es/items/10685373502-stone-island-marina-long-sleeve-hoodie) | 5 | ninguno | 43.50 s | 0.28 s |
+| [10685206834](https://www.vinted.es/items/10685206834-warme-trui-maat-m) | 4 | ninguno | 27.83 s | 0.09 s |
+| [10685187431](https://www.vinted.es/items/10685187431-stone-island-hoodie-noir-delave-badge-logo-taille-l) | 12 | legible | 77.55 s | 0.61 s |
+| [10685095137](https://www.vinted.es/items/10685095137-stone-island-hoodie) | 6 | legible | 55.45 s | 0.23 s |
+| [10685095170](https://www.vinted.es/items/10685095170-stone-island-hoodie) | 5 | legible | 31.08 s | 0.31 s |
+| [10685095157](https://www.vinted.es/items/10685095157-stone-island-hoodie) | 6 | detectado_sin_leer | 49.28 s | 0.31 s |
+| [10685095111](https://www.vinted.es/items/10685095111-stone-island-hoodie) | 5 | legible | 35.44 s | 0.23 s |
+| [10685095124](https://www.vinted.es/items/10685095124-stone-island-hoodie) | 6 | ninguno | 39.41 s | 0.25 s |
+| [10685095184](https://www.vinted.es/items/10685095184-stone-island-hoodie) | 5 | legible | 37.64 s | 0.19 s |
+| [10685095094](https://www.vinted.es/items/10685095094-stone-island-hoodie) | 6 | legible | 44.44 s | 0.25 s |
+| [10684056043](https://www.vinted.es/items/10684056043-i28-stone-island-chest-pocket-crewneck-sweatshirt-light-blue-turquoise) | 12 | legible | 81.36 s | 0.72 s |
+| [10683277813](https://www.vinted.es/items/10683277813-pull-a-capuche-stone-island) | 7 | ninguno | 50.78 s | 0.23 s |
+| [10683001108](https://www.vinted.es/items/10683001108-voici-un-magnifique-pull-stone-island-noir) | 4 | detectado_sin_leer | 25.75 s | 0.17 s |
+| [10682766478](https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo) | 5 | ninguno | 38.28 s | 0.19 s |
+| [10681938894](https://www.vinted.es/items/10681938894-sweat-a-capuche-stone-island) | 6 | ninguno | 41.45 s | 0.27 s |
+| [10681840766](https://www.vinted.es/items/10681840766-pull-sweat-a-capuche-stone-island) | 7 | detectado_sin_leer | 55.25 s | 0.31 s |
+| [10681794971](https://www.vinted.es/items/10681794971-pull-stone-island) | 7 | detectado_sin_leer | 57.27 s | 0.39 s |
+| [10681704958](https://www.vinted.es/items/10681704958-pull-stone-island) | 5 | ninguno | 35.38 s | 0.14 s |
+| [10681678572](https://www.vinted.es/items/10681678572-tuta-stone-island) | 8 | detectado_sin_leer | 53.73 s | 0.33 s |
+| [10681593924](https://www.vinted.es/items/10681593924-pull-stone-island) | 1 | ninguno | 11.42 s | 0.03 s |
+| [10679276010](https://www.vinted.es/items/10679276010-pull-cotele-beige-stone-island) | 10 | detectado_sin_leer | 67.58 s | 0.61 s |
+| [10681317091](https://www.vinted.es/items/10681317091-hoodie-junior-noir-a-capuche-taille-14-ans-164-cm-stone-island-621661642) | 9 | ninguno | 67.14 s | 0.56 s |
+| [10629799851](https://www.vinted.es/items/10629799851-felpa-stone-island-cappuccio-verde-oliva-xl-nuova-senza-cartellino) | 3 | ninguno | 21.70 s | 0.23 s |
+| [10680855262](https://www.vinted.es/items/10680855262-veste-stone-island) | 2 | detectado_sin_leer | 26.30 s | 0.05 s |
+| [10680720540](https://www.vinted.es/items/10680720540-stone-island-off-dye-new) | 11 | legible | 82.53 s | 0.52 s |
+| [10680740832](https://www.vinted.es/items/10680740832-felpa-stone-island) | 4 | ninguno | 22.36 s | 0.12 s |
+| [10680593953](https://www.vinted.es/items/10680593953-stone-island-hoodie-grijsgroen) | 8 | legible | 58.33 s | 0.45 s |
+| [10680443166](https://www.vinted.es/items/10680443166-pulls) | 4 | ninguno | 24.33 s | 0.12 s |
+| [10680542884](https://www.vinted.es/items/10680542884-stone-island-ghost) | 9 | legible | 62.61 s | 0.33 s |
+
+## 2026-11-06 · Backfill complementario de Stone Island
+
+Pasada del mismo motor con el perfil aislado y dos páginas principales. 558 Stone Island, 423 descartados, 12 con ficha y 10 fichas nuevas.
+Desglose de la cohorte {'price': 411, 'category': 2, 'seller_rating': 2, 'color': 7, 'size': 1}. Tiers {'rejected': 423, 'pending': 135}.
+
+| Anuncio con ficha nueva | Talla | Color | Motivo o nivel |
+| --- | --- | --- | --- |
+| [10486128135](https://www.vinted.es/items/10486128135-sudadera-de-stone-island) | XL | Azul marino | color |
+| [10494677313](https://www.vinted.es/items/10494677313-felpa-stone-island) | XL | Negro | color |
+| [10520622292](https://www.vinted.es/items/10520622292-felpa-stone-island-ragazzouomo) | XL | Rojo | color |
+| [10596101190](https://www.vinted.es/items/10596101190-pull-stone-islande) | XL | Marrón | color |
+| [10646354305](https://www.vinted.es/items/10646354305-felpa-stone-island-taglia-xl) | XL | Beige | color |
+| [10648031208](https://www.vinted.es/items/10648031208-pull-stone-island) | XL | Azul claro | color |
+| [10652042596](https://www.vinted.es/items/10652042596-felpa-nera-ston-island) | XL | Negro | color |
+| [10653435931](https://www.vinted.es/items/10653435931-felpa-stone-island) | XL | Gris | seller_rating |
+| [10681593924](https://www.vinted.es/items/10681593924-pull-stone-island) | M | Negro | size |
+| [10685688285](https://www.vinted.es/items/10685688285-pullover-stone-island) | XL | Morado, Gris | category |
