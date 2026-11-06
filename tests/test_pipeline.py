@@ -9,7 +9,7 @@ import qrcode
 
 from vinted_hunter.config import Config, load_config
 from vinted_hunter.pipeline.dedupe import distance, is_drop, photo_dedupe
-from vinted_hunter.pipeline.gates import gate
+from vinted_hunter.pipeline.gates import ATTRIBUTE_GATES, gate
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.pricing import price_signals, summarize, timing
 from vinted_hunter.pipeline.score import score
@@ -62,7 +62,11 @@ def test_gates(
 ) -> None:
     profile = config.profiles[0]
     listing = candidate.model_copy(update=updates)
-    rejected, passed = gate(listing, profile, config, seller, evidence)
+    if reason in ATTRIBUTE_GATES:
+        assert gate(listing, profile, config)[0] is None
+    rejected, passed = gate(
+        listing, profile, config, seller, evidence, detailed=reason in ATTRIBUTE_GATES
+    )
     assert rejected == reason
     assert (
         score(listing, profile, seller, evidence or Evidence(), config, passed, {}, rejected).tier
@@ -78,7 +82,9 @@ def test_hood_and_brand_specific_rules(config: Config, candidate: Listing) -> No
     supreme = next(p for p in config.profiles if p.id == "supreme")
     box = candidate.model_copy(update={"size": "L", "title": "Box Logo Hoodie"})
     assert gate(box, supreme, config)[0] == supreme.brand_rules[0].reason
-    assert gate(no_hood.model_copy(update={"size": "L"}), supreme, config)[0] == "hood"
+    assert (
+        gate(no_hood.model_copy(update={"size": "L"}), supreme, config, detailed=True)[0] == "hood"
+    )
     assert gate(candidate, stone, config, detailed=True)[0] == "photos"
 
 
@@ -203,4 +209,33 @@ def test_explicit_seller_size_overrides_conflicting_catalog(
             "size": "L",
         }
     )
-    assert gate(listing, rhude, config)[0] == "size"
+    assert gate(listing, rhude, config, detailed=True)[0] == "size"
+
+
+def test_unknown_attributes_pass_catalog_and_detail(config: Config, candidate: Listing) -> None:
+    profile = config.profiles[0]
+    listing = candidate.model_copy(
+        update={
+            "size": None,
+            "status": None,
+            "color": None,
+            "category_id": None,
+            "photos": candidate.photos * profile.min_photos,
+        }
+    )
+    assert gate(listing, profile, config)[0] is None
+    reason, evidence = gate(listing, profile, config, detailed=True)
+    assert reason is None
+    assert {f"{name}_unconfirmed" for name in ATTRIBUTE_GATES} <= set(evidence)
+
+
+def test_detail_supersedes_catalogue_attributes(config: Config, candidate: Listing) -> None:
+    from vinted_hunter.sources.vinted.item import parse_item
+
+    profile = config.profiles[0].model_copy(update={"color": None})
+    tile = candidate.model_copy(update={"size": "S", "status": "satisfactory", "color": None})
+    assert gate(tile, profile, config)[0] is None
+    body = gzip.decompress((ROOT / "tests/fixtures/item.html.gz").read_bytes()).decode()
+    detail = parse_item(body, tile, NOW)
+    assert detail.size == "XL" and detail.status == "very_good"
+    assert gate(detail, profile, config, detailed=True)[0] is None

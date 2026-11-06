@@ -39,8 +39,9 @@ def parse_item(html: str, listing: Listing, observed: datetime) -> Listing:
     data = listing.model_dump()
     data.update(
         brand=attributes.get("brand") or listing.brand,
-        size=attributes.get("size") or listing.size,
-        status=STATUS.get(attributes.get("status"), listing.status),
+        title=item.get("title") or listing.title,
+        size=attributes.get("size"),
+        status=STATUS.get(attributes.get("status")),
         color=attributes.get("color"),
         category_id=item.get("catalog_id"),
         seller_id=item.get("seller_id") or listing.seller_id,

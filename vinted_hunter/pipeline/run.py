@@ -13,7 +13,7 @@ from curl_cffi.requests import RequestsError
 from vinted_hunter.config import Config, Profile, load_config
 from vinted_hunter.pipeline.dedupe import is_drop, photo_dedupe
 from vinted_hunter.pipeline.enrich import get_item, get_seller, image_bytes
-from vinted_hunter.pipeline.gates import gate
+from vinted_hunter.pipeline.gates import ATTRIBUTE_GATES, gate
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.pricing import Market, price_signals, summarize, timing
 from vinted_hunter.pipeline.score import score
@@ -136,6 +136,7 @@ class Pipeline:
         seller: Seller | None = None,
         rejection: str | None = None,
         pending: bool = False,
+        enriched: bool = False,
     ) -> None:
         clock = timing(listing, self.now, self.config.scoring)
         market = self.markets[profile.id]
@@ -162,6 +163,7 @@ class Pipeline:
             if seller
             else None,
             "pending": pending,
+            "enriched": enriched,
         }
         self.store.save(
             listing,
@@ -248,8 +250,10 @@ class Pipeline:
     ) -> None:
         settings = self.config.scoring.capture
         seller = None
+        enriched = False
         try:
             listing = get_item(client, listing, self.now)
+            enriched = True
             self.run["enriched"] += 1
             reason, passed = gate(listing, profile, self.config, detailed=True)
             if not reason and listing.seller_id is None:
@@ -289,16 +293,22 @@ class Pipeline:
                 )
                 reason = reason or ("relisted" if relisted else None)
         except BudgetExhausted:
-            self.record(listing, profile, [], evidence, backfill, seller, pending=True)
+            self.record(
+                listing, profile, [], evidence, backfill, seller, pending=True, enriched=enriched
+            )
             return
         except CircuitOpen:
-            self.record(listing, profile, [], evidence, backfill, seller, pending=True)
+            self.record(
+                listing, profile, [], evidence, backfill, seller, pending=True, enriched=enriched
+            )
             raise
         except REMOTE_ERRORS as error:
             self.error(error, "enrich")
-            self.record(listing, profile, [], evidence, backfill, seller, pending=True)
+            self.record(
+                listing, profile, [], evidence, backfill, seller, pending=True, enriched=enriched
+            )
             return
-        self.record(listing, profile, passed, evidence, backfill, seller, reason)
+        self.record(listing, profile, passed, evidence, backfill, seller, reason, enriched=enriched)
 
     def process(
         self,
@@ -314,7 +324,23 @@ class Pipeline:
             listing.first_seen = (previous.first_seen if previous else None) or self.now
             previous_price = self.store.observe_price(listing, profile.id, self.now.isoformat())
             dropped = is_drop(listing, previous_price)
-            if row and row["tier"] is not None and previous_price == listing.price:
+            needs_detail = (
+                row
+                and "enriched" not in row["trace"]
+                and (
+                    row["trace"].get("gate_rejected") in ATTRIBUTE_GATES
+                    or any(
+                        row["trace"].get("gate_rejected") == rule.reason and rule.if_condition
+                        for rule in profile.brand_rules
+                    )
+                )
+            )
+            if (
+                row
+                and row["tier"] is not None
+                and previous_price == listing.price
+                and not needs_detail
+            ):
                 continue
             if not row:
                 self.run["discovered"] += 1
@@ -393,7 +419,14 @@ class Pipeline:
             reason, passed = gate(listing, profile, self.config, seller, evidence, detailed=True)
             if reason:
                 self.record(
-                    listing, profile, passed, evidence, bool(row["backfill"]), seller, reason
+                    listing,
+                    profile,
+                    passed,
+                    evidence,
+                    bool(row["backfill"]),
+                    seller,
+                    reason,
+                    enriched=True,
                 )
                 changed += 1
         self.store.flush()

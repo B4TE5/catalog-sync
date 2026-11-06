@@ -4,6 +4,8 @@ from vinted_hunter.config import Config, Profile
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.text import hood_signal, matches, normalize, stated_sizes
 
+ATTRIBUTE_GATES = frozenset({"size", "hood", "status", "color"})
+
 
 def gate(
     listing: Listing,
@@ -29,32 +31,45 @@ def gate(
     categories = set(config.ids.catalog_ids.values())
     expected_size = normalize(profile.size)
     explicit_sizes = stated_sizes(listing.title, words.get("size_labels", []))
-    size_matches = normalize((listing.size or "").split(" / ")[0]) == expected_size
+    size = normalize((listing.size or "").split(" / ")[0])
     tests = {
         "category": not categories
         or listing.category_id is None
         or listing.category_id in categories,
         "price": listing.currency == "EUR"
         and profile.price_floor <= listing.price <= profile.price_max,
-        "size": (size_matches or (listing.size is None and not detailed))
-        and (not explicit_sizes or expected_size in explicit_sizes),
-        "hood": hood is None or hood == profile.hood,
-        "status": listing.status is None or listing.status in profile.allowed_status,
         "replica": not matches(text, words["replica"]),
-        "color": not profile.color
-        or not listing.color
-        or bool(matches(listing.color, words.get(profile.color, [profile.color]))),
-        "photos": not detailed or len(listing.photos) >= profile.min_photos,
     }
     for reason, valid in tests.items():
         if not valid:
             return reason, passed
         passed.append(reason)
-    if hood is None:
+    if detailed:
+        attributes = {
+            "size": (not size or size == expected_size)
+            and (not explicit_sizes or expected_size in explicit_sizes)
+            if size or explicit_sizes
+            else None,
+            "hood": hood == profile.hood if hood is not None else None,
+            "status": listing.status in profile.allowed_status if listing.status else None,
+            "color": bool(matches(listing.color, words.get(profile.color, [profile.color])))
+            if profile.color and listing.color and listing.color.strip()
+            else None,
+        }
+        for reason, valid in attributes.items():
+            if valid is False:
+                return reason, passed
+            if reason != "color" or profile.color:
+                passed.append(reason if valid else f"{reason}_unconfirmed")
+    elif hood is None:
         passed.append("hood_unconfirmed")
+    if detailed and len(listing.photos) < profile.min_photos:
+        return "photos", passed
+    if detailed:
+        passed.append("photos")
     for rule in profile.brand_rules:
         text_pass = not rule.if_text_any or bool(matches(text, rule.if_text_any))
-        status_pass = not rule.if_condition or listing.status == rule.if_condition
+        status_pass = not rule.if_condition or (detailed and listing.status == rule.if_condition)
         if text_pass and status_pass and listing.price < rule.and_price_below:
             return rule.reason, passed
     passed.append("brand_rules")

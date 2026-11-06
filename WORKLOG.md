@@ -98,3 +98,10 @@
 - Comandos clave: inspección pública con curl_cffi → dos HTTP 200 y 96 tarjetas coherentes cada uno.
 - Evidencia: config/vinted_ids.yaml, tests/fixtures/catalog-size-*.html.gz.
 - Problemas y cómo se resolvieron: el 515 de la ficha es un ID de interfaz. Se contrastaron dos candidatos con el catálogo y se exigió confirmación del grupo MEN-DE.
+
+## 2026-11-06 10:07 — Corrección 2 · Gates con datos ausentes
+- Objetivo: decidir talla, capucha, estado y color con la ficha.
+- Hecho: esos gates se aplazan. Una ausencia se registra como no confirmada y no descarta. El parser de ficha deja de heredar talla y estado de la tarjeta. Se reintentan los descartes históricos afectados cuando reaparecen.
+- Comandos clave: pytest → 35 pasados; Ruff → salida 0 tras ordenar importaciones.
+- Evidencia: tests/test_pipeline.py y fixture público item.html.gz.
+- Problemas y cómo se resolvieron: una tarjeta contradictoria podría contaminar la ficha si faltaba el dato; se eliminó esa mezcla.
