@@ -46,6 +46,7 @@ summary{cursor:pointer;color:var(--muted)}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.4 ui-monospace,monospace}
 .empty{padding:30px;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}
 @media(max-width:520px){.controls,.selects{width:100%}.selects select{flex:1;min-width:0}.controls{margin:16px 0}}
+details ul{padding-left:1.2rem} details td, details th{padding:.2rem .4rem;text-align:left}
 </style>
 </head>
 <body>
@@ -104,6 +105,77 @@ for (const [id, name] of Object.entries(data.brands)) {
   option.value = id;
   brand.append(option);
 }
+Object.assign(reasons, {
+  not_sweatshirt: "Prenda ajena a la categoría de sudaderas",
+  too_cheap_for_brand: "Precio por debajo del suelo de la marca",
+  catalog_photos_only: "Fotos de catálogo sin suficientes fotos propias",
+  labelled_fake: "Marcado como falso"
+});
+const gates = {
+  garment:"Tipo de prenda", price:"Precio y moneda", size:"Talla", hood:"Capucha",
+  color:"Color", status:"Condición", replica:"Texto de réplica", photos:"Mínimo de fotos",
+  brand_rules:"Reglas de marca", seller_feedback:"Valoraciones del vendedor",
+  seller_rating:"Nota del vendedor", fake_certilogo_domain:"Dominio del QR",
+  catalog_photos_only:"Fotos propias", too_cheap_for_brand:"Suelo de precio y Certilogo",
+  blacklisted_photo:"Lista negra de fotos", shared_photo:"Foto compartida"
+};
+const signals = {
+  base:"Base", certilogo_ok:"Dominio Certilogo", qr_detected_unreadable:"QR sin lectura",
+  seller_high:"Vendedor con trayectoria", seller_medium:"Valoraciones del vendedor",
+  diverse:"Armario variado", same_brand:"Concentración de la marca", many_new:"Prendas nuevas",
+  very_good:"Muy buen estado", new_without_tags:"Nuevo sin etiquetas",
+  satisfactory:"Estado satisfactorio", cheap_new:"Nuevo a precio bajo", motivated:"Vendedor motivado",
+  proof:"Prueba de compra", wear:"Desgaste", short_description:"Descripción breve",
+  many_photos:"Cantidad de fotos", parts:"Partes de autenticación", stock_photo:"Foto de catálogo",
+  price_drop:"Bajada de precio", bargain:"Cuartil inferior", hood_unconfirmed:"Capucha sin confirmar"
+};
+function decision(row) {
+  const trace = row.trace;
+  const details = node("details");
+  details.append(node("summary", "¿Por qué?"));
+  const checks = node("ul");
+  const passed = trace.gates_passed || [];
+  for (const [key, label] of Object.entries(gates)) {
+    const failed = key === trace.gate_rejected || (key === "garment" && trace.gate_rejected === "not_sweatshirt");
+    const symbol = failed ? "❌ " : passed.includes(key) ? "✅ " : passed.includes(key + "_unconfirmed") ? "⚪ " : "— ";
+    checks.append(node("li", symbol + label));
+  }
+  details.append(checks);
+  if (trace.score && row.tier && row.tier !== "rejected") {
+    const table = node("table");
+    const head = node("tr");
+    head.append(node("th","Señal"),node("th","Puntos"));
+    table.append(head);
+    for (const [key, points] of Object.entries(trace.score.points)) {
+      const line = node("tr");
+      line.append(node("td", signals[key] || key), node("td", String(points)));
+      table.append(line);
+    }
+    const total = node("tr");
+    total.append(node("th","Total"),node("th",String(trace.score.score)));
+    table.append(total);
+    details.append(table);
+  }
+  const evidence = trace.evidence || {};
+  const qr = {certilogo_ok:"Dominio Certilogo",qr_detected_unreadable:"Detectado sin lectura",
+              qr_foreign_domain:"Dominio ajeno",none:"Sin señal"};
+  details.append(node("p", "Visión · QR: " + (qr[evidence.qr] || "Sin evaluar") +
+    " · Foto de catálogo: " + (evidence.stock_photo ? "Sí" : "Sin señal") +
+    " · Compartida: " + (evidence.shared_photo ? "Sí" : "Sin señal")));
+  if (trace.seller) details.append(node("p", "Vendedor · " +
+    (trace.seller.feedback_count ?? "—") + " valoraciones · Nota " + (trace.seller.rating ?? "—")));
+  if (trace.wardrobe) details.append(node("p", "Armario · " + trace.wardrobe.reviewed +
+    " revisados · " + trace.wardrobe.same_brand + " de la marca · " + trace.wardrobe.new_with_tags +
+    " con etiquetas"));
+  const phrases = Object.values(trace.text || {}).flat();
+  if (phrases.length) details.append(node("p", "Frases detectadas · " + [...new Set(phrases)].join(", ")));
+  if (trace.timing) details.append(node("p", (trace.timing.age_estimated ? "Primera observación (edad estimada)" :
+    "Hora indicada en la ficha") + " · Hace " + minutesSince(row.body.uploaded_at || row.body.first_seen) + " min"));
+  const technical = node("details");
+  technical.append(node("summary","Ver datos técnicos"),node("pre",JSON.stringify(trace,null,2)));
+  details.append(technical);
+  return details;
+}
 const euro = new Intl.NumberFormat("es-ES", {style:"currency", currency:"EUR"});
 const tierOf = row => row.tier || "pending";
 let active = "all";
@@ -155,6 +227,9 @@ function card(row) {
     const medianDelta = row.display_under_median;
     if (medianDelta != null)
       content.append(node("p", `${Math.abs(medianDelta)} % ${medianDelta < 0 ? "sobre" : "bajo"} la mediana`, "muted"));
+    if (medianDelta == null)
+      content.append(node("p", "Sin datos de mercado suficientes (n=" + (row.market_samples ?? 0) + ")", "muted"));
+    for (const flag of score.flags || []) content.append(node("p", flag, "chip"));
     content.append(node("p", pricing.buy_now ? "COMPRAR YA, no ofertes" :
       `Oferta sugerida · ${euro.format(Number(pricing.offer))}${row.backfill && pricing.negotiable ? " · Negociable" : ""}`));
     const age = minutesSince(item.uploaded_at || item.first_seen);
@@ -165,9 +240,7 @@ function card(row) {
     for (const reason of score.reasons) chips.append(node("span", reason, "chip"));
     content.append(chips);
   }
-  const details = node("details");
-  details.append(node("summary", "¿Por qué?"), node("pre", JSON.stringify(row.trace, null, 2)));
-  content.append(details);
+  content.append(decision(row));
   const link = node("a", "Abrir en Vinted", "open");
   const url = new URL(item.url);
   if (url.protocol === "https:" && url.hostname === "www.vinted.es") {
@@ -183,7 +256,7 @@ const cards = document.querySelector("#cards");
 const more = document.querySelector("#more");
 const sort = document.querySelector("#sort");
 function render() {
-  const filtered = data.listings.filter(row => (active === "all" || tierOf(row) === active) &&
+  const filtered = data.listings.filter(row => (active === "all" ? row.tier !== "rejected" : tierOf(row) === active) &&
     (!brand.value || row.profile === brand.value));
   const recent = row => Date.parse(row.body.uploaded_at || row.body.first_seen);
   filtered.sort((a, b) => sort.value === "recent" ? recent(b) - recent(a) :
@@ -195,7 +268,7 @@ function render() {
   if (!filtered.length) cards.append(node("p", "Aún no hay anuncios para estos filtros.", "empty"));
 }
 for (const [id, label] of Object.entries(tiers)) {
-  const count = data.listings.filter(row => id === "all" || tierOf(row) === id).length;
+  const count = data.listings.filter(row => id === "all" ? row.tier !== "rejected" : tierOf(row) === id).length;
   const button = node("button", `${label} · ${count}`);
   button.setAttribute("aria-pressed", String(active === id));
   button.onclick = () => {
