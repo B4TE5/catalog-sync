@@ -305,3 +305,15 @@ La pasada normal usó 25 peticiones y tardó 117.31 s. Vio 884 anuncios y puntu�
 - Sonda 3 · 2026-11-06T19:38:13.979834+00:00 · run 42281374832 · HTTP 200 · 96 anuncios.
 
 Las tres sondas superaron el mínimo con 302 s entre despachos. GitHub aceptó los tres secretos cifrados y devolvió 403 al crear Pages. El flujo puede guardar estado y producir un artefacto cifrado aunque falte el sitio. La rama pública contiene un solo commit huérfano con state.enc. Se cifra la copia SQLite comprimida para respetar la regla de no versionar la base legible. GitHub documenta la suspensión tras 60 días sin actividad y no aclara que la rama de estado baste, así que se añadió un latido mensual en la rama por defecto. [Eventos programados](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+
+## 2026-11-06 · Estado remoto, cron y feedback
+
+La ejecución manual 42282635097 creó la rama de estado cifrada y un artefacto de un único HTML cifrado. La API confirmó que la revisión de estado no tiene padres.
+
+El issue 1 se cerró y guardó la etiqueta meh. El issue 2 se rechazó y se cerró con el mismo SHA de estado y el mismo número de etiquetas.
+
+La segunda ejecución manual 42285332221 restauró el estado. Vio 963 anuncios y reportó 49 nuevos frente a 428 primeras observaciones y 1 bajadas reales. Se registra por separado de los eventos del cron.
+
+Se observaron 0 ejecuciones programadas completadas en la ventana de comprobación.
+
+Se mantuvo shadow_mode activo. El enlace de ntfy usa la URL del panel sin query ni fragmento. La clave se usa en el navegador desde el enlace generado en local.

@@ -19,31 +19,32 @@ Credenciales disponibles en `.env` (gitignored, NUNCA commitear ni imprimir en l
 **Hecho cuando:** 3/3 ejecuciones en Actions devuelven 200 y ≥ 10 anuncios.
 
 ## F2.2 — Ejecución programada y estado
-- [ ] `hunt.yml`: cron `*/10 * * * *` + workflow_dispatch; `concurrency: {group: hunt, cancel-in-progress: false}`; `timeout-minutes: 8`; `permissions` mínimos; todas las actions fijadas por SHA; caché de uv.
-- [ ] Estado persistente: base SQLite comprimida en una rama huérfana `state`, publicada como **un único commit con force-push** en cada pasada (sin historial que crezca). Restaurar al inicio, guardar al final, también si la pasada falla a medias (paso `if: always()` con escritura atómica).
-- [ ] Comprobar y documentar si esa actividad evita que GitHub desactive el cron a los 60 días; si no está claro, añadir un keepalive mensual en main.
-- [ ] Tablero publicado en GitHub Pages (`actions/deploy-pages`) tras cada pasada, **cifrado**: los datos (JSON) van cifrados con AES-GCM (clave derivada con PBKDF2/scrypt de `BOARD_KEY`, secret del repo); el HTML publicado solo contiene el blob cifrado + el código de descifrado (WebCrypto). La clave se pasa en el **fragmento de la URL** (`#k=...`), que el navegador nunca envía al servidor; sin clave, la página muestra solo una pantalla neutra sin datos ni marcas. `vh board-url` imprime la URL completa con la clave (solo en local). Nada de tokens ni del topic de ntfy en el HTML. Título y metadatos de la página genéricos (sin "Vinted" ni marcas). Añadir `<meta name="robots" content="noindex,nofollow">`.
-- [ ] Nombres neutros: ni el repo, ni los workflows, ni el README, ni el título del tablero mencionan nombres de marcas ni la lista de búsqueda.
-- [ ] `shadow_mode: true` en `config/scoring.yaml` por defecto.
+- [x] `hunt.yml`: cron `*/10 * * * *` + workflow_dispatch; `concurrency: {group: hunt, cancel-in-progress: false}`; `timeout-minutes: 8`; `permissions` mínimos; todas las actions fijadas por SHA; caché de uv.
+- [x] Estado persistente: base SQLite comprimida en una rama huérfana `state`, publicada como **un único commit con force-push** en cada pasada (sin historial que crezca). Restaurar al inicio, guardar al final, también si la pasada falla a medias (paso `if: always()` con escritura atómica).
+- [x] Comprobar y documentar si esa actividad evita que GitHub desactive el cron a los 60 días; si no está claro, añadir un keepalive mensual en main.
+- [!] Tablero publicado en GitHub Pages (`actions/deploy-pages`) tras cada pasada, **cifrado**: los datos (JSON) van cifrados con AES-GCM (clave derivada con PBKDF2/scrypt de `BOARD_KEY`, secret del repo); el HTML publicado solo contiene el blob cifrado + el código de descifrado (WebCrypto). La clave se pasa en el **fragmento de la URL** (`#k=...`), que el navegador nunca envía al servidor; sin clave, la página muestra solo una pantalla neutra sin datos ni marcas. `vh board-url` imprime la URL completa con la clave (solo en local). Nada de tokens ni del topic de ntfy en el HTML. Título y metadatos de la página genéricos (sin "Vinted" ni marcas). Añadir `<meta name="robots" content="noindex,nofollow">`.
+- [x] Nombres neutros: ni el repo, ni los workflows, ni el README, ni el título del tablero mencionan nombres de marcas ni la lista de búsqueda.
+- [x] `shadow_mode: true` en `config/scoring.yaml` por defecto.
+- [!] Validar tres ejecuciones programadas seguidas y su deduplicación.
 **Hecho cuando:** 3 ejecuciones programadas seguidas en verde, el estado persiste entre ellas (la 2.ª y la 3.ª no reportan como nuevos los anuncios ya vistos) y la URL de Pages muestra el tablero actualizado.
 
 ## F2.3 — Notificaciones ntfy
-- [ ] `NtfyNotifier` (implementa `Notifier`), con secrets `NTFY_TOPIC` / `NTFY_HEALTH_TOPIC` (en Actions como secrets del repo; en local desde .env).
-- [ ] Mensaje: título `🔥 Stone Island crewneck gris XL · 48 € (51 total) · 82`, cuerpo con 2–3 motivos y "subida hace X min", foto adjunta (URL), `Click` = URL https del anuncio, botón "Tablero" (URL de Pages), prioridad por tier (top=5/urgent, good=4, negociable=3).
-- [ ] Reglas: solo tiers top/good (y negociable ≥ 75); nunca dos avisos del mismo anuncio salvo `price_drop` 📉; en `shadow_mode` NO se envían avisos de anuncios (solo salud).
-- [ ] Salud: aviso al topic de salud tras 3 pasadas fallidas seguidas (403/429/parser_suspect/excepción), **una sola vez por incidencia**, y aviso de "recuperado" al volver a verde.
-- [ ] `vh notify-test` envía un aviso de prueba realista (con un anuncio real del tablero) a cada topic. Ejecutarlo una vez y anotarlo.
+- [x] `NtfyNotifier` (implementa `Notifier`), con secrets `NTFY_TOPIC` / `NTFY_HEALTH_TOPIC` (en Actions como secrets del repo; en local desde .env).
+- [!] Mensaje: título `🔥 Stone Island crewneck gris XL · 48 € (51 total) · 82`, cuerpo con 2–3 motivos y "subida hace X min", foto adjunta (URL), `Click` = URL https del anuncio, botón "Tablero" (URL de Pages), prioridad por tier (top=5/urgent, good=4, negociable=3).
+- [x] Reglas: solo tiers top/good (y negociable ≥ 75); nunca dos avisos del mismo anuncio salvo `price_drop` 📉; en `shadow_mode` NO se envían avisos de anuncios (solo salud).
+- [x] Salud: aviso al topic de salud tras 3 pasadas fallidas seguidas (403/429/parser_suspect/excepción), **una sola vez por incidencia**, y aviso de "recuperado" al volver a verde.
+- [x] `vh notify-test` envía un aviso de prueba realista (con un anuncio real del tablero) a cada topic. Ejecutarlo una vez y anotarlo.
 **Hecho cuando:** tests del notifier en verde (sin red, con mock HTTP) y `vh notify-test` devuelve 200 de ntfy en ambos topics.
 
 ## F2.4 — Feedback desde el tablero (sin tokens en el cliente)
-- [ ] Botones Fake / Buena / No me interesa en cada tarjeta → abren `https://github.com/<repo>/issues/new?title=label:<listing_id>:<fake|good|meh>` prellenado.
-- [ ] Workflow `feedback.yml` (`on: issues: opened`): solo acepta si `github.event.issue.user.login == github.repository_owner` (el dueño del repo; ignora y cierra el resto sin procesar); valida el formato estrictamente; aplica la etiqueta al estado (fake → lista negra pHash); comenta el resultado y cierra el issue. Concurrencia compartida con `hunt` para no pisar el estado.
+- [x] Botones Fake / Buena / No me interesa en cada tarjeta → abren `https://github.com/<repo>/issues/new?title=label:<listing_id>:<fake|good|meh>` prellenado.
+- [x] Workflow `feedback.yml` (`on: issues: opened`): solo acepta si `github.event.issue.user.login == github.repository_owner` (el dueño del repo; ignora y cierra el resto sin procesar); valida el formato estrictamente; aplica la etiqueta al estado (fake → lista negra pHash); comenta el resultado y cierra el issue. Concurrencia compartida con `hunt` para no pisar el estado.
 **Hecho cuando:** un issue de prueba del dueño se procesa y cierra solo, y uno con formato inválido se rechaza sin tocar el estado (test + prueba real).
 
 ## F2.5 — Cierre
-- [ ] README actualizado (arquitectura nube, cómo activar avisos: `shadow_mode: false`, cómo etiquetar).
-- [ ] Revisión de seguridad: secrets nunca en logs (buscar en los logs de Actions), permisos mínimos por workflow, actions por SHA, issues solo del dueño.
-- [ ] Actualizar SESSION_REPORT.md, TEST_REPORT.md, BLOCKERS.md; WORKLOG al día; último commit y push.
+- [x] README actualizado (arquitectura nube, cómo activar avisos: `shadow_mode: false`, cómo etiquetar).
+- [x] Revisión de seguridad: secrets nunca en logs (buscar en los logs de Actions), permisos mínimos por workflow, actions por SHA, issues solo del dueño.
+- [x] Actualizar SESSION_REPORT.md, TEST_REPORT.md, BLOCKERS.md; WORKLOG al día; último commit y push.
 
 ## NO hacer
 Proxies de pago, evasión agresiva de antibots, Wallapop, modelos de IA, desactivar shadow_mode.

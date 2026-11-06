@@ -210,3 +210,17 @@
 - Comandos clave: run manual 42282635097 → verde, 25 peticiones, 938 vistos y 760 nuevos de primera pasada. Feedback → dos HTTP 201 y cierre automático. Notify-test → HTTP 200 en ambos canales. Pytest → 69 pasados.
 - Evidencia: logs de Actions vía API, artefacto github-pages y rama state. Sin coincidencias de los valores sensibles buscados.
 - Problemas y cómo se resolvieron: Chromium consultó el iframe antes de finalizar el descifrado. La segunda verificación esperó su carga y pasó. Pages sigue en 404 porque la activación respondió 403.
+
+## 2026-11-06 21:27 — F2.5 · Verificación final local
+- Objetivo: comprobar el código de Fase 2 con Vinted real y repetir la auditoría local.
+- Hecho: Ruff, suite offline, diagnóstico, autoprueba y suite live aprobados. Se comprobó que .env sigue ignorado y sin rastrear y que .git/config no contiene valores sensibles.
+- Comandos clave: Ruff → 0. Pytest offline → 69 pasados en 4,63 s. Doctor → HTTP 200 y 95 anuncios en la búsqueda base. Selftest → 8/8 etapas, 15 peticiones y 76,3 s. Pytest live → 4 pasados en 37,89 s.
+- Evidencia: TEST_REPORT.md y salida de los comandos de cierre.
+- Problemas y cómo se resolvieron: una lectura diagnóstica interpretó el tercer valor del helper API como cabeceras y falló con AttributeError. La consulta corregida confirmó el workflow activo y dos ejecuciones manuales en verde.
+
+## 2026-11-06 21:31 — F2.5 · Cierre de comprobaciones remotas
+- Objetivo: contrastar la segunda pasada manual, cerrar la observación del cron y registrar el estado de cada tarea.
+- Hecho: segunda restauración cifrada verificada con 963 vistos y 49 nuevos. El estado conserva la etiqueta de prueba y tiene un único commit huérfano. Plan e informes actualizados.
+- Comandos clave: API de Actions → HTTP 200, workflow activo y cero eventos programados tras unos 43 minutos. API de Pages → HTTP 404 al cierre.
+- Evidencia: ejecución 42285332221, rama de estado y recuentos de price_history en DECISIONS.md.
+- Problemas y cómo se resolvieron: cron y publicación quedan marcados como bloqueados. Se verificaron dos pasadas manuales y el artefacto cifrado.

@@ -19,3 +19,7 @@
 GitHub devolvió **HTTP 403** al crear el sitio con build_type workflow. El GET antes y después devolvió HTTP 404. El artefacto del tablero está cifrado y el flujo omite el paso de despliegue mientras el sitio no esté habilitado. Hace falta habilitar Pages como dueño o conceder al token el permiso Pages de escritura. [API oficial de Pages](https://docs.github.com/en/rest/pages/pages#create-a-apiname-pages-site)
 
 El enlace del botón Tablero en ntfy depende de una URL HTTPS publicada. Los avisos de prueba llegaron a ambos canales con HTTP 200 y el campo de acción se verificó con HTTP simulado. El modo sombra sigue activo.
+
+## F2.2 · Verificación del cron
+
+Se consultó la API de runs con `event=schedule` entre aproximadamente las 20:47 y las 21:30 del 6 de noviembre (hora de Madrid). El workflow de `main` estaba `active` y la última consulta devolvió HTTP 200 con `total_count: 0`. Hace falta observar tres ejecuciones programadas en verde y cotejar sus novedades con el estado restaurado. Las dos pasadas manuales y los issues confirmaron la persistencia cifrada. GitHub documenta posibles retrasos y omisiones en eventos programados. La API carece de un motivo para esta ventana. [Eventos programados de GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)

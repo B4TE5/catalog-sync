@@ -41,3 +41,13 @@ Salida 0.
 - ntfy · los dos POST reales de prueba devolvieron HTTP 200. El modo sombra, los cambios de salud y la deduplicación pasaron las pruebas con HTTP simulado.
 - Chromium local · pantalla neutra sin clave, clave errónea rechazada, descifrado con clave válida y enlaces de feedback correctos. El primer intento de QA consultó el iframe antes de completar el descifrado y se repitió con espera explícita.
 - Pages · HTTP 403 al activar y HTTP 404 al consultar el sitio. [Bloqueo](BLOCKERS.md)
+
+## Fase 2 · Cierre remoto
+
+- `uv run --offline ruff check` · salida 0. `uv run --offline pytest -q` · salida 0, 69 aprobadas y 4 excluidas, 4,63 s.
+- `uv run --offline vh doctor` · salida 0, HTTP 200 y 95 anuncios en la búsqueda base. Marcas combinadas y tallas L/XL · 96 en cada comprobación.
+- `uv run --offline vh selftest` · salida 0, 8/8 etapas, 15 peticiones, 669 vistos y 76,3 s.
+- `uv run --offline pytest -q -m live` · salida 0, 4 aprobadas y 69 excluidas, 37,89 s.
+- Manual 42282635097 · verde. Estado de un commit cifrado y artefacto cifrado comprobado.
+- Feedback · issues 1 y 2 cerrados automáticamente. La etiqueta válida quedó guardada. El rechazo no cambió el estado.
+- Cron · 0 ejecuciones completadas en la ventana. Bloqueada la validación de tres pasadas programadas. La API devolvió HTTP 200 y total 0 al cierre de la ventana.

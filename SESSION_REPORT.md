@@ -85,3 +85,11 @@ Los incidentes, evidencias y decisiones están en [BLOCKERS.md](BLOCKERS.md), [D
 ## Corrección de precisión · 2026-11-06
 
 Se reevaluaron 2.164 anuncios de SQLite con las fichas y las fotos guardadas. La consulta de prendas fuera de perfil pasó de 121 a 0 fuera de Descartados. El Palm Angels de 28 € quedó descartado y la primera foto se marcó como catálogo. El de 25 € con QR queda en Revisar. El tablero muestra los motivos en español y mantiene plegados los datos técnicos. [Evidencia y recuentos](DECISIONS.md)
+
+## Fase 2 · 2026-11-06T21:31:14.655523+01:00
+
+- **Rendimiento.** 117,31 s en una pasada normal y dos candidatos de 16,38 y 17,39 s. La cola favorece a los anuncios de la pasada.
+- **Actions.** Tres sondas en verde con 96 anuncios cada una. Se configuró la captura cada diez minutos y se publicó el estado cifrado de una sola revisión. Dos pasadas manuales en verde confirmaron el guardado y la restauración. Las pruebas finales en Windows aprobaron 69 casos offline, 4 live y las 8 etapas de selftest. La comprobación de tres pasadas por cron queda bloqueada en la ventana observada.
+- **Panel.** Artefacto cifrado verificado en Chromium y por la API. La activación de Pages devolvió HTTP 403 y el sitio sigue en HTTP 404.
+- **Avisos y feedback.** Dos pruebas ntfy HTTP 200, shadow_mode activo y dos issues cerrados automáticamente. El inválido dejó intacto el estado.
+- **Seguridad.** Valores de .env fuera de Git y sin coincidencias en los logs revisados. Los flujos usan permisos acotados y acciones fijadas por SHA.
