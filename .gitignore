@@ -21,3 +21,4 @@ dist/
 *cookies*
 scratch/*.rsc
 scratch/inspect_*.py
+scratch/.playwright/

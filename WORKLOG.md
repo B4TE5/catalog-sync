@@ -35,3 +35,38 @@
 - Comandos clave: búsqueda de JWT por patrón sobre las capturas descomprimidas → cinco valores de telemetría detectados y retirados. No había cabeceras Set-Cookie.
 - Evidencia: tests/fixtures/README.md.
 - Problemas y cómo se resolvieron: la primera inspección comprobó claves de sesión en el RSC, pero omitió la clave de telemetría. Se añadió la comprobación de JWT al preparar nuevos fixtures.
+
+## 2026-11-06 08:58 — Fase 2 · Captura, SQLite y dedupe
+- Objetivo: ejecutar dos pasadas normales y un backfill de diez páginas con límites efectivos.
+- Hecho: planificación combinada y round-robin, base SQLite versionada, historial, dedupe y circuito. Dos pasadas normales y un backfill terminaron con salida 0.
+- Comandos clave: vh run → 25 peticiones, 1152 tarjetas, 650 nuevos, 152,60 s. Segunda pasada → 25 peticiones, 1152 tarjetas, 339 nuevos, 138,20 s. vh backfill --pages 10 → 25 peticiones, 1152 tarjetas, 11 candidatos, 142,31 s.
+- Evidencia: data/logs/run-20261106.jsonl y data/vh.sqlite, ignorados por Git.
+- Problemas y cómo se resolvieron: los dos primeros intentos de ejecución terminaron antes de abrir la red porque YAML 1.1 convirtió 1:1 a 61. Se añadió comillas al valor. La segunda pasada normal cubrió búsquedas rotadas nuevas y mezcló descubrimientos con novedades. Se separaron los contadores y se lanzó watch para verificarlo.
+
+## 2026-11-06 08:58 — Fase 3 · Gates y enriquecimiento
+- Objetivo: observar descartes reales tras recuperar ficha y vendedor.
+- Hecho: gates baratos y detallados, cachés de armario e imágenes, detección de palabras multilingües.
+- Comandos clave: vh backfill --pages 10 → 700 descartes (496 por precio, 201 por talla, tres por color). uv run --offline pytest → tests de gates y texto en verde.
+- Evidencia: ejemplos en DECISIONS.md, rastro de cada anuncio en SQLite.
+- Problemas y cómo se resolvieron: los anuncios de otras categorías podían llegar por búsqueda textual. El gate detallado comprueba la categoría contra la taxonomía observada, y la prioridad reparte la cuota entre perfiles.
+
+## 2026-11-06 08:58 — Fase 4 · Visión
+- Objetivo: comprobar QR, pHash y ORB sobre fotos reales.
+- Hecho: el backfill evaluó seis fotos de un Stone Island y detectó un QR ilegible. ORB devolvió cero partes sin referencias.
+- Comandos clave: vh explain 10678896375 → seis hashes, QR detectado sin lectura. pytest → casos QR legítimo, dominio ajeno, pHash y ORB sin referencias en verde.
+- Evidencia: candidato 10678896375, etapa de enriquecimiento y visión de 54,73 s.
+- Problemas y cómo se resolvieron: no había fotos de referencia suministradas. Se verificó que la ausencia no interrumpe el embudo y se documentó cómo aportarlas.
+
+## 2026-11-06 08:58 — Fase 5 · Scoring y estadísticas
+- Objetivo: comprobar que el backfill genera puntuaciones y estadísticas reales.
+- Hecho: cálculo de precio total, edad, calor, oferta y percentiles. El Stone Island 10678896375 marcó 70 puntos, 50 EUR, total estimado 56,69 EUR, oferta 45 EUR y mediana del perfil 50 EUR con una muestra plausible.
+- Comandos clave: vh stats y vh explain 10678896375 → salida 0. uv run --offline pytest → 25 pasados. Ruff → 0.
+- Evidencia: config/scoring.yaml, tests/test_pipeline.py, SQLite y rastro del anuncio.
+- Problemas y cómo se resolvieron: la primera muestra queda por debajo del mínimo de 30 y no activa la señal p25.
+
+## 2026-11-06 09:03 — Fase 6 · Revisión del tablero
+- Objetivo: revisar el tablero real en escritorio y móvil.
+- Hecho: se comprobó la apertura por file://, 48 tarjetas visibles, enlaces HTTPS y expansión de ¿Por qué?. Se ajustó la altura de tarjetas en una fila y se embebieron fotos reales cacheadas.
+- Comandos clave: Playwright Chromium en 1440 y 390 px → dos PNG, sin desbordamiento ni excepciones JavaScript. pytest → 28 pasados. Ruff → 0.
+- Evidencia: out/board/screenshot.png, out/board/screenshot-mobile.png y rastro de los anuncios.
+- Problemas y cómo se resolvieron: Chromium tardó en arrancar dentro del sandbox y la verificación local se repitió con acceso autorizado. La inspección mostró un polo de categoría 5492 puntuado en la primera iteración y un título neerlandés con geïnspireerde. Se añadió revalidación de registros enriquecidos y se amplió el vocabulario de réplica. Dos intentos de la prueba de regresión dieron hood antes que replica porque la propia entrada mencionaba hoodie; se aisló la señal que debía probarse.
