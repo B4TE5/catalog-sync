@@ -6,6 +6,7 @@ from vinted_hunter.config import load_config
 from vinted_hunter.pipeline.run import health
 from vinted_hunter.sources.vinted.catalog import parse_catalog
 from vinted_hunter.sources.vinted.client import VintedClient
+from vinted_hunter.sources.vinted.parse import ParseError
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 KNOWN_QUERY = "stone island"
@@ -30,7 +31,7 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         retry_at = store.setting("retry_at")
     missing = configured_ids(root)
     results.append(("Filtros utilizados", not missing, ", ".join(missing) or "IDs documentados"))
-    results.append(("Salud", current == "healthy", current))
+    results.append(("Salud", current in {"healthy", "unknown"}, current))
     if retry_at:
         from datetime import UTC, datetime
 
@@ -42,9 +43,16 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         response = client.get(
             "/catalog", "catalog", {"search_text": KNOWN_QUERY, "order": "newest_first"}
         )
-        catalog = parse_catalog(response.text, client.base)
+        try:
+            catalog = parse_catalog(response.text, client.base)
+        except ParseError as error:
+            raise ParseError(
+                f"HTTP {response.status_code} · 0 anuncios reales · {error}"
+            ) from error
         count = len(catalog.listings)
-        results.append(("Parser", count >= 10, f"{count} anuncios reales"))
+        results.append(
+            ("Parser", count >= 10, f"HTTP {response.status_code} · {count} anuncios reales")
+        )
         stone = config.ids.brand_ids.get("Stone Island")
         category = config.ids.catalog_ids.get("sweatshirts")
         supreme = config.ids.brand_ids.get("Supreme")

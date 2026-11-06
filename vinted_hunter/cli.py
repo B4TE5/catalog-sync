@@ -170,15 +170,19 @@ def watch(
 
 
 @app.command()
-def doctor() -> None:
+def doctor(compact: Annotated[bool, typer.Option("--compact")] = False) -> None:
     """Comprueba salud, conexión, parser y filtros."""
     try:
         checks = check(ROOT)
     except (HttpFailure, ParseError, RequestsError) as error:
-        show(f"[red]✗[/red] {type(error).__name__}")
+        detail = (
+            str(error) if isinstance(error, (HttpFailure, ParseError)) else type(error).__name__
+        )
+        show(f"[red]✗[/red] {detail}")
         raise typer.Exit(1) from error
     for name, ok, detail in checks:
-        show(f"{'[green]✓[/green]' if ok else '[red]✗[/red]'} {name} · {detail}")
+        suffix = f" · {detail}" if not compact or name in {"Portada y cookies", "Parser"} else ""
+        show(f"{'[green]✓[/green]' if ok else '[red]✗[/red]'} {name}{suffix}")
     if not all(ok for _, ok, _ in checks):
         raise typer.Exit(1)
 

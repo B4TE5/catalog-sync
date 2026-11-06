@@ -1,0 +1,26 @@
+name: Connectivity check
+on:
+  workflow_dispatch:
+    inputs:
+      attempt:
+        description: Correlation identifier
+        required: false
+        type: string
+run-name: Connectivity check ${{ inputs.attempt }}
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/uv-bootstrap"
+          "$RUNNER_TEMP/uv-bootstrap/bin/pip" install uv==0.13.5
+          "$RUNNER_TEMP/uv-bootstrap/bin/uv" sync --locked --python 3.12
+      - name: Check public catalog
+        run: '"$RUNNER_TEMP/uv-bootstrap/bin/uv" run --no-sync vh doctor --compact'
