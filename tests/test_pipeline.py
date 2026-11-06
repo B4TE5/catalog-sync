@@ -337,3 +337,22 @@ def test_legacy_catalogue_reject_is_reopened(
         pipe.process(client, {tile.id: (tile, profile, True)}, False, None)
         assert pipe.run["candidates"] == 1 and pipe.run["new"] == 0
         assert store.record(tile.id)["tier"] is None
+
+
+def test_revalidate_requires_ficha_evidence_for_attribute_rejects(
+    config: Config,
+    candidate: Listing,
+    tmp_path: Path,
+) -> None:
+    from vinted_hunter.pipeline.run import Pipeline
+
+    profile = config.profiles[0]
+    listing = candidate.model_copy(update={"size": "M", "photos": candidate.photos * 3})
+    with SQLiteStore(tmp_path / "vh.sqlite") as store:
+        pipe = Pipeline(tmp_path, store, config, NOW)
+        store.save(listing, profile.id, "good", 70, {}, False)
+        assert pipe.revalidate() == 0
+        assert store.record(listing.id)["tier"] == "good"
+        store.save(listing, profile.id, "good", 70, {"enriched": True}, False)
+        assert pipe.revalidate() == 1
+        assert store.record(listing.id)["trace"]["gate_rejected"] == "size"

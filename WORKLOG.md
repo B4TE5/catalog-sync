@@ -133,3 +133,10 @@
 - Comandos clave: uv run --offline pytest -q → 46 pasados, 4 live excluidos. Ruff → salida 0.
 - Evidencia: tests/test_pipeline.py, tests/test_heat.py y tests/test_vision_check.py.
 - Problemas y cómo se resolvieron: el test previo de dedupe comprobaba comparaciones y no la transición del pipeline con un ID ya visto; se añadió esa transición con SQLite temporal y una tarjeta real.
+
+## 2026-11-06 10:19 — Corrección 2 · Revalidación histórica
+- Objetivo: evitar un descarte por atributos guardados antes de distinguir ficha y catálogo.
+- Hecho: la revalidación exige un rastro de ficha para esos cuatro gates y para las reglas de marca condicionadas al estado.
+- Comandos clave: Ruff → salida 0. Pytest → 47 pasados, 4 live excluidos.
+- Evidencia: test_revalidate_requires_ficha_evidence_for_attribute_rejects.
+- Problemas y cómo se resolvieron: en registros previos la talla podía haberse heredado de la tarjeta. La revalidación aplaza el descarte hasta disponer de evidencia confirmada.

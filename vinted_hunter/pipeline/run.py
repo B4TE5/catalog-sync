@@ -14,7 +14,7 @@ from vinted_hunter.config import Config, Profile, load_config
 from vinted_hunter.pipeline.dedupe import is_drop, photo_dedupe
 from vinted_hunter.pipeline.enrich import get_item, get_seller, image_bytes
 from vinted_hunter.pipeline.funnel import funnel
-from vinted_hunter.pipeline.gates import ATTRIBUTE_GATES, gate
+from vinted_hunter.pipeline.gates import ATTRIBUTE_GATES, gate, needs_confirmed_detail
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.pricing import Market, price_signals, summarize, timing
 from vinted_hunter.pipeline.score import score
@@ -330,13 +330,7 @@ class Pipeline:
             needs_detail = (
                 row
                 and "enriched" not in row["trace"]
-                and (
-                    row["trace"].get("gate_rejected") in ATTRIBUTE_GATES
-                    or any(
-                        row["trace"].get("gate_rejected") == rule.reason and rule.if_condition
-                        for rule in profile.brand_rules
-                    )
-                )
+                and needs_confirmed_detail(row["trace"].get("gate_rejected"), profile)
             )
             if (
                 row
@@ -435,6 +429,8 @@ class Pipeline:
             seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
             evidence = Evidence.model_validate(trace.get("evidence", {}))
             reason, passed = gate(listing, profile, self.config, seller, evidence, detailed=True)
+            if needs_confirmed_detail(reason, profile) and not trace.get("enriched"):
+                continue
             if reason:
                 self.record(
                     listing,

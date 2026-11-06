@@ -7,6 +7,12 @@ from vinted_hunter.pipeline.text import hood_signal, matches, normalize, stated_
 ATTRIBUTE_GATES = frozenset({"size", "hood", "status", "color"})
 
 
+def needs_confirmed_detail(reason: str | None, profile: Profile) -> bool:
+    return reason in ATTRIBUTE_GATES or any(
+        reason == rule.reason and rule.if_condition is not None for rule in profile.brand_rules
+    )
+
+
 def gate(
     listing: Listing,
     profile: Profile,
