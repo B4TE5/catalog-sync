@@ -14,11 +14,11 @@
 - **Visitas públicas.** Las capturas de ficha carecen de `view_count` y `viewCount`. Para extraer el contador haría falta una fuente pública real que lo exponga.
 - **Referencias ORB.** El directorio de referencias carece de imágenes de autenticación. La ejecución de ORB devuelve una lista vacía de partes. [Formato de referencias](refs/README.md)
 
-## F2.2 · Activación pública del tablero
+## Resueltos · F2.2 Pages y F2.3 botón Tablero
 
-GitHub devolvió **HTTP 403** al crear el sitio con build_type workflow. El GET antes y después devolvió HTTP 404. El artefacto del tablero está cifrado y el flujo omite el paso de despliegue mientras el sitio no esté habilitado. Hace falta habilitar Pages como dueño o conceder al token el permiso Pages de escritura. [API oficial de Pages](https://docs.github.com/en/rest/pages/pages#create-a-apiname-pages-site)
+GitHub devolvió **HTTP 403** al crear el sitio con build_type workflow. El GET antes y después devolvió HTTP 404. Tras la activación manual por el dueño, la API de configuración devolvió HTTP 200 y `actions/deploy-pages` publicó el artefacto en la ejecución 42296435101. En Chromium, el HTML público coincidió con el artefacto. El enlace de `vh board-url` mostró 48 tarjetas y la URL pública mostró la pantalla neutra. [API oficial de Pages](https://docs.github.com/en/rest/pages/pages#create-a-apiname-pages-site)
 
-El enlace del botón Tablero en ntfy depende de una URL HTTPS publicada. Los avisos de prueba llegaron a ambos canales con HTTP 200 y el campo de acción se verificó con HTTP simulado. El modo sombra sigue activo.
+El botón Tablero deriva la dirección pública de Pages. Ambos avisos de prueba devolvieron HTTP 200 y la API de ntfy devolvió la acción con la URL sin clave en cada canal. El modo sombra sigue activo.
 
 ## F2.2 · Verificación del cron
 

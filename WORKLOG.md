@@ -231,3 +231,10 @@
 - Comandos clave: GET Pages → HTTP 200, modo workflow. Consultar la variable de Actions → HTTP 403. Despacho de hunt → HTTP 200. Ruff → 0. Pytest → 71 aprobadas.
 - Evidencia: `vinted_hunter/secrets.py`, `vinted_hunter/notify/ntfy.py` y regresiones de URL local y de Actions en `tests/test_ntfy.py`.
 - Problemas y cómo se resolvieron: el token de operación local no puede consultar la variable de Actions. Se deriva la URL pública de `GITHUB_REPOSITORY` en el runner, sin permisos adicionales.
+
+## 2026-11-06 22:29 — F2.2/F2.3 · Publicación y aviso comprobados
+- Objetivo: comprobar Pages, el enlace privado, el botón Tablero y la independencia del token personal.
+- Hecho: se publicó el artefacto 13542332390. Chromium abrió 48 tarjetas desde el enlace privado. Los dos avisos ntfy incluyeron el botón que apunta al panel público. Los cuatro workflows remotos coinciden con Git y ninguno referencia `GH_TOKEN`.
+- Comandos clave: `hunt` 42296435101 → verde, 25 peticiones, 889 vistos, 112 nuevos. `deploy-pages` → verde. Pages → HTTP 200. `vh notify-test` → dos HTTP 200. API de runs programados → HTTP 200, total 0.
+- Evidencia: jobs y logs del run 42296435101, coincidencia SHA-256 del HTML servido con el artefacto y lectura de las acciones recibidas mediante la API de ntfy.
+- Problemas y cómo se resolvieron: el primer intento de QA usó `scratch/.venv` y falló con `ModuleNotFoundError` para Playwright. La repetición con `.venv` aprobó los tres casos.

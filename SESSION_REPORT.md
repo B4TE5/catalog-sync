@@ -93,3 +93,11 @@ Se reevaluaron 2.164 anuncios de SQLite con las fichas y las fotos guardadas. La
 - **Panel.** Artefacto cifrado verificado en Chromium y por la API. La activación de Pages devolvió HTTP 403 y el sitio sigue en HTTP 404.
 - **Avisos y feedback.** Dos pruebas ntfy HTTP 200, shadow_mode activo y dos issues cerrados automáticamente. El inválido dejó intacto el estado.
 - **Seguridad.** Valores de .env fuera de Git y sin coincidencias en los logs revisados. Los flujos usan permisos acotados y acciones fijadas por SHA.
+
+## Pages y credenciales de Actions · 2026-11-06 22:29
+
+- El dueño habilitó Pages con fuente GitHub Actions. El `hunt` manual 42296435101 restauró y guardó el estado cifrado y publicó el artefacto 13542332390. Registró 889 vistos y 112 nuevos en 25 peticiones.
+- Chromium recibió HTTP 200 y el mismo HTML cifrado que Actions. El enlace de `vh board-url` mostró 48 tarjetas. La URL pública mostró la pantalla neutra y una clave incorrecta fue rechazada. La verificación mantuvo la clave en memoria.
+- `vh notify-test` entregó los dos avisos con HTTP 200. La API de ntfy confirmó que ambos llevaban el botón Tablero con la URL pública sin clave. `BOARD_URL` sigue disponible para elegir un destino alternativo. El modo sombra continúa activo.
+- Se cotejaron `hunt`, `feedback`, `keepalive` y `probe` con la rama remota. `hunt`, `feedback` y `keepalive` usan el token automático de Actions a través de `github.token`. `probe` usa el token automático de checkout y una consulta pública. El PAT se utilizó localmente para iniciar el run y auditar GitHub. [Token automático de GitHub Actions](https://docs.github.com/en/actions/concepts/security/github_token)
+- Pages y el botón Tablero quedan desbloqueados. La comprobación de tres pasadas programadas sigue bloqueada. [Bloqueos](BLOCKERS.md)

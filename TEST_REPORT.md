@@ -51,3 +51,11 @@ Salida 0.
 - Manual 42282635097 · verde. Estado de un commit cifrado y artefacto cifrado comprobado.
 - Feedback · issues 1 y 2 cerrados automáticamente. La etiqueta válida quedó guardada. El rechazo no cambió el estado.
 - Cron · 0 ejecuciones completadas en la ventana. Bloqueada la validación de tres pasadas programadas. La API devolvió HTTP 200 y total 0 al cierre de la ventana.
+
+## Validación de Pages y ntfy · 2026-11-06 22:29
+
+- Ruff · salida 0. Pytest offline · 71 pasadas, 4 excluidas, 5,23 s.
+- Pytest live · 4 pasadas, 71 excluidas, 40,88 s. `vh selftest` · 8/8 etapas, 15 peticiones y 82,3 s.
+- Actions · run 42296435101 en verde, incluido `deploy-pages`. Artefacto 13542332390 y HTML servido con el mismo SHA-256. Logs auditados sin coincidencias de secretos.
+- Chromium · HTTP 200 en los tres casos. Pantalla neutra sin clave, clave incorrecta rechazada y 48 tarjetas con `vh board-url`.
+- `vh notify-test` · dos HTTP 200. La API de suscripción devolvió ambos avisos con la acción `view` Tablero y la URL pública sin fragmento. [API de ntfy](https://docs.ntfy.sh/subscribe/api/#poll-for-messages)
