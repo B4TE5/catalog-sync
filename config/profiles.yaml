@@ -1,0 +1,115 @@
+# profiles.yaml — qué cazar
+# Precios en EUR sobre el precio del anuncio (el total se calcula aparte).
+# brand_ids / size_ids / catalog_ids NO van aquí: se resuelven desde config/vinted_ids.yaml
+# usando los nombres lógicos de abajo (brand, size, hood).
+
+defaults:
+  allowed_status: [new_without_tags, very_good, new_with_tags]   # new_with_tags solo si pasa gates de precio y vendedor (ver scoring)
+  seller_min_feedback: 5
+  seller_min_rating: 4.5
+  price_floor: 25            # por debajo: casi seguro fake
+  min_photos: 3
+  domain: vinted.es
+
+profiles:
+
+  - id: stone-island
+    enabled: true
+    brand: Stone Island
+    size: XL
+    hood: without            # SOLO sin capucha
+    color: grey              # gris (gate solo si el anuncio marca explícitamente otro color)
+    price_floor: 30
+    price_max: 60
+    certilogo: true          # usa la detección QR Certilogo como señal fuerte
+    text_queries:
+      - { q: "stone island", priority: high }
+      - { q: "stoneisland", priority: high }
+      - { q: "stone islan", priority: high }
+      - { q: "sudadera stone island", priority: normal }
+      - { q: "stone island crewneck", priority: normal }
+      - { q: "felpa stone island", priority: normal }
+    brand_rules: []
+    refs_dir: refs/stone-island
+
+  - id: twojeys
+    enabled: true
+    brand: TwoJeys
+    size: L
+    hood: with
+    price_max: 55
+    text_queries:
+      - { q: "twojeys", priority: normal }
+      - { q: "two jeys", priority: normal }
+    brand_rules: []
+
+  - id: yzy-gap
+    enabled: true
+    brand: Yeezy Gap        # resolver el/los brand_id reales (puede haber "Yeezy Gap", "YZY GAP", "Gap x Yeezy")
+    size: L
+    hood: with
+    price_max: 70
+    text_queries:
+      - { q: "yeezy gap", priority: normal }
+      - { q: "yzy gap", priority: normal }
+      - { q: "gap yeezy", priority: normal }
+    brand_rules: []
+
+  - id: heron-preston
+    enabled: true
+    brand: Heron Preston
+    size: L
+    hood: with
+    price_max: 80
+    text_queries:
+      - { q: "heron preston", priority: normal }
+    brand_rules: []
+
+  - id: supreme
+    enabled: true
+    brand: Supreme
+    size: L
+    hood: with
+    price_max: 100
+    seller_min_feedback: 15
+    text_queries:
+      - { q: "supreme hoodie", priority: normal }
+      - { q: "sudadera supreme", priority: normal }
+    brand_rules:
+      - { if_text_any: ["box logo", "bogo"], and_price_below: 100, then: reject, reason: "Supreme box logo < 100 € → fake casi seguro" }
+
+  - id: rhude
+    enabled: true
+    brand: Rhude
+    size: L
+    hood: with
+    price_max: 100
+    text_queries:
+      - { q: "rhude", priority: normal }
+    brand_rules: []
+
+  - id: palm-angels
+    enabled: true
+    brand: Palm Angels
+    size: L
+    hood: with
+    price_max: 100
+    seller_min_feedback: 20      # marca muy falsificada → filtros más duros
+    min_photos: 5
+    text_queries:
+      - { q: "palm angels", priority: normal }
+    brand_rules:
+      - { if_condition: new_with_tags, and_price_below: 100, then: reject, reason: "Palm Angels nueva con etiquetas < 100 € → fake casi seguro" }
+
+  - id: palace
+    enabled: false               # Carlos la activará si quiere
+    brand: Palace
+    size: L
+    hood: with
+    price_max: 100
+    seller_min_feedback: 15
+    text_queries:
+      - { q: "palace hoodie", priority: normal }
+      - { q: "sudadera palace", priority: normal }
+    brand_rules:
+      - { if_text_any: ["tri-ferg", "triferg", "tri ferg"], and_price_below: 50, then: reject, reason: "Palace Tri-Ferg < 50 € → fake casi seguro" }

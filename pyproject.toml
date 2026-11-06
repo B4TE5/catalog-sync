@@ -1,0 +1,39 @@
+[project]
+name = "vinted-hunter"
+version = "0.1.0"
+description = "Cazador local de sudaderas en Vinted"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "curl-cffi",
+    "imagehash",
+    "opencv-python-headless",
+    "pillow",
+    "pydantic",
+    "pyyaml",
+    "rich",
+    "typer",
+    "unidecode",
+    "zxing-cpp",
+]
+
+[project.scripts]
+vh = "vinted_hunter.cli:app"
+
+[dependency-groups]
+dev = ["pytest", "qrcode", "ruff"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not live'"
+markers = ["live: consulta Vinted real sin iniciar sesión"]
