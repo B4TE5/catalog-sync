@@ -243,3 +243,18 @@ def notify_test() -> None:
     typer.echo(f"ntfy anuncios · HTTP {statuses[0]} · ntfy salud · HTTP {statuses[1]}")
     if statuses != (200, 200):
         raise typer.Exit(1)
+
+
+@app.command("board-url")
+def board_url() -> None:
+    """Muestra en local el enlace privado del panel publicado."""
+    from urllib.parse import quote
+
+    from vinted_hunter.cloud import board_address, require_key
+
+    try:
+        address = board_address(ROOT)
+        key = require_key(ROOT)
+    except ValueError as error:
+        raise typer.BadParameter(str(error)) from None
+    typer.echo(address + "#k=" + quote(key, safe=""))

@@ -249,6 +249,18 @@ function card(row) {
     link.rel = "noopener noreferrer";
     content.append(link);
   }
+  if (data.feedback_repo) {
+    const feedback = node("div", undefined, "chips");
+    for (const [label, description] of [["fake","Fake"],["good","Buena"],["meh","No me interesa"]]) {
+      const button = node("a", description, "chip");
+      const title = "label:" + row.id + ":" + label;
+      button.href = "https://github.com/" + data.feedback_repo + "/issues/new?title=" + encodeURIComponent(title);
+      button.target = "_blank";
+      button.rel = "noopener noreferrer";
+      feedback.append(button);
+    }
+    content.append(feedback);
+  }
   article.append(content);
   return article;
 }

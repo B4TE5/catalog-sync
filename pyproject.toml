@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Cazador local de sudaderas en Vinted"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "cryptography>=50.0.2",
     "curl-cffi",
     "imagehash",
     "opencv-python-headless",

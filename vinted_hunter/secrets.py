@@ -1,6 +1,7 @@
 """Lee secretos de entorno y del archivo local sin incluir valores en errores."""
 
 import os
+import re
 from pathlib import Path
 
 
@@ -18,3 +19,13 @@ def local_secret(root: Path, name: str) -> str | None:
                 value = value[1:-1]
             return value or None
     return None
+
+
+def repository_name(root: Path) -> str | None:
+    value = local_secret(root, "GITHUB_REPO") or os.environ.get("GITHUB_REPOSITORY", "")
+    slug = (
+        value.removeprefix("https://github.com/")
+        .removeprefix("git@github.com:")
+        .removesuffix(".git")
+    )
+    return slug if re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9._-]+", slug) else None

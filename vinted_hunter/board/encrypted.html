@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Panel privado</title>
+<style>
+body{margin:0;background:#101416;color:#e7e9ea;font:1rem system-ui,sans-serif}
+main{max-width:34rem;margin:18vh auto;padding:1.5rem}
+iframe{display:block;border:0;width:100vw;height:100vh}
+</style>
+<main><h1>Panel privado</h1><p id="status">Abre el enlace con su clave.</p></main>
+<script type="application/json" id="payload">__ENVELOPE__</script>
+<script>
+(async () => {
+  const key = new URLSearchParams(location.hash.slice(1)).get("k");
+  if (!key) return;
+  try {
+    const envelope = JSON.parse(document.querySelector("#payload").textContent);
+    if (envelope.v !== 1) throw Error();
+    const bytes = value => Uint8Array.from(atob(value), character => character.charCodeAt(0));
+    const utf = new TextEncoder();
+    const material = await crypto.subtle.importKey("raw", utf.encode(key), "PBKDF2", false, ["deriveKey"]);
+    const aes = await crypto.subtle.deriveKey({
+      name:"PBKDF2", salt:bytes(envelope.salt), iterations:600000, hash:"SHA-256"
+    }, material, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+    const result = await crypto.subtle.decrypt({
+      name:"AES-GCM", iv:bytes(envelope.nonce), additionalData:utf.encode("catalog-sync:board:v1")
+    }, aes, bytes(envelope.data));
+    const frame = document.createElement("iframe");
+    frame.setAttribute("title", "Panel privado");
+    frame.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
+    frame.referrerPolicy = "no-referrer";
+    frame.srcdoc = new TextDecoder().decode(result);
+    document.body.replaceChildren(frame);
+  } catch {
+    document.querySelector("#status").textContent = "La clave no abre este panel.";
+  }
+})();
+</script>
+</html>

@@ -10,6 +10,7 @@ from typing import Any
 
 from vinted_hunter.config import load_config
 from vinted_hunter.pipeline.run import health, market_for
+from vinted_hunter.secrets import repository_name
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 
@@ -20,6 +21,7 @@ def build(root: Path, database: str = "vh.sqlite", folder: str = "board") -> Pat
             "listings": store.records(),
             "run": next(iter(store.runs(1)), None),
             "health": health(store, config),
+            "feedback_repo": repository_name(root),
             "brands": {profile.id: profile.brand for profile in config.profiles},
         }
         markets = {profile.id: market_for(store, profile, config) for profile in config.profiles}
