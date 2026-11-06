@@ -33,6 +33,7 @@ def summarize(prices: list[Decimal]) -> Market:
 
 
 def timing(listing: Listing, now: datetime, scoring: Scoring) -> dict:
+    """Calcula heat a partir de favoritos y edad."""
     source = listing.uploaded_at or listing.first_seen or now
     minutes = max(0, (now - source).total_seconds() / 60)
     heat = (listing.favourites or 0) / max(minutes, scoring.thresholds["heat_min_age"])

@@ -62,6 +62,10 @@ La base de datos, la caché y los logs se guardan en `data/`. El tablero inserta
 los datos y las fotos cacheadas de los candidatos dentro del HTML. Las fotos sin
 caché se muestran desde sus URLs públicas cuando hay conexión.
 
+La señal de actividad usa `favoritos / max(edad_en_minutos, heat_min_age)`.
+La edad sale de la publicación o, si falta, de la primera observación.
+Los favoritos ausentes aportan cero.
+
 ## Pruebas
 
 ```text

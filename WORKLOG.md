@@ -112,3 +112,10 @@
 - Comandos clave: pytest → 36 pasados. Ruff → salida 0. Backfill real lanzado con 10 páginas.
 - Evidencia: vinted_hunter/pipeline/funnel.py, SQLite run_log y prueba de conservación de la cohorte.
 - Problemas y cómo se resolvieron: PowerShell rechazó expansión de rutas estilo Bash antes de ejecutar los cambios. Se repitió con rutas explícitas.
+
+## 2026-11-06 10:14 — Corrección 5 · Heat
+- Objetivo: verificar que la actividad solo usa favoritos y edad.
+- Hecho: documenté la fórmula existente y añadí un test que cambia las visitas sin alterar el resultado.
+- Comandos clave: Ruff → salida 0. Pytest → 46 pasados en el conjunto de correcciones.
+- Evidencia: tests/test_heat.py y README.md.
+- Problemas y cómo se resolvieron: el campo histórico de visitas no interviene en el cálculo y sigue admitido en datos guardados.
