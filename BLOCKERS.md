@@ -18,3 +18,13 @@
 - Intentos. `vh doctor`, `pytest -m live` y `vh selftest --report` se ejecutaron contra Vinted.
 - Resultado. La portada, las cookies, el parser de catálogo, la combinación de marcas, la ficha, el vendedor y el armario respondieron. `doctor` devolvió salida 1 con «Filtro real · 0 Stone Island XL» y la lista de IDs pendientes. El test en vivo del filtro devolvió `AssertionError: Stone Island XL: el filtro público devolvió 0 tarjetas`. Pasaron dos de las tres pruebas en vivo y las ocho etapas del extremo a extremo.
 - Qué haría falta. Resolver y probar los IDs de filtros pendientes. `selftest --report` devuelve salida 1 cuando su suite en vivo falla.
+
+## Fase 4 · Medición de visión para Stone Island dentro del perfil
+
+- Intentos. El backfill procesó seis fotos de un primer Stone Island. Tras la revisión se verificó que era un polo de manga corta de categoría 5492, fuera del objetivo. Se volvió a probar una sudadera Stone Island gris XL de categoría 267 que había quedado pendiente.
+- Resultado. El polo produjo 0 QR legibles, 1 detectado sin lectura y 0 sin QR en 54,73 s. La sudadera se descartó en 21,41 s por `seller_rating`. Su nota era 4,20 y el perfil exige 4,50. El resto del embudo sí evaluó fotos de otras marcas en las pasadas reales.
+- Qué haría falta. Un Stone Island dentro del perfil que supere los gates de prenda y vendedor. Se mantuvo la regla de enriquecer fotos solo después de los descartes baratos y de vendedor. [Sudadera evaluada](https://www.vinted.es/items/10677376605-sudadera-stone-island-talla-xl).
+
+## Último sondeo visual de la taxonomía
+
+Chromium abrió el catálogo de sudaderas con HTTP 200 y mostró 500+ resultados. La segunda inspección tampoco encontró controles visibles de talla, estado o color por sus identificadores en el DOM. Las capturas públicas del catálogo y de la ficha siguen siendo utilizables. Queda pendiente obtener el intercambio real de los selectores.

@@ -84,3 +84,10 @@
 - Comandos clave: GET localhost:8787 → HTTP 200, 5.442.993 bytes. vh watch --interval 0.15 --jitter 0 --cycles 3 → salida 0, 827 / 879 / 837 vistos, 0 / 1 / 1 nuevos. vh selftest --report → 8/8 etapas, 20 peticiones, 116,17 s y dos puntuados. La suite live del informe devolvió 2 pasados y 1 fallo de filtro.
 - Evidencia: out/board/index.html, out/board/screenshot.png, out/board/screenshot-mobile.png, TEST_REPORT.md, data/logs/run-20261106.jsonl. Commits de implementación 8a9bb12, a289cb8, 681e41b, bcd25e2 y 9f24124.
 - Problemas y cómo se resolvieron: la autoprueba de embudo pasó; el informe agregado y doctor quedaron en salida 1 por la taxonomía. Se registró el bloqueo y se preservó la búsqueda textual. Se separó el SQL de SQLite del embudo para que StateStore cubra el contrato efectivo.
+
+## 2026-11-06 09:21 — Fase 7 · Cierre y contraste de dedupe
+- Objetivo: comprobar dos ejecuciones directas finales, inspeccionar los selectores restantes y cerrar los informes.
+- Hecho: dos vh run terminaron en verde. El primero puntuó un Rhude y el segundo puntuó dos anuncios, incluido un Palm Angels con QR en dominio Certilogo. Se revalidó un Rhude cuyo título indicaba S aunque Vinted lo presentaba como L. La sudadera gris Stone Island de control se descartó por nota 4,20.
+- Comandos clave: vh run → 25 peticiones, 844 vistos, 67 nuevos, 43 candidatos, 151,30 s. Segundo vh run → 25 peticiones, 835 vistos, nueve avisos, 44 candidatos, 142,25 s. Consulta SQLite de price_history → ocho primeras observaciones y una bajada de 119,99 a 90,00. Ruff → salida 0. Pytest → 31 pasados y 3 live excluidos en 2,04 s.
+- Evidencia: data/logs/run-20261106.jsonl, data/vh.sqlite, SESSION_REPORT.md, TEST_REPORT.md, out/board/ y commit 937080b. Auditoría Git → ocho blobs de fixtures alcanzables comprobados, sin JWT de telemetría ni datos de ejecución versionados.
+- Problemas y cómo se resolvieron: Chromium recibió HTTP 200 del catálogo, pero tampoco halló selectores visibles por identificador. El bloqueo queda documentado. Playwright generó de nuevo las dos capturas con 1.914 anuncios y validó el carrusel y el rastro. Linux queda pendiente de ejecución.
