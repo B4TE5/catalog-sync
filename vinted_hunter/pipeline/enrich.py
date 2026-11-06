@@ -1,6 +1,7 @@
 """Ficha, vendedor y caché de imágenes por URL."""
 
 import hashlib
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -50,31 +51,50 @@ def image_bytes(
     settings: Capture,
     *,
     require_budget: bool = False,
-) -> list[bytes]:
+) -> list[bytes | None]:
     cache.mkdir(parents=True, exist_ok=True)
-    images = []
-    for photo in listing.photos[: settings.max_photos]:
+    photos = listing.photos[: settings.max_photos]
+    images: list[bytes | None] = [None] * len(photos)
+    missing = []
+    for index, photo in enumerate(photos):
         url = str(photo)
         parts = urlsplit(url)
         if parts.scheme != "https" or not (parts.hostname or "").endswith(".vinted.net"):
             continue
         path = image_path(cache, url)
-        if path.exists():
-            images.append(path.read_bytes())
-            continue
+        if path.is_file():
+            images[index] = path.read_bytes()
+        else:
+            missing.append((index, url, path))
+
+    def fetch(job: tuple[int, str, Path]) -> tuple[int, bytes | None]:
+        index, url, path = job
         try:
-            response = client.get(url, "enrich")
+            response = client.get_cdn(url, settings.cdn_timeout)
         except BudgetExhausted:
-            if require_budget:
-                raise
-            break
-        if response.headers.get("Content-Type", "").startswith("image/"):
-            with NamedTemporaryFile("wb", dir=cache, delete=False) as file:
-                temporary = Path(file.name)
-                file.write(response.content)
-            try:
-                temporary.replace(path)
-            finally:
-                temporary.unlink(missing_ok=True)
-            images.append(response.content)
+            return index, None
+        if not response.headers.get("Content-Type", "").startswith("image/"):
+            return index, None
+        with NamedTemporaryFile("wb", dir=cache, delete=False) as file:
+            temporary = Path(file.name)
+            file.write(response.content)
+        try:
+            temporary.replace(path)
+        finally:
+            temporary.unlink(missing_ok=True)
+        return index, response.content
+
+    quota = client.remaining("enrich")
+    if missing and quota:
+        with ThreadPoolExecutor(max_workers=settings.cdn_workers) as pool:
+            for index, image in pool.map(fetch, missing[:quota]):
+                images[index] = image
+    if require_budget and (
+        len(missing) > quota
+        or (
+            client.remaining("enrich") == 0
+            and any(images[index] is None for index, _, _ in missing)
+        )
+    ):
+        raise BudgetExhausted("Cuota de imágenes agotada")
     return images

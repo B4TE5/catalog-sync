@@ -175,3 +175,10 @@
 - Comandos clave: vh selftest --report → salida 0, 8/8 etapas, 20 peticiones, 115,7 s. Pytest live → 4 pasados.
 - Evidencia: TEST_REPORT.md, CORRECCION_1.md, commits 5907c4b y 4f15b3d.
 - Problemas y cómo se resolvieron: para evitar contaminar el mercado se excluyeron también las piezas bajo el suelo que solo pasan a Revisar por su QR.
+
+## 2026-11-06 20:27 — F2.0 · Rendimiento
+- Objetivo: separar la cadencia de páginas y fotos y dar prioridad a los anuncios frescos.
+- Hecho: cuatro trabajadores de CDN sin cookies ni pausa, timeout y un reintento dentro del presupuesto. Los anuncios de la pasada preceden al backlog.
+- Comandos clave: vh run → salida 0, 25 peticiones, 884 vistos y 117,3 s. Pytest → 58 pasados.
+- Evidencia: tiempos por candidato en DECISIONS.md y run_log.
+- Problemas y cómo se resolvieron: las fotos conservan sus posiciones aun cuando falten bytes. Se mantiene el circuit breaker para CDN y páginas.

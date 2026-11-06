@@ -3,6 +3,8 @@ capture:
   enrich_limit: 12
   wait: [3, 8]
   max_photos: 12
+  cdn_workers: 4
+  cdn_timeout: 10
   seller_hours: 24
   unhealthy_after: 3
   backoff_seconds: 60

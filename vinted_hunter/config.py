@@ -62,6 +62,8 @@ class Capture(BaseModel):
     enrich_limit: int = Field(12, ge=1, le=12)
     wait: tuple[float, float] = (3, 8)
     max_photos: int = Field(12, ge=1, le=12)
+    cdn_workers: int = Field(4, ge=1, le=4)
+    cdn_timeout: float = Field(10, gt=0, le=30)
     seller_hours: int = 24
     unhealthy_after: int = 3
     backoff_seconds: int = 60

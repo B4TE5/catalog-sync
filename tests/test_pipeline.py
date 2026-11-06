@@ -444,3 +444,17 @@ def test_catalog_only_gate_keeps_enough_own_photos(config: Config, candidate: Li
     assert gate(listing, profile, config, evidence=four_own)[0] is None
     result = score(listing, profile, None, four_own, config, [], {"bargain": False})
     assert result.points["stock_photo"] == -20
+
+
+def test_enrichment_prioritizes_fresh_before_backlog(config: Config, candidate: Listing) -> None:
+    from vinted_hunter.pipeline.run import enrichment_priority
+
+    profile = config.profiles[0]
+    fresh = candidate.model_copy(update={"first_seen": NOW, "price": Decimal(50)})
+    cheap_fresh = fresh.model_copy(update={"price": Decimal(40)})
+    backlog = cheap_fresh.model_copy(update={"first_seen": NOW - timedelta(days=4)})
+    ordered = sorted(
+        [(backlog, False), (fresh, True), (cheap_fresh, True)],
+        key=lambda job: enrichment_priority(job[0], profile, job[1], NOW),
+    )
+    assert [job[0] for job in ordered] == [cheap_fresh, fresh, backlog]

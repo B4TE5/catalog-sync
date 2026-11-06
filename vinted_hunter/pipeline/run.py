@@ -100,6 +100,21 @@ def select_profiles(
     return []
 
 
+def enrichment_priority(
+    listing: Listing,
+    profile: Profile,
+    fresh: bool,
+    now: datetime,
+) -> tuple[bool, bool, float, float]:
+    age = listing.uploaded_at or listing.first_seen or now
+    return (
+        not fresh,
+        listing.price < profile.price_floor,
+        -age.timestamp(),
+        float(listing.price / profile.price_max),
+    )
+
+
 class Pipeline:
     def __init__(self, root: Path, store: StateStore, config: Config, now: datetime) -> None:
         self.root = root
@@ -318,7 +333,7 @@ class Pipeline:
                 reason, passed = gate(listing, profile, self.config, seller, detailed=True)
             if not reason:
                 images = image_bytes(client, listing, self.root / "data" / "images", settings)
-                if not images:
+                if not any(images):
                     raise BudgetExhausted("Sin fotos descargadas para el candidato")
                 refs = profile.refs_dir or Path("refs") / profile.id
                 vision = inspect_photos(
@@ -415,37 +430,43 @@ class Pipeline:
                 pending=reason is None,
             )
             if reason is None:
-                work.append((listing, profile, evidence, is_new))
+                work.append((listing, profile, evidence, is_new, not row or dropped))
         self.run["candidates"] = len(work)
         self.store.flush()
         words = self.config.scoring.words
 
-        def priority(job: tuple[Listing, Profile, Evidence, bool]) -> tuple:
-            listing, profile, evidence, _ = job
+        def priority(job: tuple[Listing, Profile, Evidence, bool, bool]) -> tuple:
+            listing, profile, _, _, fresh = job
+            primary = enrichment_priority(listing, profile, fresh, self.now)
+            if candidate_cap is None:
+                return primary
             stated = hood_signal(listing.title, words)
             color_match = profile.color and matches(
                 listing.title,
                 words.get(profile.color, [profile.color]),
             )
             return (
-                not evidence.price_drop,
+                primary[0],
+                primary[1],
                 gate(listing, profile, self.config, detailed=True)[0] in ATTRIBUTE_GATES,
                 listing.size is not None and listing.size != profile.size,
                 not (stated == profile.hood or color_match),
-                -(listing.first_seen or self.now).timestamp(),
+                *primary[2:],
             )
 
         work.sort(key=priority)
-        first_per_profile: dict[str, tuple[Listing, Profile, Evidence, bool]] = {}
-        remaining = []
-        for job in work:
-            profile_id = job[1].id
-            if profile_id in first_per_profile:
-                remaining.append(job)
-            else:
-                first_per_profile[profile_id] = job
-        ordered = [*first_per_profile.values(), *remaining]
-        for listing, profile, evidence, is_new in ordered[:candidate_cap]:
+        ordered = work
+        if candidate_cap is not None:
+            first_per_profile: dict[str, tuple] = {}
+            remaining = []
+            for job in work:
+                profile_id = job[1].id
+                if profile_id in first_per_profile:
+                    remaining.append(job)
+                else:
+                    first_per_profile[profile_id] = job
+            ordered = sorted([*first_per_profile.values(), *remaining], key=lambda job: not job[4])
+        for listing, profile, evidence, is_new, _ in ordered[:candidate_cap]:
             if not client.remaining("enrich"):
                 break
             self.emit("candidate", id=listing.id, profile=profile.id)

@@ -293,3 +293,7 @@ Palm Angels de 28 € (10685333948) tenía 95 puntos. De nueve fotos cacheadas, 
 | supreme | pending 40, rejected 161, top 3 | good 1, pending 78, rejected 124, top 1 |
 | twojeys | pending 12, rejected 86 | pending 19, rejected 79 |
 | yzy-gap | pending 11, rejected 127, top 1 | pending 33, rejected 106 |
+
+## 2026-11-06 · F2.0, rendimiento y cola
+
+La pasada normal usó 25 peticiones y tardó 117.31 s. Vio 884 anuncios y puntuó 1. Tiempos por candidato en segundos [16.38, 17.39]. Se conserva el presupuesto de peticiones. Las fotos del CDN se descargan con cuatro hilos y un reintento acotado. Las páginas mantienen la pausa. Los primeros avistamientos y las bajadas de esta pasada preceden al backlog. Dentro de ese grupo se usa fecha disponible y precio relativo al tope, con prioridad a piezas que alcanzan el suelo de precio.
