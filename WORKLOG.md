@@ -140,3 +140,10 @@
 - Comandos clave: Ruff → salida 0. Pytest → 47 pasados, 4 live excluidos.
 - Evidencia: test_revalidate_requires_ficha_evidence_for_attribute_rejects.
 - Problemas y cómo se resolvieron: en registros previos la talla podía haberse heredado de la tarjeta. La revalidación aplaza el descarte hasta disponer de evidencia confirmada.
+
+## 2026-11-06 10:32 — Correcciones 3 y 7 · Backfill y validación pública
+- Objetivo: medir el embudo con datos de Vinted y comprobar el cierre en vivo.
+- Hecho: el backfill general guardó 1.022 IDs Stone Island con su motivo o estado. Doctor confirmó las dos tallas. Selftest con informe completó 8/8 etapas y la suite live pasó 4/4.
+- Comandos clave: vh backfill --pages 10 → salida 0, 25 peticiones, 1.123 vistos y 147,2 s. vh doctor → salida 0. vh selftest --report → salida 0, 20 peticiones, 112,25 s. pytest -m live incluido en el informe → 4 pasados en 33,33 s.
+- Evidencia: DECISIONS.md, TEST_REPORT.md y run_log.
+- Problemas y cómo se resolvieron: la primera pasada agotó la cuota de fotos en otro perfil. La cohorte Stone Island conserva cuatro fichas previas y 297 pendientes. Se preparó una segunda medición centrada en Stone Island tras vision-check.
