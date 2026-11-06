@@ -195,3 +195,10 @@ class SQLiteStore(StateStore):
     def runs(self, limit: int) -> list[dict[str, Any]]:
         rows = self.db.execute("SELECT body FROM run_log ORDER BY id DESC LIMIT ?", (limit,))
         return [json.loads(row["body"]) for row in rows]
+
+    def latest_backfill(self) -> dict[str, Any]:
+        row = self.db.execute(
+            "SELECT body FROM run_log WHERE json_type(body, '$.funnel') = 'object' "
+            "ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+        return json.loads(row["body"]) if row else {}

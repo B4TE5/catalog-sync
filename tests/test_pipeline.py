@@ -239,3 +239,29 @@ def test_detail_supersedes_catalogue_attributes(config: Config, candidate: Listi
     detail = parse_item(body, tile, NOW)
     assert detail.size == "XL" and detail.status == "very_good"
     assert gate(detail, profile, config, detailed=True)[0] is None
+
+
+def test_funnel_tracks_each_listing_once(
+    config: Config, candidate: Listing, tmp_path: Path
+) -> None:
+    from vinted_hunter.pipeline.run import Pipeline
+
+    profile = config.profiles[0]
+    other = candidate.model_copy(update={"id": candidate.id + 1})
+    with SQLiteStore(tmp_path / "vh.sqlite") as store:
+        store.save(
+            candidate, profile.id, "rejected", 0, {"gate_rejected": "color", "enriched": True}, True
+        )
+        pipe = Pipeline(tmp_path, store, config, NOW)
+        pipe.fetched_details.add(candidate.id)
+        counts = pipe.backfill_funnel(
+            {
+                candidate.id: (candidate, profile, False),
+                other.id: (other, profile, False),
+            }
+        )[profile.id]
+    assert counts["seen"] == 2
+    assert counts["enriched"] == counts["fetched"] == 1
+    assert counts["tiers"] == {"rejected": 1, "pending": 1}
+    assert counts["rejected"] == {"color": 1}
+    assert counts["ids_by_outcome"] == {"rejected:color": [candidate.id], "pending": [other.id]}

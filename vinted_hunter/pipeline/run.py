@@ -13,6 +13,7 @@ from curl_cffi.requests import RequestsError
 from vinted_hunter.config import Config, Profile, load_config
 from vinted_hunter.pipeline.dedupe import is_drop, photo_dedupe
 from vinted_hunter.pipeline.enrich import get_item, get_seller, image_bytes
+from vinted_hunter.pipeline.funnel import funnel
 from vinted_hunter.pipeline.gates import ATTRIBUTE_GATES, gate
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.pricing import Market, price_signals, summarize, timing
@@ -95,6 +96,7 @@ class Pipeline:
         self.now = now
         self.emit = EventLog(root / "data" / "logs")
         self.reasons: Counter[str] = Counter()
+        self.fetched_details: set[int] = set()
         self.markets = {
             profile.id: market_for(store, profile.id, config.scoring.thresholds["plausible"])
             for profile in config.profiles
@@ -255,6 +257,7 @@ class Pipeline:
             listing = get_item(client, listing, self.now)
             enriched = True
             self.run["enriched"] += 1
+            self.fetched_details.add(listing.id)
             reason, passed = gate(listing, profile, self.config, detailed=True)
             if not reason and listing.seller_id is None:
                 raise ParseError("Ficha sin ID de vendedor")
@@ -378,7 +381,8 @@ class Pipeline:
             )
             return (
                 not evidence.price_drop,
-                listing.size != profile.size,
+                gate(listing, profile, self.config, detailed=True)[0] in ATTRIBUTE_GATES,
+                listing.size is not None and listing.size != profile.size,
                 not (stated == profile.hood or color_match),
                 -(listing.first_seen or self.now).timestamp(),
             )
@@ -402,6 +406,20 @@ class Pipeline:
             duration = round(time.monotonic() - started, 2)
             self.run["candidate_seconds"].append(duration)
             self.store.flush()
+
+    def backfill_funnel(self, found: dict[int, tuple[Listing, Profile, bool]]) -> dict:
+        cohorts: dict[str, list[dict]] = {}
+        fetched: Counter[str] = Counter()
+        for listing, profile, _ in found.values():
+            row = self.store.record(listing.id)
+            if row is None:
+                row = {"id": listing.id, "body": {}, "trace": {}, "tier": None}
+            cohorts.setdefault(profile.id, []).append(row)
+            fetched[profile.id] += int(listing.id in self.fetched_details)
+        return {
+            profile: {**funnel(rows), "fetched": fetched[profile]}
+            for profile, rows in cohorts.items()
+        }
 
     def revalidate(self) -> int:
         """Aplica los gates actuales a las tarjetas enriquecidas guardadas."""
@@ -458,7 +476,11 @@ class Pipeline:
                     found = self.catalog(client, pages, selftest)
                     self.run["phases"]["catalog"] = round(time.monotonic() - catalog_start, 2)
                     pipeline_start = time.monotonic()
-                    self.process(client, found, backfill, 3 if selftest else None)
+                    try:
+                        self.process(client, found, backfill, 3 if selftest else None)
+                    finally:
+                        if backfill:
+                            self.run["funnel"] = self.backfill_funnel(found)
                     self.run["phases"]["pipeline"] = round(time.monotonic() - pipeline_start, 2)
             except CircuitOpen as error:
                 self.error(error, "capture")

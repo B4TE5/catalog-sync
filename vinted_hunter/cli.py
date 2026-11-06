@@ -16,6 +16,7 @@ from vinted_hunter.board.build import build
 from vinted_hunter.config import load_config
 from vinted_hunter.diagnostics import check
 from vinted_hunter.notify.console import ConsoleNotifier
+from vinted_hunter.pipeline.funnel import funnel
 from vinted_hunter.pipeline.run import market_for, run_pass
 from vinted_hunter.sources.vinted.client import HttpFailure
 from vinted_hunter.sources.vinted.parse import ParseError
@@ -85,27 +86,29 @@ def stats() -> None:
     config = load_config(ROOT)
     with local_store() as store:
         records = store.records()
+        recent = store.latest_backfill().get("funnel", {})
         for profile in config.profiles:
             market = market_for(store, profile.id, config.scoring.thresholds["plausible"])
             samples = store.db.execute(
                 "SELECT COUNT(*) FROM price_history WHERE profile=?", (profile.id,)
             ).fetchone()[0]
-            tiers = {}
-            rejections = {}
-            for row in records:
-                if row["profile"] == profile.id:
-                    tier = row["tier"] or "pending"
-                    tiers[tier] = tiers.get(tier, 0) + 1
-                    reason = row["trace"]["gate_rejected"]
-                    if reason:
-                        rejections[reason] = rejections.get(reason, 0) + 1
+            inventory = funnel(row for row in records if row["profile"] == profile.id)
             show(
                 f"{profile.brand} · {samples} precios · {market.count} plausibles · "
                 f"mediana {market.median or '—'} · p25 {market.p25 or '—'} · "
                 f"p10 {market.p10 or '—'}"
             )
-            if tiers:
-                show(f"  Niveles {tiers} · descartes {rejections}")
+            for label, counts in (
+                ("Inventario", inventory),
+                ("Último backfill", recent.get(profile.id)),
+            ):
+                if counts is None:
+                    continue
+                fetched = f" ({counts['fetched']} fichas nuevas)" if "fetched" in counts else ""
+                show(
+                    f"  {label} · {counts['seen']} vistos · descartes {counts['rejected']} · "
+                    f"{counts['enriched']} enriquecidos{fetched} · tiers {counts['tiers']}"
+                )
 
 
 @app.command()

@@ -105,3 +105,10 @@
 - Comandos clave: pytest → 35 pasados; Ruff → salida 0 tras ordenar importaciones.
 - Evidencia: tests/test_pipeline.py y fixture público item.html.gz.
 - Problemas y cómo se resolvieron: una tarjeta contradictoria podría contaminar la ficha si faltaba el dato; se eliminó esa mezcla.
+
+## 2026-11-06 10:11 — Corrección 3 · Embudo por perfil
+- Objetivo: separar vistos únicos, descartes por causa, fichas y tiers.
+- Hecho: stats muestra el inventario y la cohorte del último backfill. El registro de pasada conserva cada ID y su resultado. Las señales de tarjeta ordenan la cola sin decidir los cuatro gates de atributos.
+- Comandos clave: pytest → 36 pasados. Ruff → salida 0. Backfill real lanzado con 10 páginas.
+- Evidencia: vinted_hunter/pipeline/funnel.py, SQLite run_log y prueba de conservación de la cohorte.
+- Problemas y cómo se resolvieron: PowerShell rechazó expansión de rutas estilo Bash antes de ejecutar los cambios. Se repitió con rutas explícitas.
