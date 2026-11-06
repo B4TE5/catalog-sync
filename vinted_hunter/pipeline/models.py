@@ -52,6 +52,8 @@ class Evidence(BaseModel):
     primary_hash: str | None = None
     parts_present: list[str] = Field(default_factory=list)
     stock_photo: bool = False
+    catalog_photo_count: int = 0
+    catalog_first: bool = False
     shared_photo: bool = False
     blacklisted_photo: bool = False
     price_drop: bool = False
@@ -61,4 +63,5 @@ class ScoreResult(BaseModel):
     score: int = 0
     tier: Tier
     reasons: list[str] = Field(default_factory=list)
+    flags: list[str] = Field(default_factory=list)
     points: dict[str, int] = Field(default_factory=dict)

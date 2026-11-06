@@ -22,3 +22,4 @@ dist/
 scratch/*.rsc
 scratch/inspect_*.py
 scratch/.playwright/
+scratch/inspect_*.png

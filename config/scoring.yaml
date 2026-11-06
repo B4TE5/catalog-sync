@@ -8,6 +8,8 @@ capture:
   backoff_seconds: 60
   max_backoff_seconds: 3600
 words:
+  garment_positive: [sudadera, hoodie, hoody, sweat, sweatshirt, crewneck, felpa, pull, capuche, kapuzenpullover, sweatjacke, kapuzenjacke, sweater]
+  garment_negative: [camiseta, camisetas, t-shirt, tshirt, t shirt, tee, polo, polos, camisa, chemise, camicia, hemd, pantalón, pantalones, pantalon, pantaloni, pants, trousers, hose, jogger, joggers, "pantalón de chándal", "bas de survêtement", shorts, bermuda, gafas, sunglasses, lunettes, occhiali, sonnenbrille, pulsera, bracelet, bracciale, armband, collar, necklace, collier, collana, halskette, anillo, anelli, ring, bague, pendiente, pendientes, earring, orecchini, ohrringe, gorra, cap, beanie, gorro, bonnet, cappellino, berretto, mütze, calcetines, socks, chaussettes, calzini, socken, bolso, bag, sac, borsa, tasche, cartera, wallet, cinturón, belt, zapatillas, sneakers, baskets, scarpe, schuhe, chaqueta, jacket, veste, giacca, jacke, abrigo, coat, manteau, cappotto, mantel, chaleco, gilet, weste]
   replica: [replica, "1:1", aaa, inspired, no original, copia, fake, rep, réplique, contrefaçon, non original, falso, riproduzione, fälschung, nachgemacht, geïnspireerd, geïnspireerde, namaak]
   hood_with: [capucha, hoodie, hooded, capuche, cappuccio, kapuze, kangourou, capuchon]
   hood_without: [sin capucha, crewneck, crew neck, cuello redondo, sans capuche, col rond, senza cappuccio, girocollo, ohne kapuze, rundhals, zonder capuchon]
@@ -41,6 +43,14 @@ weights:
   bargain: 8
   hood_unconfirmed: -5
 thresholds:
+  catalog_edge_fraction: 0.60
+  catalog_background_delta: 24
+  catalog_min_foreground: 0.12
+  catalog_max_foreground: 0.88
+  catalog_center_offset: 0.17
+  catalog_ui_flat_delta: 9
+  catalog_ui_band_fraction: 0.035
+  catalog_ui_contrast: 30
   top: 75
   good: 60
   maybe: 45

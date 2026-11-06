@@ -10,6 +10,7 @@ import numpy as np
 import zxingcpp
 from PIL import Image, UnidentifiedImageError
 
+from vinted_hunter.pipeline.catalog_photo import catalog_style_photo
 from vinted_hunter.pipeline.models import QR, Evidence
 
 
@@ -106,7 +107,7 @@ class ReferenceMatcher:
 
 
 def inspect_photos(
-    images: list[bytes],
+    images: list[bytes | None],
     refs: Path,
     stock: Path,
     thresholds: dict[str, float],
@@ -122,6 +123,8 @@ def inspect_photos(
     parts = set()
     order = ("qr_foreign_domain", "certilogo_ok", "qr_detected_unreadable", "none")
     for index, body in enumerate(images):
+        if body is None:
+            continue
         try:
             with Image.open(BytesIO(body)) as source:
                 image = source.convert("RGB")
@@ -131,7 +134,10 @@ def inspect_photos(
         if index == 0:
             evidence.primary_hash = value
         evidence.hashes.append(value)
-        evidence.stock_photo |= value in stock_hashes
+        if value in stock_hashes or catalog_style_photo(np.asarray(image), thresholds):
+            evidence.stock_photo = True
+            evidence.catalog_photo_count += 1
+            evidence.catalog_first |= index == 0
         gray = np.asarray(image.convert("L"))
         if scan_qr:
             qr, decoded = _read_qr(gray)

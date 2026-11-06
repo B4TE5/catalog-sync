@@ -13,6 +13,18 @@ def needs_confirmed_detail(reason: str | None, profile: Profile) -> bool:
     )
 
 
+def sweatshirt_categories(config: Config, profile: Profile) -> set[int]:
+    keys = ("sweatshirts", "zip_sweatshirts", profile.hood)
+    return {config.ids.catalog_ids[key] for key in keys if key in config.ids.catalog_ids}
+
+
+def garment_mismatch(listing: Listing, profile: Profile, config: Config) -> bool:
+    categories = sweatshirt_categories(config, profile)
+    if categories and listing.category_id is not None and listing.category_id not in categories:
+        return True
+    return bool(matches(listing.title, config.scoring.words["garment_negative"]))
+
+
 def gate(
     listing: Listing,
     profile: Profile,
@@ -34,22 +46,18 @@ def gate(
         None,
     )
     hood = category_hood or hood_signal(text, words)
-    categories = set(config.ids.catalog_ids.values())
     expected_size = normalize(profile.size)
     explicit_sizes = stated_sizes(listing.title, words.get("size_labels", []))
     size = normalize((listing.size or "").split(" / ")[0])
     tests = {
-        "category": not categories
-        or listing.category_id is None
-        or listing.category_id in categories,
-        "price": listing.currency == "EUR"
-        and profile.price_floor <= listing.price <= profile.price_max,
+        "not_sweatshirt": not garment_mismatch(listing, profile, config),
+        "price": listing.currency == "EUR" and listing.price <= profile.price_max,
         "replica": not matches(text, words["replica"]),
     }
     for reason, valid in tests.items():
         if not valid:
             return reason, passed
-        passed.append(reason)
+        passed.append("garment" if reason == "not_sweatshirt" else reason)
     if detailed:
         attributes = {
             "size": (not size or size == expected_size)
@@ -91,6 +99,19 @@ def gate(
     if evidence:
         for rejected, reason in (
             (evidence.qr == "qr_foreign_domain", "fake_certilogo_domain"),
+            (
+                evidence.catalog_photo_count > 0
+                and (
+                    evidence.catalog_photo_count == len(listing.photos)
+                    or evidence.catalog_first
+                    and len(listing.photos) - evidence.catalog_photo_count <= 3
+                ),
+                "catalog_photos_only",
+            ),
+            (
+                listing.price < profile.price_floor and evidence.qr != "certilogo_ok",
+                "too_cheap_for_brand",
+            ),
             (evidence.blacklisted_photo, "blacklisted_photo"),
             (evidence.shared_photo, "shared_photo"),
         ):

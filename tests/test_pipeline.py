@@ -37,9 +37,9 @@ def candidate() -> Listing:
 @pytest.mark.parametrize(
     ("updates", "seller", "evidence", "reason"),
     [
-        ({"price": Decimal(10)}, None, None, "price"),
+        ({"price": Decimal(100)}, None, None, "price"),
         ({"size": "XXL"}, None, None, "size"),
-        ({"category_id": 5492}, None, None, "category"),
+        ({"category_id": 5492}, None, None, "not_sweatshirt"),
         ({"description": "geïnspireerde groene"}, None, None, "replica"),
         ({"title": "Felpa con cappuccio"}, None, None, "hood"),
         ({"status": "satisfactory"}, None, None, "status"),
@@ -112,7 +112,7 @@ def test_price_speed_and_top_tier(config: Config, candidate: Listing) -> None:
     )
     clock = timing(listing, NOW, config.scoring)
     assert clock["hot"] and clock["age_minutes"] == 8
-    price = price_signals(listing, profile, market, 8, False, config.scoring)
+    price = price_signals(listing, profile, market, 8, False, config.scoring, seller_verified=True)
     assert price["buy_now"] and price["estimated"] and price["bargain"]
     old = price_signals(listing, profile, summarize([]), 8000, False, config.scoring)
     assert old["negotiable"] and old["offer"] == "30"
@@ -356,3 +356,91 @@ def test_revalidate_requires_ficha_evidence_for_attribute_rejects(
         store.save(listing, profile.id, "good", 70, {"enriched": True}, False)
         assert pipe.revalidate() == 1
         assert store.record(listing.id)["trace"]["gate_rejected"] == "size"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pulsera TwoJeys",
+        "Stone Island tee",
+        "Lunettes Rhude",
+        "Pantaloni Heron Preston",
+        "Palm Angels Sonnenbrille",
+    ],
+)
+def test_garment_prefilter_rejects_other_types(config: Config, candidate: Listing, title: str):
+    tile = candidate.model_copy(update={"title": title})
+    assert gate(tile, config.profiles[0], config)[0] == "not_sweatshirt"
+
+
+def test_below_floor_needs_certilogo_and_can_only_be_reviewed(config: Config, candidate: Listing):
+    profile = config.profiles[0]
+    listing = candidate.model_copy(update={"price": Decimal(25)})
+    assert gate(listing, profile, config)[0] is None
+    assert gate(listing, profile, config, evidence=Evidence())[0] == "too_cheap_for_brand"
+    proof = Evidence(qr="certilogo_ok", qr_decoded=True)
+    assert gate(listing, profile, config, evidence=proof)[0] is None
+    prices = price_signals(
+        listing, profile, summarize([]), 1, False, config.scoring, seller_verified=True
+    )
+    result = score(
+        listing, profile, Seller(id=1, rating=5, feedback_count=100), proof, config, [], prices
+    )
+    assert result.tier == "maybe" and result.flags
+    assert not prices["buy_now"]
+    assert not price_signals(candidate, profile, summarize([]), 1, False, config.scoring)["buy_now"]
+
+
+def test_pending_has_no_score_or_purchase_recommendation(
+    config: Config, candidate: Listing, tmp_path: Path
+):
+    from vinted_hunter.pipeline.run import Pipeline
+
+    with SQLiteStore(tmp_path / "state.sqlite") as store:
+        Pipeline(tmp_path, store, config, NOW).record(
+            candidate,
+            config.profiles[0],
+            [],
+            Evidence(),
+            False,
+            pending=True,
+            enriched=True,
+        )
+        row = store.record(candidate.id)
+        assert (
+            row["tier"] is row["score"] is row["trace"]["score"] is row["trace"]["pricing"] is None
+        )
+
+
+def test_market_requires_enriched_sweatshirt_and_excludes_fake(
+    config: Config, candidate: Listing, tmp_path: Path
+):
+    from vinted_hunter.pipeline.run import market_for
+
+    profile = config.profiles[0]
+    item = candidate.model_copy(update={"category_id": config.ids.catalog_ids["sweatshirts"]})
+    with SQLiteStore(tmp_path / "state.sqlite") as store:
+        for offset, category, enriched, tier, points in (
+            (0, item.category_id, True, "good", 65),
+            (1, item.category_id, True, "top", 90),
+            (2, 5492, True, "top", 95),
+            (3, item.category_id, False, "top", 90),
+            (4, item.category_id, True, "rejected", 85),
+            (5, item.category_id, True, "maybe", 59),
+        ):
+            row = item.model_copy(update={"id": item.id + offset, "category_id": category})
+            store.save(row, profile.id, tier, points, {"enriched": enriched}, False)
+        store.label(item.id + 1, "fake", NOW.isoformat())
+        market = market_for(store, profile, config)
+        assert market.count == 1 and market.median == item.price
+
+
+def test_catalog_only_gate_keeps_enough_own_photos(config: Config, candidate: Listing) -> None:
+    profile = config.profiles[0]
+    listing = candidate.model_copy(update={"photos": candidate.photos * 5})
+    three_own = Evidence(stock_photo=True, catalog_photo_count=2, catalog_first=True)
+    assert gate(listing, profile, config, evidence=three_own)[0] == "catalog_photos_only"
+    four_own = Evidence(stock_photo=True, catalog_photo_count=1, catalog_first=True)
+    assert gate(listing, profile, config, evidence=four_own)[0] is None
+    result = score(listing, profile, None, four_own, config, [], {"bargain": False})
+    assert result.points["stock_photo"] == -20

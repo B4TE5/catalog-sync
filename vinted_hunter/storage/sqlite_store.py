@@ -120,12 +120,25 @@ class SQLiteStore(StateStore):
         rows = self.db.execute(f"SELECT * FROM listings {condition} ORDER BY id DESC")
         return [self._record(row) for row in rows]
 
-    def plausible_prices(self, profile: str, score: float) -> list[Decimal]:
+    def plausible_prices(
+        self, profile: str, score: float, categories: set[int], floor: Decimal
+    ) -> list[Decimal]:
+        if not categories:
+            return []
         rows = self.db.execute(
-            "SELECT body FROM listings WHERE profile=? AND score>=?",
-            (profile, score),
+            "SELECT body FROM listings LEFT JOIN labels ON labels.listing_id=listings.id "
+            "WHERE profile=? AND score>=? AND tier IN ('top','good','maybe','low') "
+            "AND COALESCE(labels.label, '') != 'fake' "
+            "AND json_extract(trace, '$.enriched')=1",
+            (profile, max(60, score)),
         )
-        return [Listing.model_validate_json(row["body"]).price for row in rows]
+        return [
+            item.price
+            for row in rows
+            if (item := Listing.model_validate_json(row["body"])).category_id in categories
+            and item.currency == "EUR"
+            and item.price >= floor
+        ]
 
     def save_market(self, profile: str, market: dict[str, Any]) -> None:
         self.db.execute(

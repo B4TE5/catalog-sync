@@ -37,10 +37,11 @@ profiles:
     brand: TwoJeys
     size: L
     hood: with
+    price_floor: 20
     price_max: 55
     text_queries:
-      - { q: "twojeys", priority: normal }
-      - { q: "two jeys", priority: normal }
+      - { q: "twojeys hoodie", priority: normal }
+      - { q: "twojeys sudadera", priority: normal }
     brand_rules: []
 
   - id: yzy-gap
@@ -48,6 +49,7 @@ profiles:
     brand: Yeezy Gap        # resolver el/los brand_id reales (puede haber "Yeezy Gap", "YZY GAP", "Gap x Yeezy")
     size: L
     hood: with
+    price_floor: 25
     price_max: 70
     text_queries:
       - { q: "yeezy gap", priority: normal }
@@ -60,6 +62,7 @@ profiles:
     brand: Heron Preston
     size: L
     hood: with
+    price_floor: 35
     price_max: 80
     text_queries:
       - { q: "heron preston", priority: normal }
@@ -70,8 +73,10 @@ profiles:
     brand: Supreme
     size: L
     hood: with
+    price_floor: 45
     price_max: 100
-    seller_min_feedback: 15
+    seller_min_feedback: 20
+    min_photos: 5
     text_queries:
       - { q: "supreme hoodie", priority: normal }
       - { q: "sudadera supreme", priority: normal }
@@ -83,6 +88,7 @@ profiles:
     brand: Rhude
     size: L
     hood: with
+    price_floor: 45
     price_max: 100
     text_queries:
       - { q: "rhude", priority: normal }
@@ -93,6 +99,7 @@ profiles:
     brand: Palm Angels
     size: L
     hood: with
+    price_floor: 60
     price_max: 100
     seller_min_feedback: 20      # marca muy falsificada → filtros más duros
     min_photos: 5
@@ -106,6 +113,7 @@ profiles:
     brand: Palace
     size: L
     hood: with
+    price_floor: 40
     price_max: 100
     seller_min_feedback: 15
     text_queries:

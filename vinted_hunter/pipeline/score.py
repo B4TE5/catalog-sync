@@ -90,4 +90,8 @@ def score(
     add("hood_unconfirmed", "Capucha sin confirmar", "hood_unconfirmed" in passed)
     total = max(0, min(100, sum(points.values())))
     tier = next((tier for tier in ("top", "good", "maybe") if total >= limits[tier]), "low")
-    return ScoreResult(score=total, tier=tier, points=points, reasons=reasons)
+    flags = []
+    if listing.price < profile.price_floor and evidence.qr == "certilogo_ok":
+        tier = "maybe" if tier in ("top", "good") else tier
+        flags.append("⚠️ Precio sospechoso: escanea el Certilogo antes de comprar")
+    return ScoreResult(score=total, tier=tier, points=points, reasons=reasons, flags=flags)

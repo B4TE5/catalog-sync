@@ -14,7 +14,12 @@ from vinted_hunter.config import Config, Profile, load_config
 from vinted_hunter.pipeline.dedupe import is_drop, photo_dedupe
 from vinted_hunter.pipeline.enrich import get_item, get_seller, image_bytes
 from vinted_hunter.pipeline.funnel import funnel
-from vinted_hunter.pipeline.gates import ATTRIBUTE_GATES, gate, needs_confirmed_detail
+from vinted_hunter.pipeline.gates import (
+    ATTRIBUTE_GATES,
+    gate,
+    needs_confirmed_detail,
+    sweatshirt_categories,
+)
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.pricing import Market, price_signals, summarize, timing
 from vinted_hunter.pipeline.score import score
@@ -53,8 +58,15 @@ class EventLog:
             target.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def market_for(store: StateStore, profile: str, plausible: float) -> Market:
-    return summarize(store.plausible_prices(profile, plausible))
+def market_for(store: StateStore, profile: Profile, config: Config) -> Market:
+    return summarize(
+        store.plausible_prices(
+            profile.id,
+            config.scoring.thresholds["plausible"],
+            sweatshirt_categories(config, profile),
+            profile.price_floor,
+        )
+    )
 
 
 def health(store: StateStore, config: Config) -> str:
@@ -98,8 +110,7 @@ class Pipeline:
         self.reasons: Counter[str] = Counter()
         self.fetched_details: set[int] = set()
         self.markets = {
-            profile.id: market_for(store, profile.id, config.scoring.thresholds["plausible"])
-            for profile in config.profiles
+            profile.id: market_for(store, profile, config) for profile in config.profiles
         }
         self.baseline = not store.runs(1)
         self.run: dict[str, Any] = dict(
@@ -142,10 +153,39 @@ class Pipeline:
     ) -> None:
         clock = timing(listing, self.now, self.config.scoring)
         market = self.markets[profile.id]
-        prices = price_signals(
-            listing, profile, market, clock["age_minutes"], evidence.price_drop, self.config.scoring
+        seller_verified = bool(
+            seller
+            and seller.feedback_count is not None
+            and seller.rating is not None
+            and {"seller_feedback", "seller_rating"} <= set(passed)
+            and not rejection
         )
-        result = score(listing, profile, seller, evidence, self.config, passed, prices, rejection)
+        prices = None
+        result = None
+        if not pending:
+            prices = (
+                price_signals(
+                    listing,
+                    profile,
+                    market,
+                    clock["age_minutes"],
+                    evidence.price_drop,
+                    self.config.scoring,
+                    seller_verified=seller_verified,
+                )
+                if not rejection
+                else None
+            )
+            result = score(
+                listing,
+                profile,
+                seller,
+                evidence,
+                self.config,
+                passed,
+                prices or {},
+                rejection,
+            )
         trace = {
             "gates_passed": passed,
             "gate_rejected": rejection,
@@ -157,26 +197,38 @@ class Pipeline:
             },
             "timing": clock,
             "pricing": prices,
-            "score": result.model_dump(),
+            "score": result.model_dump() if result else None,
             "seller": seller.model_dump(
                 mode="json",
                 exclude={"closet"},
             )
             if seller
             else None,
+            "wardrobe": (
+                {
+                    "reviewed": len(seller.closet),
+                    "same_brand": sum(
+                        normalize(item.brand or "") == normalize(profile.brand)
+                        for item in seller.closet
+                    ),
+                    "new_with_tags": sum(item.status == "new_with_tags" for item in seller.closet),
+                }
+                if seller and seller.closet is not None
+                else None
+            ),
             "pending": pending,
             "enriched": enriched,
         }
         self.store.save(
             listing,
             profile.id,
-            None if pending else result.tier,
-            None if pending else result.score,
+            result.tier if result else None,
+            result.score if result else None,
             trace,
             backfill,
         )
         self.store.save_photos(listing.id, evidence.hashes, evidence.primary_hash)
-        if pending:
+        if result is None:
             return
         self.run["tiers"][result.tier] += 1
         if rejection:
@@ -276,6 +328,8 @@ class Pipeline:
                     self.config.scoring.thresholds,
                     True,
                 )
+                if not vision.hashes:
+                    raise ParseError("Las fotos del anuncio no se pudieron analizar")
                 vision.price_drop = evidence.price_drop
                 evidence = vision
                 self.run["vision"] += 1
@@ -504,7 +558,7 @@ class Pipeline:
         self.run["duration"] = round(time.monotonic() - started, 2)
         self.run["end"] = datetime.now(UTC).isoformat()
         for profile in self.config.profiles:
-            market = market_for(self.store, profile.id, self.config.scoring.thresholds["plausible"])
+            market = market_for(self.store, profile, self.config)
             self.store.save_market(profile.id, asdict(market))
         self.store.save_run(self.run)
         self.emit("run_end", **self.run)

@@ -39,6 +39,10 @@ def get_seller(
     return seller
 
 
+def image_path(cache: Path, url: str) -> Path:
+    return cache / hashlib.sha256(url.encode()).hexdigest()
+
+
 def image_bytes(
     client: VintedClient,
     listing: Listing,
@@ -54,8 +58,7 @@ def image_bytes(
         parts = urlsplit(url)
         if parts.scheme != "https" or not (parts.hostname or "").endswith(".vinted.net"):
             continue
-        key = hashlib.sha256(url.encode()).hexdigest()
-        path = cache / key
+        path = image_path(cache, url)
         if path.exists():
             images.append(path.read_bytes())
             continue

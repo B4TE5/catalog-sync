@@ -52,6 +52,8 @@ def price_signals(
     age: int,
     price_drop: bool,
     scoring: Scoring,
+    *,
+    seller_verified: bool = False,
 ) -> dict:
     settings = scoring.pricing
     protected = listing.protected_total
@@ -60,9 +62,13 @@ def price_signals(
             listing.price * (1 + settings["protection_fraction"]) + settings["protection_fixed"]
         )
     shipping = listing.shipping if listing.shipping is not None else settings["shipping_estimate"]
-    p25 = market.p25 if market.count >= settings["minimum_samples"] else None
+    p25 = market.p25 if market.count >= max(30, settings["minimum_samples"]) else None
     fresh_limit = p25 if p25 is not None else profile.price_max * settings["fresh_ratio"]
-    buy = age < settings["fresh_minutes"] and listing.price <= fresh_limit
+    buy = (
+        seller_verified
+        and age < settings["fresh_minutes"]
+        and profile.price_floor <= listing.price <= fresh_limit
+    )
     negotiable = age >= settings["negotiable_days"] * 24 * 60 or price_drop
     step = settings["round_euros"]
     offer = listing.price * settings["default_ratio"]

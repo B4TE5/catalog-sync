@@ -88,7 +88,7 @@ def stats() -> None:
         records = store.records()
         recent = store.latest_backfill().get("funnel", {})
         for profile in config.profiles:
-            market = market_for(store, profile.id, config.scoring.thresholds["plausible"])
+            market = market_for(store, profile, config)
             samples = store.db.execute(
                 "SELECT COUNT(*) FROM price_history WHERE profile=?", (profile.id,)
             ).fetchone()[0]
@@ -109,6 +109,17 @@ def stats() -> None:
                     f"  {label} · {counts['seen']} vistos · descartes {counts['rejected']} · "
                     f"{counts['enriched']} enriquecidos{fetched} · tiers {counts['tiers']}"
                 )
+
+
+@app.command("rescore")
+def rescore_saved() -> None:
+    """Reevalúa la base con las fichas y fotos que ya están guardadas."""
+    from vinted_hunter.pipeline.rescore import rescore
+
+    with local_store() as store:
+        count = rescore(ROOT, store)
+    path = build(ROOT)
+    typer.echo(f"{count} anuncios reevaluados sin red · {path}")
 
 
 @app.command()

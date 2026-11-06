@@ -22,15 +22,15 @@ def build(root: Path, database: str = "vh.sqlite", folder: str = "board") -> Pat
             "health": health(store, config),
             "brands": {profile.id: profile.brand for profile in config.profiles},
         }
-        medians = {
-            profile.id: market_for(store, profile.id, config.scoring.thresholds["plausible"]).median
-            for profile in config.profiles
-        }
+        markets = {profile.id: market_for(store, profile, config) for profile in config.profiles}
     cache = root / "data" / "images"
     for row in payload["listings"]:
         if row["tier"] is None or row["tier"] == "rejected":
             continue
-        median = medians.get(row["profile"])
+        market = markets.get(row["profile"])
+        row["market_samples"] = market.count if market else 0
+        minimum = max(30, config.scoring.pricing["minimum_samples"])
+        median = market.median if market and market.count >= minimum else None
         row["display_under_median"] = (
             round(float(1 - Decimal(row["body"]["price"]) / median) * 100, 1) if median else None
         )

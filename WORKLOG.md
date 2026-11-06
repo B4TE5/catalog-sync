@@ -161,3 +161,10 @@
 - Comandos clave: inspección SQLite y JSONL → 558 vistos del perfil, 423 descartes, 135 pendientes, 12 con ficha y 10 cargadas en esa pasada.
 - Evidencia: run_end de 2026-11-06T09:39:17.385776+00:00 y la cohorte persistida.
 - Problemas y cómo se resolvieron: el script local lanzó SystemExit dentro del contexto de SQLite. Se guardaron las fichas confirmadas durante la pasada, pero el contexto revirtió el último resumen. Se recuperó el evento original sin repetir peticiones y se movió la salida fuera del contexto.
+
+## 2026-11-06 20:21 — C1–C6 · Precisión y tablero
+- Objetivo: depurar tipo de prenda, precio, fotos, mercado y explicación antes de Fase 2.
+- Hecho: se inspeccionó el esquema de todos los fixtures de catálogo. El título filtra de forma temprana y la categoría de la ficha confirma la prenda. Se aplicaron los suelos, la heurística visual, el límite de tier y el cálculo de mercado limpio. Pendiente queda sin puntuación ni oferta.
+- Comandos clave: vh rescore → 2.164 filas sin red. Consulta SQLite → 121 prendas fuera de perfil antes, 0 después. Chromium local → panel, técnico plegado, pestañas y aviso de mercado verificados. Ruff → 0. Pytest → 57 pasados.
+- Evidencia: DECISIONS.md, scratch/correction1-*.json y el anuncio 10685333948, foto principal de catálogo y tier descartado.
+- Problemas y cómo se resolvieron: tres tests representaban la política anterior de precio, categoría y compra. Se actualizaron y se añadieron regresiones. Para registros guardados bajo el suelo se exige evidencia cacheada de Certilogo legible.

@@ -26,7 +26,9 @@ class StateStore(ABC):
         """Registra una observación y devuelve el precio previo."""
 
     @abstractmethod
-    def plausible_prices(self, profile: str, score: float) -> list[Decimal]:
+    def plausible_prices(
+        self, profile: str, score: float, categories: set[int], floor: Decimal
+    ) -> list[Decimal]:
         """Devuelve el precio vigente de los anuncios que superan el umbral."""
 
     @abstractmethod
