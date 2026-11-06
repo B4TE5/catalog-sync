@@ -36,3 +36,10 @@
 - 10682720384 · Pull stone island kaki taille 14 ans enfants · 80.00 EUR fuera del rango del perfil. [Anuncio](https://www.vinted.es/items/10682720384-pull-stone-island-kaki-taille-14-ans-enfants)
 
 Stone Island en visión durante este backfill: 0 QR legibles, 1 QR detectado sin lectura y 0 sin QR. 54,73 s para el candidato procesado.
+
+## 2026-11-06 · Confirmación de marcas y atributos
+
+- Las ocho marcas de los perfiles tienen evidencia en páginas públicas. Dos fichas españolas confirmaron Rhude 435315 y Palm Angels 395367. Vinted mostró 96 tarjetas que pertenecían únicamente a Stone Island y Supreme en la consulta de ambas marcas. Se conservaron los parámetros repetidos en la URL. Se descartó enviar un único valor separado por comas. [Consulta combinada](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&brand_ids%5B%5D=14969&order=newest_first).
+- El `id: 515` corresponde al atributo de interfaz `size` de tipo `faq`. La ficha Stone Island lo usa para XL y la ficha Rhude para L. El `id: 50` también se repite en los cinco estados diferentes comprobados. Se retiraron como supuestos IDs de filtro. Los valores se conservan bajo `detail_attribute_ids` como evidencia del intento. [Ficha XL](https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo) y [ficha L](https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize).
+- Un filtro real con 515 devuelve cero tarjetas, con o sin categoría. La interfaz de ficha muestra «Gris» sin ID. El cliente filtra talla, condición y color por los valores que muestra cada tarjeta o ficha. [Filtro Stone Island](https://www.vinted.es/catalog?brand_ids%5B%5D=73306&size_ids%5B%5D=515&order=newest_first) y [ficha gris](https://www.vinted.es/items/10682246082-maglione-stone-island-grigio-girocollo-patch-compass-nuovo-con-cartellino).
+- Se revalidaron las tarjetas de la primera iteración. Se descartaron el polo de manga corta de categoría 5492 y la prenda con la mención neerlandesa «geïnspireerde». La primera observación de QR de Stone Island queda como ensayo técnico sobre una prenda fuera de perfil.

@@ -2,13 +2,14 @@
 
 import json
 from base64 import b64encode
+from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
 from vinted_hunter.config import load_config
-from vinted_hunter.pipeline.run import health
+from vinted_hunter.pipeline.run import health, market_for
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 
@@ -21,10 +22,18 @@ def build(root: Path, database: str = "vh.sqlite", folder: str = "board") -> Pat
             "health": health(store, config),
             "brands": {profile.id: profile.brand for profile in config.profiles},
         }
+        medians = {
+            profile.id: market_for(store, profile.id, config.scoring.thresholds["plausible"]).median
+            for profile in config.profiles
+        }
     cache = root / "data" / "images"
     for row in payload["listings"]:
         if row["tier"] is None or row["tier"] == "rejected":
             continue
+        median = medians.get(row["profile"])
+        row["display_under_median"] = (
+            round(float(1 - Decimal(row["body"]["price"]) / median) * 100, 1) if median else None
+        )
         display_photos = []
         for url in row["body"]["photos"]:
             image = cache / sha256(url.encode()).hexdigest()

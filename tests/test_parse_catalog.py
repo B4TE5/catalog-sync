@@ -37,3 +37,12 @@ def test_verified_empty_filter_has_valid_structure() -> None:
         result = parse_catalog(body.read())
     assert result.raw_count == result.invalid_count == 0
     assert not result.listings
+
+
+def test_real_combined_brand_catalog() -> None:
+    import gzip
+
+    with gzip.open(FIXTURES / "catalog-combined.html.gz", "rt", encoding="utf-8") as body:
+        result = parse_catalog(body.read())
+    assert len(result.listings) == 96
+    assert {item.brand for item in result.listings} == {"Stone Island", "Supreme"}

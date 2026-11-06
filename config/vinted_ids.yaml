@@ -5,22 +5,23 @@ brand_ids:
   Heron Preston: [389625]  # https://www.vinted.es/catalog/178-mini-dresses/brand/389625-heron-preston
   Supreme: [14969]  # https://www.vinted.es/catalog/267-hoodies-and-sweaters/brand/14969-supreme
   Yeezy Gap: [6582025]  # https://www.vinted.com/brand/6582025-yeezy-x-gap
-  Rhude: [435315]  # https://www.vinted.com/brand/435315-rhude
-  Palm Angels: [395367]  # https://www.vinted.com/catalog/267-hoodies-and-sweaters/brand/395367-palm-angels
+  Rhude: [435315]  # https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize
+  Palm Angels: [395367]  # https://www.vinted.es/items/10684882767-palm-angels-t-shirt-uomo-nera
   Palace: [222038]  # https://www.vinted.es/catalog/1078-bomber-jackets/brand/222038-palace-skateboards
 brand_names:
   TwoJeys: [Two Jeys]
   Yeezy Gap: [Yeezy x Gap, YZY GAP, Gap x Yeezy]
   Palace: [Palace Skateboards]
 size_ids: {}
-# ID XL mostrado por la ficha. El mismo valor devolvió cero tarjetas al filtrar.
+# Los IDs en atributos de tipo faq identifican la interfaz, con valores distintos.
 # https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo
-item_size_ids:
-  XL: 515
+# https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize
+detail_attribute_ids:
+  size: 515
+  status: 50
 catalog_ids:
   sweatshirts: 267  # https://www.vinted.es/catalog/267-hoodies-and-sweaters
   sweatshirts_parent: 79  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
   zip_sweatshirts: 1812  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
-status_ids:
-  very_good: 50  # https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo
+status_ids: {}
 color_ids: {}

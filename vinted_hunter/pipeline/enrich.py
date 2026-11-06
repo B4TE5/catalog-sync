@@ -11,7 +11,7 @@ from vinted_hunter.pipeline.models import Listing, Seller
 from vinted_hunter.sources.vinted.client import BudgetExhausted, VintedClient
 from vinted_hunter.sources.vinted.item import parse_item
 from vinted_hunter.sources.vinted.user import parse_user, parse_wardrobe
-from vinted_hunter.storage.sqlite_store import SQLiteStore
+from vinted_hunter.storage.base import StateStore
 
 
 def get_item(client: VintedClient, listing: Listing, now: datetime) -> Listing:
@@ -21,7 +21,7 @@ def get_item(client: VintedClient, listing: Listing, now: datetime) -> Listing:
 
 def get_seller(
     client: VintedClient,
-    store: SQLiteStore,
+    store: StateStore,
     seller_id: int,
     now: datetime,
     settings: Capture,

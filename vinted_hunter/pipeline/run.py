@@ -28,6 +28,7 @@ from vinted_hunter.sources.vinted.client import (
 )
 from vinted_hunter.sources.vinted.parse import ParseError
 from vinted_hunter.sources.vinted.search import plan_searches
+from vinted_hunter.storage.base import StateStore
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 LOG_RETENTION_DAYS = 14
@@ -51,14 +52,11 @@ class EventLog:
             target.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def market_for(store: SQLiteStore, profile: str, plausible: float) -> Market:
-    rows = store.db.execute(
-        "SELECT body FROM listings WHERE profile=? AND score>=?", (profile, plausible)
-    )
-    return summarize([Listing.model_validate_json(row["body"]).price for row in rows])
+def market_for(store: StateStore, profile: str, plausible: float) -> Market:
+    return summarize(store.plausible_prices(profile, plausible))
 
 
-def health(store: SQLiteStore, config: Config) -> str:
+def health(store: StateStore, config: Config) -> str:
     failures = int(store.setting("failures", "0"))
     if failures >= config.scoring.capture.unhealthy_after:
         return "unhealthy"
@@ -90,7 +88,7 @@ def select_profiles(
 
 
 class Pipeline:
-    def __init__(self, root: Path, store: SQLiteStore, config: Config, now: datetime) -> None:
+    def __init__(self, root: Path, store: StateStore, config: Config, now: datetime) -> None:
         self.root = root
         self.store = store
         self.config = config
@@ -195,7 +193,7 @@ class Pipeline:
         searches, cursor = plan_searches(self.config, cursor, selftest)
         if not selftest:
             self.store.set_setting("search_cursor", str(cursor))
-            self.store.db.commit()
+            self.store.flush()
         jobs = [(search, page) for page in range(1, pages + 1) for search in searches]
         if pages > 1 and searches:
             # Da profundidad a la primera búsqueda conocida dentro de la cuota de la pasada.
@@ -220,7 +218,7 @@ class Pipeline:
             known_search = self.baseline or bool(self.store.setting(query_key))
             if page == 1:
                 self.store.set_setting(query_key, self.now.isoformat())
-                self.store.db.commit()
+                self.store.flush()
             ids_seen.update(listing.id for listing in result.listings)
             self.run["seen"] = len(ids_seen)
             self.emit(
@@ -311,10 +309,8 @@ class Pipeline:
     ) -> None:
         work = []
         for listing, profile, known_search in found.values():
-            row = self.store.db.execute(
-                "SELECT tier,trace FROM listings WHERE id=?", (listing.id,)
-            ).fetchone()
-            previous = self.store.listing(listing.id)
+            row = self.store.record(listing.id)
+            previous = Listing.model_validate(row["body"]) if row else None
             listing.first_seen = (previous.first_seen if previous else None) or self.now
             previous_price = self.store.observe_price(listing, profile.id, self.now.isoformat())
             dropped = is_drop(listing, previous_price)
@@ -329,7 +325,7 @@ class Pipeline:
             pending_drop = (
                 row is not None
                 and row["tier"] is None
-                and json.loads(row["trace"]).get("evidence", {}).get("price_drop", False)
+                and row["trace"].get("evidence", {}).get("price_drop", False)
             )
             evidence = Evidence(price_drop=dropped or pending_drop)
             self.record(
@@ -344,7 +340,7 @@ class Pipeline:
             if reason is None:
                 work.append((listing, profile, evidence, is_new))
         self.run["candidates"] = len(work)
-        self.store.db.commit()
+        self.store.flush()
         words = self.config.scoring.words
 
         def priority(job: tuple[Listing, Profile, Evidence, bool]) -> tuple:
@@ -379,22 +375,19 @@ class Pipeline:
             self.candidate(client, listing, profile, backfill, evidence, is_new)
             duration = round(time.monotonic() - started, 2)
             self.run["candidate_seconds"].append(duration)
-            self.store.db.commit()
+            self.store.flush()
 
     def revalidate(self) -> int:
         """Aplica los gates actuales a las tarjetas enriquecidas guardadas."""
         profiles = {profile.id: profile for profile in self.config.profiles}
-        rows = self.store.db.execute(
-            "SELECT profile,body,trace,backfill FROM listings "
-            "WHERE tier IN ('top','good','maybe','low')",
-        ).fetchall()
+        rows = self.store.records(scored=True)
         changed = 0
         for row in rows:
             profile = profiles.get(row["profile"])
             if profile is None:
                 continue
-            listing = Listing.model_validate_json(row["body"])
-            trace = json.loads(row["trace"])
+            listing = Listing.model_validate(row["body"])
+            trace = row["trace"]
             seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
             evidence = Evidence.model_validate(trace.get("evidence", {}))
             reason, passed = gate(listing, profile, self.config, seller, evidence, detailed=True)
@@ -403,7 +396,7 @@ class Pipeline:
                     listing, profile, passed, evidence, bool(row["backfill"]), seller, reason
                 )
                 changed += 1
-        self.store.db.commit()
+        self.store.flush()
         return changed
 
     def execute(self, pages: int, backfill: bool, selftest: bool) -> dict[str, Any]:
@@ -461,10 +454,7 @@ class Pipeline:
         self.run["end"] = datetime.now(UTC).isoformat()
         for profile in self.config.profiles:
             market = market_for(self.store, profile.id, self.config.scoring.thresholds["plausible"])
-            self.store.db.execute(
-                "INSERT OR REPLACE INTO price_stats VALUES (?, ?)",
-                (profile.id, json.dumps(asdict(market), default=str)),
-            )
+            self.store.save_market(profile.id, asdict(market))
         self.store.save_run(self.run)
         self.emit("run_end", **self.run)
         return self.run

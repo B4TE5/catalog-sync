@@ -51,7 +51,7 @@ class IDs(BaseModel):
     brand_ids: dict[str, list[int]] = Field(default_factory=dict)
     brand_names: dict[str, list[str]] = Field(default_factory=dict)
     size_ids: dict[str, int] = Field(default_factory=dict)
-    item_size_ids: dict[str, int] = Field(default_factory=dict)
+    detail_attribute_ids: dict[str, int] = Field(default_factory=dict)
     catalog_ids: dict[str, int] = Field(default_factory=dict)
     status_ids: dict[str, int] = Field(default_factory=dict)
     color_ids: dict[str, int] = Field(default_factory=dict)
@@ -66,6 +66,13 @@ class Capture(BaseModel):
     unhealthy_after: int = 3
     backoff_seconds: int = 60
     max_backoff_seconds: int = 3600
+
+    @model_validator(mode="after")
+    def human_wait(self) -> "Capture":
+        low, high = self.wait
+        if not 3 <= low <= high <= 8:
+            raise ValueError("La pausa entre peticiones debe quedar entre 3 y 8 segundos")
+        return self
 
 
 class Scoring(BaseModel):

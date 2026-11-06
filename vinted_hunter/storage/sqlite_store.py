@@ -107,12 +107,34 @@ class SQLiteStore(StateStore):
             ),
         )
 
-    def records(self) -> list[dict[str, Any]]:
-        rows = self.db.execute("SELECT * FROM listings ORDER BY id DESC")
-        return [
-            {**dict(row), "body": json.loads(row["body"]), "trace": json.loads(row["trace"])}
-            for row in rows
-        ]
+    @staticmethod
+    def _record(row: sqlite3.Row) -> dict[str, Any]:
+        return {**dict(row), "body": json.loads(row["body"]), "trace": json.loads(row["trace"])}
+
+    def record(self, listing_id: int) -> dict[str, Any] | None:
+        row = self.db.execute("SELECT * FROM listings WHERE id=?", (listing_id,)).fetchone()
+        return self._record(row) if row else None
+
+    def records(self, *, scored: bool = False) -> list[dict[str, Any]]:
+        condition = "WHERE tier IN ('top','good','maybe','low')" if scored else ""
+        rows = self.db.execute(f"SELECT * FROM listings {condition} ORDER BY id DESC")
+        return [self._record(row) for row in rows]
+
+    def plausible_prices(self, profile: str, score: float) -> list[Decimal]:
+        rows = self.db.execute(
+            "SELECT body FROM listings WHERE profile=? AND score>=?",
+            (profile, score),
+        )
+        return [Listing.model_validate_json(row["body"]).price for row in rows]
+
+    def save_market(self, profile: str, market: dict[str, Any]) -> None:
+        self.db.execute(
+            "INSERT OR REPLACE INTO price_stats VALUES (?, ?)",
+            (profile, json.dumps(market, default=str)),
+        )
+
+    def flush(self) -> None:
+        self.db.commit()
 
     def seller(self, seller_id: int, after: datetime) -> Seller | None:
         row = self.db.execute(
@@ -133,14 +155,15 @@ class SQLiteStore(StateStore):
             [(listing_id, value, int(value == primary)) for value in hashes],
         )
 
-    def matching_hashes(self, seller_id: int) -> list[sqlite3.Row]:
-        return self.db.execute(
+    def matching_hashes(self, seller_id: int) -> list[dict[str, Any]]:
+        rows = self.db.execute(
             "SELECT photos.*, listings.body, listings.seller_id, labels.label FROM photos "
             "JOIN listings ON listings.id=photos.listing_id "
             "LEFT JOIN labels ON labels.listing_id=photos.listing_id "
             "WHERE listings.seller_id=? OR labels.label='fake'",
             (seller_id,),
-        ).fetchall()
+        )
+        return [dict(row) for row in rows]
 
     def shared_hash(self, value: str, seller_id: int) -> bool:
         return (

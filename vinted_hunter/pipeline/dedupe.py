@@ -3,7 +3,7 @@
 from decimal import Decimal
 
 from vinted_hunter.pipeline.models import Evidence, Listing
-from vinted_hunter.storage.sqlite_store import SQLiteStore
+from vinted_hunter.storage.base import StateStore
 
 
 def distance(left: str, right: str) -> int:
@@ -15,7 +15,7 @@ def is_drop(listing: Listing, previous: Decimal | None) -> bool:
 
 
 def photo_dedupe(
-    store: SQLiteStore,
+    store: StateStore,
     listing: Listing,
     evidence: Evidence,
     threshold: int,

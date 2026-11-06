@@ -7,8 +7,8 @@ from urllib.parse import urljoin, urlsplit
 from pydantic import ValidationError
 
 from vinted_hunter.pipeline.models import Listing
+from vinted_hunter.sources.base import QueryParams, Source
 from vinted_hunter.sources.base import SearchResult as CatalogResult
-from vinted_hunter.sources.base import Source
 from vinted_hunter.sources.vinted.client import VintedClient
 from vinted_hunter.sources.vinted.parse import ParseError, flight_payload, values
 
@@ -80,6 +80,6 @@ class VintedCatalog(Source):
     def __init__(self, client: VintedClient) -> None:
         self.client = client
 
-    def search(self, params: dict[str, str]) -> CatalogResult:
+    def search(self, params: QueryParams) -> CatalogResult:
         response = self.client.get("/catalog", "catalog", params)
         return parse_catalog(response.text, self.client.base)

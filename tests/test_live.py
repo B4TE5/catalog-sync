@@ -52,17 +52,20 @@ def test_live_detail_seller_and_wardrobe(client: VintedClient, catalog: CatalogR
 
 def test_live_filtered_catalog(client: VintedClient) -> None:
     ids = load_config(ROOT).ids
-    assert not configured_ids(ROOT)
+    size = ids.size_ids.get("XL") or ids.detail_attribute_ids["size"]
     response = client.get(
         "/catalog",
         "catalog",
         {
             "catalog[]": ids.catalog_ids["sweatshirts"],
             "brand_ids[]": ids.brand_ids["Stone Island"][0],
-            "size_ids[]": ids.size_ids["XL"],
+            "size_ids[]": size,
             "order": "newest_first",
         },
     )
     result = parse_catalog(response.text, client.base)
-    assert result.listings
+    assert result.listings, (
+        f"Stone Island XL: el filtro público devolvió {result.raw_count} tarjetas. "
+        f"Taxonomía pendiente: {', '.join(configured_ids(ROOT))}"
+    )
     assert all(item.brand == "Stone Island" and item.size == "XL" for item in result.listings)

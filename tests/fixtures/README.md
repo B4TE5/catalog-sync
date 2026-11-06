@@ -10,3 +10,6 @@ Cuerpos HTTP comprimidos, sin cabeceras ni cookies de la sesión. Se reemplazó 
 - `catalog-brand-only.html.gz` — [marca Stone Island en la categoría 267](https://www.vinted.es/catalog/267-hoodies-and-sweaters/brand/73306-stone-island?size_ids%5B%5D=515&order=newest_first). La ruta de marca aplica la marca, pero ignora la talla.
 - `catalog-empty-size.html.gz` — [marca y talla en el catálogo general](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=515&order=newest_first). El estado aplica ambos filtros y muestra cero resultados.
 
+
+- `item-rhude.html.gz` — [ficha de Rhude en talla L](https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize). El mismo ID de atributo 515 aparece en la ficha XL de Stone Island. El atributo 50 dice «Nuevo sin etiquetas» aquí y «Muy bueno» en Stone Island.
+- `catalog-combined.html.gz` — [Stone Island y Supreme, dos claves repetidas](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&brand_ids%5B%5D=14969&order=newest_first). HTTP 200, 96 tarjetas de las dos marcas.

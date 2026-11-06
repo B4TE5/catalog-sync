@@ -178,3 +178,16 @@ def test_label_cli_from_real_fixture(
         assert store.matching_hashes(candidate.seller_id)[0]["label"] == "fake"
 
 
+def test_search_groups_and_rotates(config: Config) -> None:
+    from vinted_hunter.sources.vinted.search import plan_searches
+
+    first, cursor = plan_searches(config)
+    second, _ = plan_searches(config, cursor)
+    groups = [search for search in first if "brand_ids[]" in search.params]
+    assert len(groups) == 2
+    assert len(groups[0].profiles) == 1
+    ids = groups[1].params["brand_ids[]"]
+    assert isinstance(ids, list) and len(ids) >= 2
+    assert first != second
+    assert any(search.params.get("search_text") == "stone island" for search in second)
+    assert len(first) <= config.scoring.capture.catalog_limit

@@ -51,9 +51,30 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         catalog = parse_catalog(response.text, client.base)
         count = len(catalog.listings)
         results.append(("Parser", count >= 10, f"{count} anuncios reales"))
-        size = config.ids.size_ids.get("XL")
+        size = config.ids.size_ids.get("XL") or config.ids.detail_attribute_ids.get("size")
         stone = config.ids.brand_ids.get("Stone Island")
         category = config.ids.catalog_ids.get("sweatshirts")
+        supreme = config.ids.brand_ids.get("Supreme")
+        if stone and supreme and category:
+            response = client.get(
+                "/catalog",
+                "catalog",
+                {
+                    "catalog[]": str(category),
+                    "order": "newest_first",
+                    "brand_ids[]": [str(stone[0]), str(supreme[0])],
+                },
+            )
+            combined = parse_catalog(response.text, client.base).listings
+            brands = {item.brand for item in combined}
+            results.append(
+                (
+                    "Marcas combinadas",
+                    brands == {"Stone Island", "Supreme"},
+                    f"{len(combined)} anuncios · "
+                    + ", ".join(sorted(brand or "sin marca" for brand in brands)),
+                )
+            )
         if size and stone and category:
             response = client.get(
                 "/catalog",

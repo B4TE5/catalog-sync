@@ -70,3 +70,17 @@
 - Comandos clave: Playwright Chromium en 1440 y 390 px → dos PNG, sin desbordamiento ni excepciones JavaScript. pytest → 28 pasados. Ruff → 0.
 - Evidencia: out/board/screenshot.png, out/board/screenshot-mobile.png y rastro de los anuncios.
 - Problemas y cómo se resolvieron: Chromium tardó en arrancar dentro del sandbox y la verificación local se repitió con acceso autorizado. La inspección mostró un polo de categoría 5492 puntuado en la primera iteración y un título neerlandés con geïnspireerde. Se añadió revalidación de registros enriquecidos y se amplió el vocabulario de réplica. Dos intentos de la prueba de regresión dieron hood antes que replica porque la propia entrada mencionaba hoodie; se aisló la señal que debía probarse.
+
+## 2026-11-06 09:13 — Fases 1 y 6 · Confirmación del filtro combinado
+- Objetivo: resolver las marcas que faltaban y contrastar los IDs expuestos en la ficha con el filtro público.
+- Hecho: ocho marcas con evidencia. Capturas reales de Rhude y del catálogo combinado. Consulta conjunta en doctor y en el diagnóstico independiente.
+- Comandos clave: vh doctor → home 200, 96 anuncios parseados y 96 de Stone Island y Supreme con filtros repetidos. Filtro XL → 0. Sondeo de fichas → seis HTTP 200. pytest → 30 pasados, 3 live excluidos.
+- Evidencia: config/vinted_ids.yaml, tests/fixtures/catalog-combined.html.gz, tests/fixtures/item-rhude.html.gz y DECISIONS.md.
+- Problemas y cómo se resolvieron: las fichas muestran 515 para L y XL, y 50 para cinco estados distintos. Esos IDs de interfaz se separaron de los IDs de filtro. La primera inspección con Chromium recibió 200 pero no halló los cuatro controles por rol. Los intentos con endpoints públicos de filtros devolvieron 404. Un cambio de tipos dejó temporalmente sin dos puntos la firma de Search.query y falló la recolección de pytest. Se corrigió antes de la autoprueba.
+
+## 2026-11-06 09:13 — Fases 6 y 7 · Validación local y extremo a extremo
+- Objetivo: comprobar tablero, servicio, latido y tres ciclos consecutivos.
+- Hecho: vh serve respondió en loopback. Playwright verificó imágenes cacheadas, enlaces y ancho de pantalla. Watch reconstruyó el tablero tras cada ciclo. Se revalidaron dos falsos positivos guardados y se revisó de nuevo el tablero.
+- Comandos clave: GET localhost:8787 → HTTP 200, 5.442.993 bytes. vh watch --interval 0.15 --jitter 0 --cycles 3 → salida 0, 827 / 879 / 837 vistos, 0 / 1 / 1 nuevos. vh selftest --report → 8/8 etapas, 20 peticiones, 116,17 s y dos puntuados. La suite live del informe devolvió 2 pasados y 1 fallo de filtro.
+- Evidencia: out/board/index.html, out/board/screenshot.png, out/board/screenshot-mobile.png, TEST_REPORT.md, data/logs/run-20261106.jsonl. Commits de implementación 8a9bb12, a289cb8, 681e41b, bcd25e2 y 9f24124.
+- Problemas y cómo se resolvieron: la autoprueba de embudo pasó; el informe agregado y doctor quedaron en salida 1 por la taxonomía. Se registró el bloqueo y se preservó la búsqueda textual. Se separó el SQL de SQLite del embudo para que StateStore cubra el contrato efectivo.

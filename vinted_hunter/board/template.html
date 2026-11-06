@@ -91,7 +91,7 @@ health.textContent = {healthy:"Operativo", degraded:"Revisar", unhealthy:"No ope
 health.classList.add(data.health);
 const minutesSince = date => Math.max(0, Math.floor((Date.now() - new Date(date)) / 60000));
 document.querySelector("#heartbeat").textContent = data.run
-  ? `Última pasada hace ${minutesSince(data.run.end)} min · ${data.run.seen} vistos · ${data.run.new} nuevos`
+  ? `Última pasada hace ${minutesSince(data.run.end)} min · ${data.run.seen} vistos · ${data.run.new} ${data.run.new === 1 ? "nuevo" : "nuevos"}`
   : "A la espera de la primera pasada";
 if (data.run?.errors?.length) {
   const incident = document.querySelector("#incident");
@@ -152,8 +152,9 @@ function card(row) {
     content.append(node("p", reasons[gate_rejected] || gate_rejected));
   } else if (row.tier && pricing) {
     content.append(node("p", `${pricing.estimated ? "Total estimado" : "Total"} · ${euro.format(Number(pricing.total))}`, "muted"));
-    if (pricing.under_median !== null)
-      content.append(node("p", `${Math.abs(pricing.under_median)} % ${pricing.under_median < 0 ? "sobre" : "bajo"} la mediana`, "muted"));
+    const medianDelta = row.display_under_median;
+    if (medianDelta != null)
+      content.append(node("p", `${Math.abs(medianDelta)} % ${medianDelta < 0 ? "sobre" : "bajo"} la mediana`, "muted"));
     content.append(node("p", pricing.buy_now ? "COMPRAR YA, no ofertes" :
       `Oferta sugerida · ${euro.format(Number(pricing.offer))}${row.backfill && pricing.negotiable ? " · Negociable" : ""}`));
     const age = minutesSince(item.uploaded_at || item.first_seen);
@@ -186,8 +187,8 @@ function render() {
     (!brand.value || row.profile === brand.value));
   const recent = row => Date.parse(row.body.uploaded_at || row.body.first_seen);
   filtered.sort((a, b) => sort.value === "recent" ? recent(b) - recent(a) :
-    sort.value === "median" ? (b.trace.pricing?.under_median ?? -Infinity) -
-      (a.trace.pricing?.under_median ?? -Infinity) : (b.score ?? -1) - (a.score ?? -1));
+    sort.value === "median" ? (b.display_under_median ?? -Infinity) -
+      (a.display_under_median ?? -Infinity) : (b.score ?? -1) - (a.score ?? -1));
   document.querySelector("#count").textContent = `${filtered.length} anuncios`;
   cards.replaceChildren(...filtered.slice(0, limit).map(card));
   more.hidden = filtered.length <= limit;

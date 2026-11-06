@@ -4,15 +4,16 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from vinted_hunter.config import Config, Profile
+from vinted_hunter.sources.base import QueryParams
 
 
 @dataclass
 class Search:
     profiles: list[Profile]
-    params: dict[str, str] = field(default_factory=dict)
+    params: QueryParams = field(default_factory=dict)
     expects_items: bool = False
 
-    def query(self, page: int) -> dict[str, str]:
+    def query(self, page: int) -> QueryParams:
         return {"order": "newest_first", "page": str(page), **self.params}
 
 
@@ -32,16 +33,16 @@ def plan_searches(
         if profile.brand in ids.brand_ids and category:
             grouped[profile.size, category].append(profile)
         for query in profile.text_queries:
-            search = Search([profile], {"search_text": query.q}, query.priority == "high")
+            search = Search([profile], {"search_text": query.q}, query.q == "stone island")
             (high if query.priority == "high" else normal).append(search)
     combined = [
         Search(
             profiles,
             {
                 "catalog[]": str(category),
-                "brand_ids[]": ",".join(
+                "brand_ids[]": [
                     str(brand_id) for p in profiles for brand_id in ids.brand_ids[p.brand]
-                ),
+                ],
                 **({"size_ids[]": str(ids.size_ids[size])} if size in ids.size_ids else {}),
             },
         )

@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 from vinted_hunter.pipeline.models import Listing
 
+QueryParams = dict[str, str | list[str]]
+
 
 @dataclass
 class SearchResult:
@@ -15,5 +17,5 @@ class SearchResult:
 
 class Source(ABC):
     @abstractmethod
-    def search(self, params: dict[str, str]) -> SearchResult:
+    def search(self, params: QueryParams) -> SearchResult:
         """Obtiene y valida los anuncios de una búsqueda."""
