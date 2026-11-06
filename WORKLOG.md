@@ -168,3 +168,10 @@
 - Comandos clave: vh rescore → 2.164 filas sin red. Consulta SQLite → 121 prendas fuera de perfil antes, 0 después. Chromium local → panel, técnico plegado, pestañas y aviso de mercado verificados. Ruff → 0. Pytest → 57 pasados.
 - Evidencia: DECISIONS.md, scratch/correction1-*.json y el anuncio 10685333948, foto principal de catálogo y tier descartado.
 - Problemas y cómo se resolvieron: tres tests representaban la política anterior de precio, categoría y compra. Se actualizaron y se añadieron regresiones. Para registros guardados bajo el suelo se exige evidencia cacheada de Certilogo legible.
+
+## 2026-11-06 20:21 — C7 · Cierre de la corrección
+- Objetivo: completar y verificar la corrección antes de iniciar Fase 2.
+- Hecho: tabla antes/después, informe de pruebas, informe de sesión y plan de corrección actualizados.
+- Comandos clave: vh selftest --report → salida 0, 8/8 etapas, 20 peticiones, 115,7 s. Pytest live → 4 pasados.
+- Evidencia: TEST_REPORT.md, CORRECCION_1.md, commits 5907c4b y 4f15b3d.
+- Problemas y cómo se resolvieron: para evitar contaminar el mercado se excluyeron también las piezas bajo el suelo que solo pasan a Revisar por su QR.

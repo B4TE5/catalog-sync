@@ -268,3 +268,28 @@ Desglose de la cohorte {'price': 411, 'category': 2, 'seller_rating': 2, 'color'
 | [10653435931](https://www.vinted.es/items/10653435931-felpa-stone-island) | XL | Gris | seller_rating |
 | [10681593924](https://www.vinted.es/items/10681593924-pull-stone-island) | M | Negro | size |
 | [10685688285](https://www.vinted.es/items/10685688285-pullover-stone-island) | XL | Morado, Gris | category |
+
+## 2026-11-06 · C1–C7, precisión sobre la base real
+
+El RSC de catálogo no expone categoría por tarjeta. Se revisó la unión de claves de los fixtures de catálogo. La fase barata usa el título y cualquier categoría que ya se conozca. La ficha confirma la categoría.
+
+Se usó esta consulta antes y después de la reevaluación de 2.164 anuncios. La función SQLite garment_reject se registró con el prefiltro de título y categoría del proyecto.
+
+```sql
+SELECT COUNT(*) FROM listings
+WHERE tier IS NOT 'rejected' AND garment_reject(profile, body) = 1;
+```
+
+Resultado 121 → 0. Las tarjetas sin evidencia suficiente quedan pendientes y carecen de score u oferta.
+
+Palm Angels de 28 € (10685333948) tenía 95 puntos. De nueve fotos cacheadas, tres se detectaron como catálogo, incluida la primera. Quedó descartado por precio bajo sin Certilogo legible. El de 25 € con Certilogo queda en Revisar y carece de recomendación de compra inmediata. Se excluyen de las estadísticas las piezas bajo el suelo de precio, además de los descartes y etiquetas fake.
+
+| Perfil | Antes | Después |
+| --- | --- | --- |
+| heron-preston | pending 11, rejected 84 | pending 31, rejected 64 |
+| palm-angels | pending 14, rejected 102, top 2 | maybe 1, pending 15, rejected 102 |
+| rhude | good 1, pending 21, rejected 76 | pending 18, rejected 80 |
+| stone-island | pending 329, rejected 1083 | pending 303, rejected 1109 |
+| supreme | pending 40, rejected 161, top 3 | good 1, pending 78, rejected 124, top 1 |
+| twojeys | pending 12, rejected 86 | pending 19, rejected 79 |
+| yzy-gap | pending 11, rejected 127, top 1 | pending 33, rejected 106 |

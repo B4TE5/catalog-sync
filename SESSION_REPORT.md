@@ -81,3 +81,7 @@ Los incidentes, evidencias y decisiones están en [BLOCKERS.md](BLOCKERS.md), [D
 3. Acumular 30 muestras plausibles por marca, añadir etiquetas manuales y calibrar los pesos y el estimador de envío.
 4. Repetir el arranque, las pruebas y varios ciclos en Linux para comprobar la portabilidad.
 5. En la fase futura, evaluar ntfy y GitHub Actions a través de las interfaces de fuente, estado y notificación.
+
+## Corrección de precisión · 2026-11-06
+
+Se reevaluaron 2.164 anuncios de SQLite con las fichas y las fotos guardadas. La consulta de prendas fuera de perfil pasó de 121 a 0 fuera de Descartados. El Palm Angels de 28 € quedó descartado y la primera foto se marcó como catálogo. El de 25 € con QR queda en Revisar. El tablero muestra los motivos en español y mantiene plegados los datos técnicos. [Evidencia y recuentos](DECISIONS.md)
