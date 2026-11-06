@@ -25,3 +25,12 @@ def hood_signal(text: str, words: dict[str, list[str]]) -> str | None:
     if matches(text, words["hood_with"]):
         return "with"
     return None
+
+
+def stated_sizes(title: str, labels: list[str]) -> set[str]:
+    if not labels:
+        return set()
+    prefixes = "|".join(re.escape(normalize(label)) for label in labels)
+    size = r"(?:[2-6]xl|x{0,6}[sl]|m)"
+    pattern = rf"(?<!\w)(?:{prefixes})(?:\s*[:=]\s*|\s+)({size})(?:\s*[/–-]\s*({size}))?(?!\w)"
+    return {value for match in re.findall(pattern, normalize(title)) for value in match if value}

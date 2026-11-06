@@ -191,3 +191,16 @@ def test_search_groups_and_rotates(config: Config) -> None:
     assert first != second
     assert any(search.params.get("search_text") == "stone island" for search in second)
     assert len(first) <= config.scoring.capture.catalog_limit
+
+
+def test_explicit_seller_size_overrides_conflicting_catalog(
+    config: Config, candidate: Listing
+) -> None:
+    rhude = next(profile for profile in config.profiles if profile.id == "rhude")
+    listing = candidate.model_copy(
+        update={
+            "title": "Sudadera RHUDE – Talla S (Oversize)",
+            "size": "L",
+        }
+    )
+    assert gate(listing, rhude, config)[0] == "size"

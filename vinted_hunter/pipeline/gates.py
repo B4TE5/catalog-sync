@@ -2,7 +2,7 @@
 
 from vinted_hunter.config import Config, Profile
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
-from vinted_hunter.pipeline.text import hood_signal, matches, normalize
+from vinted_hunter.pipeline.text import hood_signal, matches, normalize, stated_sizes
 
 
 def gate(
@@ -27,14 +27,17 @@ def gate(
     )
     hood = category_hood or hood_signal(text, words)
     categories = set(config.ids.catalog_ids.values())
+    expected_size = normalize(profile.size)
+    explicit_sizes = stated_sizes(listing.title, words.get("size_labels", []))
+    size_matches = normalize((listing.size or "").split(" / ")[0]) == expected_size
     tests = {
         "category": not categories
         or listing.category_id is None
         or listing.category_id in categories,
         "price": listing.currency == "EUR"
         and profile.price_floor <= listing.price <= profile.price_max,
-        "size": normalize((listing.size or "").split(" / ")[0]) == normalize(profile.size)
-        or (listing.size is None and not detailed),
+        "size": (size_matches or (listing.size is None and not detailed))
+        and (not explicit_sizes or expected_size in explicit_sizes),
         "hood": hood is None or hood == profile.hood,
         "status": listing.status is None or listing.status in profile.allowed_status,
         "replica": not matches(text, words["replica"]),

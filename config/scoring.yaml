@@ -14,6 +14,7 @@ words:
   motivated: ["no me queda", "me queda grande", "me queda pequeña", "talla equivocada", "me la regalaron", regalo, "puesta una vez", "puesta dos veces", "no la uso", "no me la pongo", "limpieza de armario", "vacío armario", liquido, mudanza, urge, "acepto ofertas", negociable, "doesn't fit", "too big", "too small", gift, "worn once", "trop grand", "porté une fois", cadeau, "taglia sbagliata", "indossata una volta", "passt nicht", geschenk]
   wear: [bolitas, pilling, desgaste, manchas, mancha, agujero, descolorida, desteñida, roto, stain, hole, tache, trou, macchia, buco, fleck, loch]
   proof: [ticket, factura, "comprada en", receipt, invoice, facture, "acheté chez", scontrino, ricevuta, kaufbeleg, rechnung]
+  size_labels: [talla, size, taille, taglia, Größe, maat]
   grey: [gris, grey, gray, grigio, grau]
 weights:
   base: 40
