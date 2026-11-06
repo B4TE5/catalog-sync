@@ -47,3 +47,7 @@ Stone Island en visión durante este backfill: 0 QR legibles, 1 QR detectado sin
 ## 2026-11-06 · Talla contradictoria en el título
 
 Una ficha Rhude mostró L en su atributo, pero el propio vendedor escribió «Talla S (Oversize)». Se agregó un gate para títulos que indican una talla de forma explícita y contradicen la solicitada. Se descartó inferir talla de letras sueltas o de la palabra «oversize». Se revalidó la tarjeta ya puntuada. [Ficha Rhude](https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize).
+
+## 2026-11-06 · Corrección de tallas
+
+L es 209 y XL es 210 en `MEN-DE` («Ropa») de `initialCatalogState.dynamicFilters`. Cada consulta devolvió 96 Stone Island de la talla solicitada y el RSC confirmó la selección. El 515 sigue documentado como atributo de interfaz. Doctor exige los IDs usados en peticiones. Los IDs opcionales de condición, gris y separación por capucha no intervienen en esas peticiones. [L](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=209) · [XL](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=210)

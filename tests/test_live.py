@@ -50,9 +50,11 @@ def test_live_detail_seller_and_wardrobe(client: VintedClient, catalog: CatalogR
     assert closet or seller.active_count == 0
 
 
-def test_live_filtered_catalog(client: VintedClient) -> None:
+@pytest.mark.parametrize("label", ["L", "XL"])
+def test_live_filtered_catalog(client: VintedClient, label: str) -> None:
     ids = load_config(ROOT).ids
-    size = ids.size_ids.get("XL") or ids.detail_attribute_ids["size"]
+    assert not configured_ids(ROOT)
+    size = ids.size_ids[label]
     response = client.get(
         "/catalog",
         "catalog",
@@ -65,7 +67,7 @@ def test_live_filtered_catalog(client: VintedClient) -> None:
     )
     result = parse_catalog(response.text, client.base)
     assert result.listings, (
-        f"Stone Island XL: el filtro público devolvió {result.raw_count} tarjetas. "
+        f"Stone Island {label}: el filtro público devolvió {result.raw_count} tarjetas. "
         f"Taxonomía pendiente: {', '.join(configured_ids(ROOT))}"
     )
-    assert all(item.brand == "Stone Island" and item.size == "XL" for item in result.listings)
+    assert all(item.brand == "Stone Island" and item.size == label for item in result.listings)

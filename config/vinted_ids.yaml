@@ -12,7 +12,10 @@ brand_names:
   TwoJeys: [Two Jeys]
   Yeezy Gap: [Yeezy x Gap, YZY GAP, Gap x Yeezy]
   Palace: [Palace Skateboards]
-size_ids: {}
+# RSC initialCatalogState.dynamicFilters, grupo MEN-DE (Ropa), categoría 267.
+size_ids:
+  L: 209  # https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=209
+  XL: 210  # https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=210
 # Los IDs en atributos de tipo faq identifican la interfaz, con valores distintos.
 # https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo
 # https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize

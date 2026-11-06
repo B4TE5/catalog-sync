@@ -16,14 +16,8 @@ def configured_ids(root: Path) -> list[str]:
     ids = config.ids
     missing = [f"marca {p.brand}" for p in config.profiles if p.brand not in ids.brand_ids]
     missing += [f"talla {size}" for size in ("L", "XL") if size not in ids.size_ids]
-    missing += [f"categoría {key}" for key in ("with", "without") if key not in ids.catalog_ids]
-    missing += [
-        f"estado {key}"
-        for key in ("new_with_tags", "new_without_tags", "very_good", "good", "satisfactory")
-        if key not in ids.status_ids
-    ]
-    if "grey" not in ids.color_ids:
-        missing.append("color gris")
+    if "sweatshirts" not in ids.catalog_ids:
+        missing.append("categoría de sudaderas")
     return missing
 
 
@@ -35,7 +29,7 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         current = health(store, config)
         retry_at = store.setting("retry_at")
     missing = configured_ids(root)
-    results.append(("Taxonomía", not missing, ", ".join(missing) or "IDs documentados"))
+    results.append(("Filtros utilizados", not missing, ", ".join(missing) or "IDs documentados"))
     results.append(("Salud", current == "healthy", current))
     if retry_at:
         from datetime import UTC, datetime
@@ -51,7 +45,6 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         catalog = parse_catalog(response.text, client.base)
         count = len(catalog.listings)
         results.append(("Parser", count >= 10, f"{count} anuncios reales"))
-        size = config.ids.size_ids.get("XL") or config.ids.detail_attribute_ids.get("size")
         stone = config.ids.brand_ids.get("Stone Island")
         category = config.ids.catalog_ids.get("sweatshirts")
         supreme = config.ids.brand_ids.get("Supreme")
@@ -75,7 +68,10 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
                     + ", ".join(sorted(brand or "sin marca" for brand in brands)),
                 )
             )
-        if size and stone and category:
+        for label in ("L", "XL"):
+            size = config.ids.size_ids.get(label)
+            if not (size and stone and category):
+                continue
             response = client.get(
                 "/catalog",
                 "catalog",
@@ -88,7 +84,7 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
             )
             filtered = parse_catalog(response.text, client.base).listings
             coherent = bool(filtered) and all(
-                item.brand == "Stone Island" and item.size == "XL" for item in filtered
+                item.brand == "Stone Island" and item.size == label for item in filtered
             )
-            results.append(("Filtro real", coherent, f"{len(filtered)} Stone Island XL"))
+            results.append((f"Filtro {label}", coherent, f"{len(filtered)} Stone Island {label}"))
     return results

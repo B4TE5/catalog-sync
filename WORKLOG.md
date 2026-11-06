@@ -91,3 +91,10 @@
 - Comandos clave: vh run → 25 peticiones, 844 vistos, 67 nuevos, 43 candidatos, 151,30 s. Segundo vh run → 25 peticiones, 835 vistos, nueve avisos, 44 candidatos, 142,25 s. Consulta SQLite de price_history → ocho primeras observaciones y una bajada de 119,99 a 90,00. Ruff → salida 0. Pytest → 31 pasados y 3 live excluidos en 2,04 s.
 - Evidencia: data/logs/run-20261106.jsonl, data/vh.sqlite, SESSION_REPORT.md, TEST_REPORT.md, out/board/ y commit 937080b. Auditoría Git → ocho blobs de fixtures alcanzables comprobados, sin JWT de telemetría ni datos de ejecución versionados.
 - Problemas y cómo se resolvieron: Chromium recibió HTTP 200 del catálogo, pero tampoco halló selectores visibles por identificador. El bloqueo queda documentado. Playwright generó de nuevo las dos capturas con 1.914 anuncios y validó el carrusel y el rastro. Linux queda pendiente de ejecución.
+
+## 2026-11-06 10:05 — Corrección 1 · Tallas
+- Objetivo: comprobar los IDs de sudaderas de hombre.
+- Hecho: verifiqué 209/210 en RSC y conservé ambas respuestas depuradas. Doctor y la suite live comprueban L y XL.
+- Comandos clave: inspección pública con curl_cffi → dos HTTP 200 y 96 tarjetas coherentes cada uno.
+- Evidencia: config/vinted_ids.yaml, tests/fixtures/catalog-size-*.html.gz.
+- Problemas y cómo se resolvieron: el 515 de la ficha es un ID de interfaz. Se contrastaron dos candidatos con el catálogo y se exigió confirmación del grupo MEN-DE.

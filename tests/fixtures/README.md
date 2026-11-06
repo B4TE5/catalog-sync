@@ -13,3 +13,5 @@ Cuerpos HTTP comprimidos, sin cabeceras ni cookies de la sesión. Se reemplazó 
 
 - `item-rhude.html.gz` — [ficha de Rhude en talla L](https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize). El mismo ID de atributo 515 aparece en la ficha XL de Stone Island. El atributo 50 dice «Nuevo sin etiquetas» aquí y «Muy bueno» en Stone Island.
 - `catalog-combined.html.gz` — [Stone Island y Supreme, dos claves repetidas](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&brand_ids%5B%5D=14969&order=newest_first). HTTP 200, 96 tarjetas de las dos marcas.
+
+- `catalog-size-L.html.gz` y `catalog-size-XL.html.gz` conservan las respuestas de las URLs de talla en `config/vinted_ids.yaml`. HTTP 200, 96 Stone Island de la talla pedida en cada caso. RSC declara grupo MEN-DE y opciones 209 (L) y 210 (XL). JWT de telemetría redactado.
