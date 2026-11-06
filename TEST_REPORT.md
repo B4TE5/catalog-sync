@@ -33,3 +33,11 @@ Salida 0.
 ```
 
 - Corrección sobre SQLite real · 2.164 anuncios reevaluados offline. Consulta de prendas fuera de perfil fuera de Descartados · 121 antes, 0 después. Chromium local · panel, JSON plegado, pendientes y aviso de mercado verificados. Ruff limpio y 57 pruebas offline en el cierre de corrección.
+
+## Fase 2 · Evidencia inicial
+
+- Pasada normal con CDN concurrente · 25 peticiones, 884 vistos y 117,31 s. Los candidatos tardaron 16,38 y 17,39 s.
+- Sondas Actions · runs 42279884459, 42280627200 y 42281374832. Tres HTTP 200 con 96 anuncios. Intervalos de despacho de 302 s. Logs por API revisados sin coincidencias de secretos.
+- ntfy · los dos POST reales de prueba devolvieron HTTP 200. El modo sombra, los cambios de salud y la deduplicación pasaron las pruebas con HTTP simulado.
+- Chromium local · pantalla neutra sin clave, clave errónea rechazada, descifrado con clave válida y enlaces de feedback correctos. El primer intento de QA consultó el iframe antes de completar el descifrado y se repitió con espera explícita.
+- Pages · HTTP 403 al activar y HTTP 404 al consultar el sitio. [Bloqueo](BLOCKERS.md)

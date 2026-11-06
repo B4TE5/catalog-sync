@@ -31,7 +31,7 @@ def test_listing_payload_and_deduplication(tmp_path: Path) -> None:
             "fake-listing-topic",
             "fake-health-topic",
             shadow_mode=False,
-            board_url="https://example.org/board",
+            board_url="https://example.org/board?token=test#k=private",
             post=post,
         )
         summary = {"errors": [], "scored_ids": [item.id]}
@@ -40,7 +40,9 @@ def test_listing_payload_and_deduplication(tmp_path: Path) -> None:
         assert len(sent) == 1
         assert sent[0]["priority"] == 5 and sent[0]["click"] == str(item.url)
         assert sent[0]["attach"] == str(item.photos[0])
-        assert sent[0]["actions"][0]["label"] == "Tablero"
+        assert sent[0]["actions"] == [
+            {"action": "view", "label": "Tablero", "url": "https://example.org/board"}
+        ]
         assert "Subida hace 4 min" in sent[0]["message"]
         price = item.price - Decimal("0.01")
         trace["evidence"]["price_drop"] = True

@@ -64,7 +64,8 @@ def listing_message(row: dict[str, Any], board_url: str | None, priority: int) -
     if body["photos"] and https_url(body["photos"][0]):
         message["attach"] = body["photos"][0]
     if board_url and https_url(board_url):
-        message["actions"] = [{"action": "view", "label": "Tablero", "url": board_url}]
+        public_url = urlsplit(board_url)._replace(query="", fragment="").geturl()
+        message["actions"] = [{"action": "view", "label": "Tablero", "url": public_url}]
     return message
 
 

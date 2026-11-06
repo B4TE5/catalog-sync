@@ -203,3 +203,10 @@
 - Comandos clave: API GitHub secretos → 201 para los tres. Crear Pages → HTTP 403. Ruff → 0. Pytest → 69 pasados. Render local cifrado → 0.
 - Evidencia: .github/workflows, tests/test_cloud.py y out/pages/index.html.
 - Problemas y cómo se resolvieron: se omitirá el deploy si Pages carece de sitio configurado. El estado y los artefactos de prueba pueden seguir ejecutándose.
+
+## 2026-11-06 20:54 — F2.2–F2.5 · Validación manual y seguridad
+- Objetivo: comprobar estado remoto, cifrado, feedback y ausencia de credenciales en los artefactos.
+- Hecho: la ejecución manual guardó el estado cifrado en un commit sin padres. El artefacto real contiene solo un HTML neutro cifrado. Los issues 1 y 2 se cerraron y el segundo no cambió el estado. El botón de ntfy elimina query y fragmento de la URL configurada.
+- Comandos clave: run manual 42282635097 → verde, 25 peticiones, 938 vistos y 760 nuevos de primera pasada. Feedback → dos HTTP 201 y cierre automático. Notify-test → HTTP 200 en ambos canales. Pytest → 69 pasados.
+- Evidencia: logs de Actions vía API, artefacto github-pages y rama state. Sin coincidencias de los valores sensibles buscados.
+- Problemas y cómo se resolvieron: Chromium consultó el iframe antes de finalizar el descifrado. La segunda verificación esperó su carga y pasó. Pages sigue en 404 porque la activación respondió 403.
