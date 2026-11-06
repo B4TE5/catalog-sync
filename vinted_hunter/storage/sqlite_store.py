@@ -202,6 +202,16 @@ class SQLiteStore(StateStore):
     def set_setting(self, key: str, value: str) -> None:
         self.db.execute("INSERT OR REPLACE INTO settings VALUES (?,?)", (key, value))
 
+    def claim_setting(self, key: str, prior: str, value: str) -> bool:
+        cursor = self.db.execute(
+            "INSERT INTO settings(key,value) SELECT ?,? "
+            "WHERE ?='' OR EXISTS (SELECT 1 FROM settings WHERE key=? AND value=?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE settings.value=?",
+            (key, value, prior, key, prior, prior),
+        )
+        self.flush()
+        return cursor.rowcount == 1
+
     def save_run(self, run: dict[str, Any]) -> None:
         self.db.execute("INSERT INTO run_log(body) VALUES (?)", (json.dumps(run),))
 

@@ -1,3 +1,4 @@
+shadow_mode: true
 capture:
   catalog_limit: 12
   enrich_limit: 12

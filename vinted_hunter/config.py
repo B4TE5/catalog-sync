@@ -78,6 +78,7 @@ class Capture(BaseModel):
 
 
 class Scoring(BaseModel):
+    shadow_mode: bool = True
     capture: Capture = Field(default_factory=Capture)
     words: dict[str, list[str]] = Field(default_factory=dict)
     weights: dict[str, int] = Field(default_factory=dict)

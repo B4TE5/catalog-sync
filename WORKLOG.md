@@ -182,3 +182,10 @@
 - Comandos clave: vh run → salida 0, 25 peticiones, 884 vistos y 117,3 s. Pytest → 58 pasados.
 - Evidencia: tiempos por candidato en DECISIONS.md y run_log.
 - Problemas y cómo se resolvieron: las fotos conservan sus posiciones aun cuando falten bytes. Se mantiene el circuit breaker para CDN y páginas.
+
+## 2026-11-06 20:33 — F2.3 · Notificador
+- Objetivo: preparar avisos locales y de salud bajo shadow_mode.
+- Hecho: envío JSON de ntfy, prioridad, dedupe persistente y transición de incidencia y recuperación. Los avisos de anuncios quedan desactivados por defecto.
+- Comandos clave: Ruff → 0. Pytest → 61 pasados, incluidas las pruebas HTTP simuladas.
+- Evidencia: tests/test_ntfy.py y vinted_hunter/notify/ntfy.py.
+- Problemas y cómo se resolvieron: la deduplicación reclama la transición en SQLite antes del envío. Así se evita repetir avisos ante un resultado de transporte incierto.

@@ -6,6 +6,7 @@ from collections import Counter
 from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
 from curl_cffi.requests import RequestsError
@@ -44,6 +45,7 @@ REMOTE_ERRORS = (RequestsError, HttpFailure, ParseError)
 class EventLog:
     def __init__(self, folder: Path) -> None:
         self.folder = folder
+        self.lock = Lock()
         folder.mkdir(parents=True, exist_ok=True)
         cutoff = (datetime.now(UTC) - timedelta(days=LOG_RETENTION_DAYS)).strftime("%Y%m%d")
         for file in folder.glob("run-????????.jsonl"):
@@ -53,7 +55,7 @@ class EventLog:
     def __call__(self, event: str, **data: Any) -> None:
         now = datetime.now(UTC)
         path = self.folder / f"run-{now:%Y%m%d}.jsonl"
-        with path.open("a", encoding="utf-8") as target:
+        with self.lock, path.open("a", encoding="utf-8") as target:
             row = {"event": event, "at": now.isoformat(), **data}
             target.write(json.dumps(row, ensure_ascii=False) + "\n")
 
@@ -135,6 +137,7 @@ class Pipeline:
             new=0,
             candidates=0,
             scored=0,
+            scored_ids=[],
             enriched=0,
             vision=0,
             errors=[],
@@ -251,6 +254,7 @@ class Pipeline:
             self.emit("gate_reject", id=listing.id, profile=profile.id, reason=rejection)
         else:
             self.run["scored"] += 1
+            self.run["scored_ids"].append(listing.id)
             self.emit("score", id=listing.id, score=result.score, tier=result.tier)
 
     def catalog(
@@ -526,7 +530,6 @@ class Pipeline:
         self.run.update(pages=pages, backfill=backfill, selftest=selftest)
         self.emit("run_start", pages=pages, backfill=backfill, selftest=selftest)
         started = time.monotonic()
-        self.run["revalidated"] = self.revalidate()
         base = (
             f"https://www.{self.config.profiles[0].domain}"
             if self.config.profiles
@@ -541,6 +544,7 @@ class Pipeline:
                     self.run["deferred"] = True
                     self.error("Circuito en espera hasta " + retry_at, "capture")
                 else:
+                    self.run["revalidated"] = self.revalidate()
                     client.home()
                     self.run["cookies"] = bool(client.session.cookies)
                     catalog_start = time.monotonic()
@@ -565,6 +569,8 @@ class Pipeline:
                 )
             except REMOTE_ERRORS as error:
                 self.error(error, "capture")
+            except Exception as error:
+                self.error(type(error).__name__, "capture")
             except KeyboardInterrupt:
                 self.error("Interrumpido", "capture")
                 self.run["interrupted"] = True

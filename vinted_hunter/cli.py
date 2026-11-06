@@ -16,6 +16,7 @@ from vinted_hunter.board.build import build
 from vinted_hunter.config import load_config
 from vinted_hunter.diagnostics import check
 from vinted_hunter.notify.console import ConsoleNotifier
+from vinted_hunter.notify.ntfy import notifier_for
 from vinted_hunter.pipeline.funnel import funnel
 from vinted_hunter.pipeline.run import market_for, run_pass
 from vinted_hunter.sources.vinted.client import HttpFailure
@@ -41,11 +42,20 @@ def main() -> None:
     """Captura y analiza anuncios públicos."""
 
 
+def publish_notifications(result: dict) -> None:
+    with local_store() as store:
+        try:
+            notifier_for(ROOT, store).publish(result)
+        except ValueError:
+            typer.echo("Configuración local de ntfy no válida", err=True)
+
+
 @app.command()
 def run() -> None:
     """Realiza una pasada de captura."""
     result = run_pass(ROOT)
     ConsoleNotifier().publish(result)
+    publish_notifications(result)
     if result["errors"]:
         raise typer.Exit(1)
 
@@ -157,6 +167,7 @@ def watch(
         while cycles is None or completed < cycles:
             result = run_pass(ROOT)
             ConsoleNotifier().publish(result)
+            publish_notifications(result)
             build(ROOT)
             if result.get("interrupted"):
                 return
@@ -212,4 +223,23 @@ def check_vision(
     for error in report["errors"]:
         typer.echo(error, err=True)
     if len(report["samples"]) != limit:
+        raise typer.Exit(1)
+
+
+@app.command("notify-test")
+def notify_test() -> None:
+    """Envía un ejemplo del tablero a los dos topics configurados."""
+    with local_store() as store:
+        choices = [row for row in store.records(scored=True) if row["trace"].get("pricing")]
+        if not choices:
+            typer.echo("El tablero carece de anuncios puntuados para la prueba", err=True)
+            raise typer.Exit(1)
+        row = max(choices, key=lambda row: row["score"])
+        try:
+            statuses = notifier_for(ROOT, store).test(row)
+        except ValueError:
+            typer.echo("Configura los dos topics locales de ntfy", err=True)
+            raise typer.Exit(1) from None
+    typer.echo(f"ntfy anuncios · HTTP {statuses[0]} · ntfy salud · HTTP {statuses[1]}")
+    if statuses != (200, 200):
         raise typer.Exit(1)
