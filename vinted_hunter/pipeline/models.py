@@ -47,6 +47,7 @@ class Seller(BaseModel):
 
 class Evidence(BaseModel):
     qr: QR = "none"
+    qr_decoded: bool = False
     hashes: list[str] = Field(default_factory=list)
     primary_hash: str | None = None
     parts_present: list[str] = Field(default_factory=list)

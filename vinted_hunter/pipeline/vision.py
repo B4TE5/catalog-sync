@@ -26,7 +26,7 @@ def classify_qr(text: str) -> QR:
     return "qr_foreign_domain"
 
 
-def read_qr(gray: np.ndarray) -> QR:
+def _read_qr(gray: np.ndarray) -> tuple[QR, bool]:
     def scan(image: np.ndarray) -> list[QR]:
         return [
             classify_qr(result.text)
@@ -42,7 +42,7 @@ def read_qr(gray: np.ndarray) -> QR:
     for variant in variants:
         detected.extend(scan(variant))
         if "qr_foreign_domain" in detected:
-            return "qr_foreign_domain"
+            return "qr_foreign_domain", True
     if not detected:
         for grid in (2, 3):
             for row in np.array_split(gray, grid):
@@ -52,9 +52,13 @@ def read_qr(gray: np.ndarray) -> QR:
         return min(
             detected,
             key=("qr_foreign_domain", "certilogo_ok", "qr_detected_unreadable", "none").index,
-        )
+        ), True
     found, _ = cv2.QRCodeDetector().detect(gray)
-    return "qr_detected_unreadable" if found else "none"
+    return ("qr_detected_unreadable" if found else "none"), False
+
+
+def read_qr(gray: np.ndarray) -> QR:
+    return _read_qr(gray)[0]
 
 
 def phash(image: Image.Image) -> str:
@@ -130,7 +134,9 @@ def inspect_photos(
         evidence.stock_photo |= value in stock_hashes
         gray = np.asarray(image.convert("L"))
         if scan_qr:
-            evidence.qr = min(evidence.qr, read_qr(gray), key=order.index)
+            qr, decoded = _read_qr(gray)
+            evidence.qr = min(evidence.qr, qr, key=order.index)
+            evidence.qr_decoded |= decoded
         parts |= matcher.parts(gray)
     evidence.parts_present = sorted(parts)
     return evidence

@@ -44,6 +44,8 @@ def image_bytes(
     listing: Listing,
     cache: Path,
     settings: Capture,
+    *,
+    require_budget: bool = False,
 ) -> list[bytes]:
     cache.mkdir(parents=True, exist_ok=True)
     images = []
@@ -60,6 +62,8 @@ def image_bytes(
         try:
             response = client.get(url, "enrich")
         except BudgetExhausted:
+            if require_budget:
+                raise
             break
         if response.headers.get("Content-Type", "").startswith("image/"):
             with NamedTemporaryFile("wb", dir=cache, delete=False) as file:

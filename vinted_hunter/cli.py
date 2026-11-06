@@ -179,3 +179,22 @@ def selftest(report: Annotated[bool, typer.Option("--report")] = False) -> None:
 
     if not verify(ROOT, report):
         raise typer.Exit(1)
+
+
+@app.command("vision-check")
+def check_vision(
+    profile: Annotated[str, typer.Option()],
+    limit: Annotated[int, typer.Option(min=1, max=30)] = 30,
+) -> None:
+    """Mide visión en anuncios públicos de un perfil sin aplicar sus gates."""
+    from vinted_hunter.vision_check import vision_check
+
+    try:
+        output, report = vision_check(ROOT, profile, limit, typer.echo)
+    except ValueError as error:
+        raise typer.BadParameter(str(error)) from error
+    typer.echo(f"QR {report['qr']} · {len(report['samples'])}/{limit} anuncios · {output}")
+    for error in report["errors"]:
+        typer.echo(error, err=True)
+    if len(report["samples"]) != limit:
+        raise typer.Exit(1)

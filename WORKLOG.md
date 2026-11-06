@@ -119,3 +119,10 @@
 - Comandos clave: Ruff → salida 0. Pytest → 46 pasados en el conjunto de correcciones.
 - Evidencia: tests/test_heat.py y README.md.
 - Problemas y cómo se resolvieron: el campo histórico de visitas no interviene en el cálculo y sigue admitido en datos guardados.
+
+## 2026-11-06 10:14 — Corrección 4 · Comando de visión
+- Objetivo: auditar las fotos de una muestra sin gates.
+- Hecho: vision-check obtiene fichas por marca y categoría, analiza hasta el máximo de fotos configurado y registra QR, pHash, ORB y tiempos por ID. Divide la red en lotes acotados con pausas.
+- Comandos clave: vh vision-check --help y pytest → comprobados. Ruff → salida 0 tras ligar las operaciones a cada anuncio con partial.
+- Evidencia: vinted_hunter/vision_check.py y tests/test_vision_check.py.
+- Problemas y cómo se resolvieron: un QR de texto decodificado cuenta como legible en la muestra y no se convierte en señal Certilogo.
