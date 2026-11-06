@@ -21,3 +21,17 @@
 - Comandos clave: uv sync con acceso a PyPI → 33 paquetes instalados. uv run --offline vh --help → 0. uv run --offline pytest → 1 pasado. uv run --offline ruff check → 0.
 - Evidencia: pyproject.toml, uv.lock, tests/test_cli.py y config/profiles.yaml.
 - Problemas y cómo se resolvieron: el archivo de perfiles estaba en la raíz. La instalación inicial falló con Host desconocido (os error 11001) para PyPI y se repitió con red autorizada. Ruff encontró cuatro errores en un script de inspección temporal que quedó fuera del árbol versionado.
+
+## 2026-11-06 08:35 — Fase 1 · Catálogo, ficha y vendedor
+- Objetivo: verificar las fuentes públicas y convertir capturas reales en pruebas reproducibles.
+- Hecho: parsers de catálogo, ficha y usuario/armario. Compresión de cuatro cuerpos reales. Lectura de taxonomía y de initialCatalogState.
+- Comandos clave: diagnóstico curl_cffi → home 200 (7 cookies), ficha 200, API vendedor 200, armario 200 y catálogo API 404. uv run --offline pytest → 5 pasados. Ruff → 0.
+- Evidencia: tests/fixtures/README.md y config/profiles.yaml. Commit previo 669096b.
+- Problemas y cómo se resolvieron: el primer git add falló al crear .git/index.lock con Permission denied. Git se ejecutó con autorización y una identidad local por comando. La prueba con size_ids[] devolvió 96 Stone Island, de los que 9 eran XL. Se investiga el parámetro actual antes de validar la talla. Un error de comillas en el script temporal de inspección se corrigió y el análisis se repitió.
+
+## 2026-11-06 08:55 — Fase 1 · Depuración de fixtures
+- Objetivo: excluir credenciales de los cuerpos comprimidos.
+- Hecho: un análisis del HTML completo identificó un JWT de telemetría otelToken en cada captura. Sustituí esos valores por REDACTED y mantuve los fragmentos de datos intactos. Se corrigió el commit local de fixtures antes de seguir.
+- Comandos clave: búsqueda de JWT por patrón sobre las capturas descomprimidas → cinco valores de telemetría detectados y retirados. No había cabeceras Set-Cookie.
+- Evidencia: tests/fixtures/README.md.
+- Problemas y cómo se resolvieron: la primera inspección comprobó claves de sesión en el RSC, pero omitió la clave de telemetría. Se añadió la comprobación de JWT al preparar nuevos fixtures.

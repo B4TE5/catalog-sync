@@ -1,6 +1,6 @@
 # PLAN.md — vinted-hunter, sesión 1 (local)
 
-Leyenda: `[x]` pendiente · `[x]` hecho (criterio verificado) · `[!]` bloqueado (ver BLOCKERS.md).
+Leyenda: `[ ]` pendiente · `[x]` hecho (criterio verificado) · `[!]` bloqueado (ver BLOCKERS.md).
 Marca cada casilla en este archivo según avances y haz commit.
 
 ## Fase 0 — Base
@@ -10,14 +10,14 @@ Marca cada casilla en este archivo según avances y haz commit.
 **Hecho cuando:** `uv run vh --help` lista los comandos y `uv run pytest` pasa.
 
 ## Fase 1 — Descubrimiento contra Vinted real
-- [ ] Cliente `curl_cffi` (impersonate chrome) que obtiene la home de vinted.es con 200 y cookies.
-- [ ] Determinar la fuente de datos real de `/catalog` (RSC/JSON embebido/endpoint) → documentado en DECISIONS.md.
-- [ ] Parser de catálogo que extrae ≥ 20 anuncios de una búsqueda real ("stone island") con id, título, precio, moneda, url, foto, marca, talla, estado (si viene), id de vendedor.
+- [x] Cliente `curl_cffi` (impersonate chrome) que obtiene la home de vinted.es con 200 y cookies.
+- [x] Determinar la fuente de datos real de `/catalog` (RSC/JSON embebido/endpoint) → documentado en DECISIONS.md.
+- [x] Parser de catálogo que extrae ≥ 20 anuncios de una búsqueda real ("stone island") con id, título, precio, moneda, url, foto, marca, talla, estado (si viene), id de vendedor.
 - [ ] Parser de ficha `/items/<id>`: todas las fotos, descripción, estado, fecha de subida, favoritos, visitas, precio total si existe.
-- [ ] Datos de vendedor (valoraciones, nota, nº artículos, país, etc.) por la vía que funcione.
+- [x] Datos de vendedor (valoraciones, nota, nº artículos, país, etc.) por la vía que funcione.
 - [ ] `config/vinted_ids.yaml` con todos los IDs de marcas de `profiles.yaml`, tallas L/XL, categorías (con/sin capucha), estados y color gris — cada uno con URL de evidencia. Verificado haciendo una búsqueda filtrada real que devuelve resultados coherentes.
-- [ ] Comprobado si vinted.es incluye anuncios de otros países → documentado.
-- [ ] Fixtures reales guardados en `tests/fixtures/` + tests del parser en verde.
+- [x] Comprobado si vinted.es incluye anuncios de otros países → documentado.
+- [x] Fixtures reales guardados en `tests/fixtures/` + tests del parser en verde.
 **Hecho cuando:** `uv run pytest tests/test_parse*.py` pasa con fixtures reales y una búsqueda filtrada en vivo devuelve anuncios de la marca/talla correctas.
 
 ## Fase 2 — Captura robusta + dedupe + almacenamiento
