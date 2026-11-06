@@ -265,3 +265,75 @@ def test_funnel_tracks_each_listing_once(
     assert counts["tiers"] == {"rejected": 1, "pending": 1}
     assert counts["rejected"] == {"color": 1}
     assert counts["ids_by_outcome"] == {"rejected:color": [candidate.id], "pending": [other.id]}
+
+
+@pytest.mark.parametrize("phrase", ["Doesn't fit", "Taglia sbagliata", "Passt nicht"])
+def test_motivated_seller_across_languages(config: Config, phrase: str) -> None:
+    assert matches(phrase, config.scoring.words["motivated"])
+
+
+def test_tag_condition_rule_waits_for_detail(config: Config, candidate: Listing) -> None:
+    palm = next(profile for profile in config.profiles if profile.id == "palm-angels")
+    listing = candidate.model_copy(
+        update={
+            "title": "Felpa con cappuccio",
+            "size": "L",
+            "photos": candidate.photos * palm.min_photos,
+        }
+    )
+    unknown = listing.model_copy(update={"status": None})
+    reason, passed = gate(unknown, palm, config, detailed=True)
+    assert reason is None
+    assert {"hood", "status_unconfirmed"} <= set(passed)
+    tagged = listing.model_copy(update={"status": "new_with_tags"})
+    assert gate(tagged, palm, config)[0] is None
+    assert gate(tagged, palm, config, detailed=True)[0] == palm.brand_rules[0].reason
+
+
+def test_regular_offer_and_drop_offer(config: Config, candidate: Listing) -> None:
+    profile = config.profiles[0]
+    ordinary = price_signals(candidate, profile, summarize([]), 90, False, config.scoring)
+    dropped = price_signals(candidate, profile, summarize([]), 90, True, config.scoring)
+    assert ordinary["offer"] == "35" and not ordinary["negotiable"]
+    assert dropped["offer"] == "30" and dropped["negotiable"]
+
+
+def test_seen_id_skips_unchanged_and_detects_drop(
+    config: Config,
+    candidate: Listing,
+    tmp_path: Path,
+) -> None:
+    from vinted_hunter.pipeline.run import Pipeline
+    from vinted_hunter.sources.vinted.client import VintedClient
+
+    profile = config.profiles[0]
+    with SQLiteStore(tmp_path / "vh.sqlite") as store, VintedClient(enrich_limit=0) as client:
+        store.observe_price(candidate, profile.id, (NOW - timedelta(minutes=2)).isoformat())
+        store.save(candidate, profile.id, "good", 70, {"enriched": True}, False)
+        pipe = Pipeline(tmp_path, store, config, NOW - timedelta(minutes=1))
+        pipe.process(client, {candidate.id: (candidate, profile, True)}, False, None)
+        assert pipe.run["new"] == pipe.run["candidates"] == 0
+        cheaper = candidate.model_copy(update={"price": Decimal(35)})
+        pipe = Pipeline(tmp_path, store, config, NOW)
+        pipe.process(client, {cheaper.id: (cheaper, profile, True)}, False, None)
+        assert pipe.run["new"] == pipe.run["candidates"] == 1
+        assert store.record(cheaper.id)["trace"]["evidence"]["price_drop"]
+
+
+def test_legacy_catalogue_reject_is_reopened(
+    config: Config,
+    candidate: Listing,
+    tmp_path: Path,
+) -> None:
+    from vinted_hunter.pipeline.run import Pipeline
+    from vinted_hunter.sources.vinted.client import VintedClient
+
+    profile = config.profiles[0]
+    tile = candidate.model_copy(update={"size": "S"})
+    with SQLiteStore(tmp_path / "vh.sqlite") as store, VintedClient(enrich_limit=0) as client:
+        store.observe_price(tile, profile.id, (NOW - timedelta(minutes=1)).isoformat())
+        store.save(tile, profile.id, "rejected", 0, {"gate_rejected": "size"}, False)
+        pipe = Pipeline(tmp_path, store, config, NOW)
+        pipe.process(client, {tile.id: (tile, profile, True)}, False, None)
+        assert pipe.run["candidates"] == 1 and pipe.run["new"] == 0
+        assert store.record(tile.id)["tier"] is None

@@ -126,3 +126,10 @@
 - Comandos clave: vh vision-check --help y pytest → comprobados. Ruff → salida 0 tras ligar las operaciones a cada anuncio con partial.
 - Evidencia: vinted_hunter/vision_check.py y tests/test_vision_check.py.
 - Problemas y cómo se resolvieron: un QR de texto decodificado cuenta como legible en la muestra y no se convierte en señal Certilogo.
+
+## 2026-11-06 10:14 — Corrección 6 · Auditoría de pruebas
+- Objetivo: contrastar la suite con la lista de AGENTS.md §10.
+- Hecho: los parsers de catálogo, ficha, vendedor y armario ya tenían capturas reales. Se ampliaron las reglas dependientes de estado, los idiomas, las ofertas normal y por bajada, el dedupe por ID en el pipeline y la reapertura de descartes históricos. Permanecen cubiertos pHash, resubidas, dominios QR y tiers top/rejected.
+- Comandos clave: uv run --offline pytest -q → 46 pasados, 4 live excluidos. Ruff → salida 0.
+- Evidencia: tests/test_pipeline.py, tests/test_heat.py y tests/test_vision_check.py.
+- Problemas y cómo se resolvieron: el test previo de dedupe comprobaba comparaciones y no la transición del pipeline con un ID ya visto; se añadió esa transición con SQLite temporal y una tarjeta real.
