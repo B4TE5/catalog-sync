@@ -12,14 +12,13 @@ from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from cryptography.exceptions import InvalidTag
 
 from vinted_hunter.board.build import build
 from vinted_hunter.cloud_crypto import BOARD_CONTEXT, STATE_CONTEXT, seal, unseal
-from vinted_hunter.secrets import local_secret, repository_name
+from vinted_hunter.secrets import local_secret
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 STATE_REF = "refs/heads/state"
@@ -55,14 +54,6 @@ def git(*args: str, data: bytes | None = None, auth: bool = False) -> bytes:
     if result.returncode:
         raise RuntimeError(f"Git {args[0]} salió con código {result.returncode}")
     return result.stdout
-
-
-def board_address(root: Path) -> str:
-    slug = repository_name(root)
-    if slug is None:
-        raise ValueError("Repositorio no configurado para el tablero")
-    owner, project = slug.split("/")
-    return f"https://{owner.lower()}.github.io/{quote(project)}/"
 
 
 def require_key(root: Path) -> str:

@@ -1,12 +1,30 @@
 import gzip
 from decimal import Decimal
 from pathlib import Path
+from shutil import copytree
 
-from vinted_hunter.notify.ntfy import NtfyNotifier, post_message
+import pytest
+
+from vinted_hunter.notify.ntfy import NtfyNotifier, notifier_for, post_message
 from vinted_hunter.sources.vinted.catalog import parse_catalog
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 ROOT = Path(__file__).parents[1]
+
+
+@pytest.mark.parametrize("repository_var", ["GITHUB_REPO", "GITHUB_REPOSITORY"])
+def test_notifier_derives_public_pages_link(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, repository_var: str
+) -> None:
+    copytree(ROOT / "config", tmp_path / "config")
+    monkeypatch.delenv("GITHUB_REPO", raising=False)
+    monkeypatch.delenv("GITHUB_REPOSITORY", raising=False)
+    monkeypatch.delenv("BOARD_URL", raising=False)
+    monkeypatch.setenv(repository_var, "Example/catalog-sync")
+    with SQLiteStore(tmp_path / "state.sqlite") as store:
+        assert notifier_for(tmp_path, store).board_url == "https://example.github.io/catalog-sync/"
+        monkeypatch.setenv("BOARD_URL", "https://example.org/board/")
+        assert notifier_for(tmp_path, store).board_url == "https://example.org/board/"
 
 
 def test_listing_payload_and_deduplication(tmp_path: Path) -> None:

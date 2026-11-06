@@ -3,6 +3,7 @@
 import os
 import re
 from pathlib import Path
+from urllib.parse import quote
 
 
 def local_secret(root: Path, name: str) -> str | None:
@@ -29,3 +30,10 @@ def repository_name(root: Path) -> str | None:
         .removesuffix(".git")
     )
     return slug if re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9._-]+", slug) else None
+
+
+def board_address(root: Path) -> str | None:
+    if slug := repository_name(root):
+        owner, project = slug.split("/")
+        return f"https://{owner.lower()}.github.io/{quote(project)}/"
+    return None

@@ -250,10 +250,13 @@ def board_url() -> None:
     """Muestra en local el enlace privado del panel publicado."""
     from urllib.parse import quote
 
-    from vinted_hunter.cloud import board_address, require_key
+    from vinted_hunter.cloud import require_key
+    from vinted_hunter.secrets import board_address
 
+    address = board_address(ROOT)
+    if address is None:
+        raise typer.BadParameter("Repositorio no configurado para el tablero")
     try:
-        address = board_address(ROOT)
         key = require_key(ROOT)
     except ValueError as error:
         raise typer.BadParameter(str(error)) from None

@@ -317,3 +317,7 @@ La segunda ejecución manual 42285332221 restauró el estado. Vio 963 anuncios y
 Se observaron 0 ejecuciones programadas completadas en la ventana de comprobación.
 
 Se mantuvo shadow_mode activo. El enlace de ntfy usa la URL del panel sin query ni fragmento. La clave se usa en el navegador desde el enlace generado en local.
+
+## 2026-11-06 22:26 · Destino público del botón Tablero
+
+La API de Pages ya devolvía HTTP 200 y la consulta de la variable `BOARD_URL` devolvió HTTP 403. Se usa la misma dirección pública de Pages que deriva `vh board-url`, con `BOARD_URL` como alternativa explícita para otro destino. Se descartó requerir permisos de Variables de Actions. El botón apunta al panel neutro y la clave sigue en el enlace privado generado en local.

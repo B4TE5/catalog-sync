@@ -224,3 +224,10 @@
 - Comandos clave: API de Actions → HTTP 200, workflow activo y cero eventos programados tras unos 43 minutos. API de Pages → HTTP 404 al cierre.
 - Evidencia: ejecución 42285332221, rama de estado y recuentos de price_history en DECISIONS.md.
 - Problemas y cómo se resolvieron: cron y publicación quedan marcados como bloqueados. Se verificaron dos pasadas manuales y el artefacto cifrado.
+
+## 2026-11-06 22:26 — F2.2/F2.3 · Reactivación de Pages y enlace de ntfy
+- Objetivo: desplegar el tablero cifrado con Pages habilitado y preparar el botón Tablero.
+- Hecho: lanzada la ejecución manual 42296435101. Se comparte la URL pública derivada del repositorio entre `vh board-url` y el notificador. `BOARD_URL` conserva prioridad si está configurada.
+- Comandos clave: GET Pages → HTTP 200, modo workflow. Consultar la variable de Actions → HTTP 403. Despacho de hunt → HTTP 200. Ruff → 0. Pytest → 71 aprobadas.
+- Evidencia: `vinted_hunter/secrets.py`, `vinted_hunter/notify/ntfy.py` y regresiones de URL local y de Actions en `tests/test_ntfy.py`.
+- Problemas y cómo se resolvieron: el token de operación local no puede consultar la variable de Actions. Se deriva la URL pública de `GITHUB_REPOSITORY` en el runner, sin permisos adicionales.

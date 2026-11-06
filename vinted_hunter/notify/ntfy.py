@@ -11,7 +11,7 @@ from curl_cffi import requests
 
 from vinted_hunter.config import load_config
 from vinted_hunter.notify.base import Notifier
-from vinted_hunter.secrets import local_secret
+from vinted_hunter.secrets import board_address, local_secret
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 NTFY = "https://ntfy.sh/"
@@ -181,6 +181,6 @@ def notifier_for(root: Path, store: SQLiteStore) -> NtfyNotifier:
         local_secret(root, "NTFY_TOPIC"),
         local_secret(root, "NTFY_HEALTH_TOPIC"),
         shadow_mode=config.scoring.shadow_mode,
-        board_url=local_secret(root, "BOARD_URL"),
+        board_url=local_secret(root, "BOARD_URL") or board_address(root),
         unhealthy_after=config.scoring.capture.unhealthy_after,
     )

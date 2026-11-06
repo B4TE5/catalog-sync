@@ -95,8 +95,9 @@ En local, `uv run vh watch` usa los topics configurados en `.env`. En Actions,
 los mismos nombres se leen desde los secretos del repositorio. El modo sombra
 envía únicamente transiciones de salud. Para activar avisos de anuncios en una
 configuración futura, cambia `shadow_mode` a `false`. El comando `vh notify-test`
-envía un ejemplo a cada topic. El botón Tablero se añade cuando `BOARD_URL`
-apunta a un tablero HTTPS accesible.
+envía un ejemplo a cada topic. El botón Tablero usa el enlace público de Pages
+del repositorio. `BOARD_URL` permite usar otro enlace HTTPS. Para abrir los datos
+cifrados, usa el enlace privado que genera `vh board-url`.
 
 Los botones Fake, Buena y No me interesa abren una solicitud prellenada en
 GitHub. El flujo de feedback acepta solicitudes válidas del dueño del repositorio
