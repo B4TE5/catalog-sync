@@ -26,13 +26,13 @@ def approximate_upload(label: str, observed: datetime) -> datetime | None:
 
 def parse_item(html: str, listing: Listing, observed: datetime) -> Listing:
     payload = flight_payload(html)
-    item = next((item for item in values(payload, ITEM)
-                 if str(item.get("id")) == str(listing.id)), None)
+    item = next(
+        (item for item in values(payload, ITEM) if str(item.get("id")) == str(listing.id)), None
+    )
     if item is None:
         raise ParseError(f"Ficha sin datos del anuncio {listing.id}")
     attributes = {
-        row["code"]: row["data"].get("value")
-        for row in next(values(payload, ATTRIBUTES), [])
+        row["code"]: row["data"].get("value") for row in next(values(payload, ATTRIBUTES), [])
     }
     photo_groups = list(values(payload, PHOTOS))
     photos = max(photo_groups, key=len, default=[])

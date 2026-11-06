@@ -28,3 +28,12 @@ def test_missing_payload_is_not_an_empty_search() -> None:
 
     with pytest.raises(ParseError, match="RSC"):
         parse_catalog("")
+
+
+def test_verified_empty_filter_has_valid_structure() -> None:
+    import gzip
+
+    with gzip.open(FIXTURES / "catalog-empty-size.html.gz", "rt", encoding="utf-8") as body:
+        result = parse_catalog(body.read())
+    assert result.raw_count == result.invalid_count == 0
+    assert not result.listings

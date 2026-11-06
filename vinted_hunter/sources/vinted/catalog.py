@@ -1,13 +1,15 @@
 """Anuncios del catálogo público español."""
 
 import re
-from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urljoin, urlsplit
 
 from pydantic import ValidationError
 
 from vinted_hunter.pipeline.models import Listing
+from vinted_hunter.sources.base import SearchResult as CatalogResult
+from vinted_hunter.sources.base import Source
+from vinted_hunter.sources.vinted.client import VintedClient
 from vinted_hunter.sources.vinted.parse import ParseError, flight_payload, values
 
 ITEMS = re.compile(r'"items"\s*:\s*\{\s*"items"\s*:\s*(\[)')
@@ -20,13 +22,6 @@ STATUS = {
 }
 
 
-@dataclass
-class CatalogResult:
-    listings: list[Listing]
-    raw_count: int
-    invalid_count: int
-
-
 def product_listing(product: dict[str, Any], base: str) -> Listing:
     box = product.get("itemBox") or {}
     size, _, condition = (box.get("secondLine") or "").partition(" · ")
@@ -36,15 +31,20 @@ def product_listing(product: dict[str, Any], base: str) -> Listing:
     if not photos and product.get("thumbnailUrl"):
         photos.append(product["thumbnailUrl"])
     item_id = product["id"]
-    path = product["url"]
-    if not urlsplit(path).path.startswith(f"/items/{item_id}-"):
-        raise ValueError("La ruta del anuncio no coincide con su ID")
+    url = urljoin(base, product["url"])
+    parts = urlsplit(url)
+    if (
+        parts.scheme != "https"
+        or parts.hostname != urlsplit(base).hostname
+        or not parts.path.startswith(f"/items/{item_id}-")
+    ):
+        raise ValueError("La URL del anuncio no coincide con Vinted y su ID")
     return Listing(
         id=item_id,
         title=product["title"],
         price=product["price"]["amount"],
         currency=product["price"]["currencyCode"],
-        url=urljoin(base, path),
+        url=url,
         photos=photos,
         seller_id=(product.get("user") or {}).get("id"),
         brand=box.get("firstLine"),
@@ -74,3 +74,12 @@ def parse_catalog(html: str, base: str = "https://www.vinted.es/") -> CatalogRes
     if raw_count and not listings:
         raise ParseError(f"Ninguna de las {raw_count} tarjetas es válida")
     return CatalogResult(list(listings.values()), raw_count, invalid_count)
+
+
+class VintedCatalog(Source):
+    def __init__(self, client: VintedClient) -> None:
+        self.client = client
+
+    def search(self, params: dict[str, str]) -> CatalogResult:
+        response = self.client.get("/catalog", "catalog", params)
+        return parse_catalog(response.text, self.client.base)

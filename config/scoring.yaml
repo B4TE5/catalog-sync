@@ -1,0 +1,73 @@
+capture:
+  catalog_limit: 12
+  enrich_limit: 12
+  wait: [3, 8]
+  max_photos: 12
+  seller_hours: 24
+  unhealthy_after: 3
+  backoff_seconds: 60
+  max_backoff_seconds: 3600
+words:
+  replica: [replica, "1:1", aaa, inspired, no original, copia, fake, rep, réplique, contrefaçon, non original, falso, riproduzione, fälschung, nachgemacht, geïnspireerd, geïnspireerde, namaak]
+  hood_with: [capucha, hoodie, hooded, capuche, cappuccio, kapuze, kangourou, capuchon]
+  hood_without: [sin capucha, crewneck, crew neck, cuello redondo, sans capuche, col rond, senza cappuccio, girocollo, ohne kapuze, rundhals, zonder capuchon]
+  motivated: ["no me queda", "me queda grande", "me queda pequeña", "talla equivocada", "me la regalaron", regalo, "puesta una vez", "puesta dos veces", "no la uso", "no me la pongo", "limpieza de armario", "vacío armario", liquido, mudanza, urge, "acepto ofertas", negociable, "doesn't fit", "too big", "too small", gift, "worn once", "trop grand", "porté une fois", cadeau, "taglia sbagliata", "indossata una volta", "passt nicht", geschenk]
+  wear: [bolitas, pilling, desgaste, manchas, mancha, agujero, descolorida, desteñida, roto, stain, hole, tache, trou, macchia, buco, fleck, loch]
+  proof: [ticket, factura, "comprada en", receipt, invoice, facture, "acheté chez", scontrino, ricevuta, kaufbeleg, rechnung]
+  grey: [gris, grey, gray, grigio, grau]
+weights:
+  base: 40
+  certilogo_ok: 35
+  qr_detected_unreadable: 15
+  seller_high: 20
+  seller_medium: 10
+  diverse: 5
+  same_brand: -25
+  many_new: -20
+  very_good: 10
+  new_without_tags: 10
+  cheap_new: -20
+  satisfactory: -10
+  motivated: 10
+  proof: 8
+  wear: -15
+  short_description: -5
+  many_photos: 5
+  part: 5
+  max_part_points: 15
+  stock_photo: -20
+  price_drop: 10
+  bargain: 8
+  hood_unconfirmed: -5
+thresholds:
+  top: 75
+  good: 60
+  maybe: 45
+  plausible: 60
+  seller_high_count: 50
+  seller_high_rating: 4.8
+  seller_medium_count: 10
+  diverse_ratio: 0.2
+  same_brand_count: 3
+  many_new_count: 3
+  cheap_new_ratio: 0.75
+  many_photos: 5
+  heat: 0.5
+  heat_min_age: 5
+  relist_distance: 6
+  orb_ratio: 0.75
+  orb_inliers: 12
+  orb_ransac: 5
+  orb_features: 1000
+pricing:
+  protection_fixed: 0.70
+  protection_fraction: 0.05
+  shipping_estimate: 3.49
+  minimum_samples: 30
+  fresh_minutes: 60
+  fresh_ratio: 0.80
+  negotiable_days: 5
+  negotiable_ratio: 0.80
+  default_ratio: 0.90
+  round_euros: 5
+

@@ -5,9 +5,7 @@ import re
 from collections.abc import Iterator
 from typing import Any
 
-FLIGHT_SCRIPT = re.compile(
-    r"<script\b[^>]*>self\.__next_f\.push\((\[.*?\])\)</script>", re.DOTALL
-)
+FLIGHT_SCRIPT = re.compile(r"<script\b[^>]*>self\.__next_f\.push\((\[.*?\])\)</script>", re.DOTALL)
 DECODER = json.JSONDecoder()
 
 

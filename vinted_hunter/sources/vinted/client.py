@@ -5,6 +5,7 @@ import time
 from collections.abc import Callable
 from types import TracebackType
 from typing import Any, Literal, Self
+from urllib.parse import urlsplit, urlunsplit
 
 from curl_cffi.requests import Response, Session
 
@@ -46,7 +47,9 @@ class VintedClient:
         return self
 
     def __exit__(
-        self, kind: type[BaseException] | None, value: BaseException | None,
+        self,
+        kind: type[BaseException] | None,
+        value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
         self.session.close()
@@ -58,7 +61,10 @@ class VintedClient:
         return self.limits[budget] - self.counts[budget]
 
     def get(
-        self, path: str, budget: Budget | None = None, params: Any = None,
+        self,
+        path: str,
+        budget: Budget | None = None,
+        params: Any = None,
     ) -> Response:
         if self.blocked:
             raise CircuitOpen("Circuito abierto para esta sesión")
@@ -73,8 +79,16 @@ class VintedClient:
         url = self.base + path if path.startswith("/") else path
         response = self.session.get(url, params=params, timeout=30)
         if self.emit:
-            self.emit("request", url=response.url, status=response.status_code,
-                      ms=round((time.monotonic() - started) * 1000), budget=budget)
+            log_url = urlsplit(response.url)
+            if log_url.hostname != urlsplit(self.base).hostname:
+                log_url = log_url._replace(query="", fragment="")
+            self.emit(
+                "request",
+                url=urlunsplit(log_url),
+                status=response.status_code,
+                ms=round((time.monotonic() - started) * 1000),
+                budget=budget,
+            )
         if response.status_code in (403, 429):
             self.blocked = True
             raise CircuitOpen(f"HTTP {response.status_code}")

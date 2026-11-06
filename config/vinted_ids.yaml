@@ -1,0 +1,26 @@
+# IDs observados en páginas públicas. Las claves ausentes siguen en BLOCKERS.md.
+brand_ids:
+  Stone Island: [73306]  # https://www.vinted.es/brand/73306-stone-island
+  TwoJeys: [1945766]  # https://www.vinted.es/catalog/1807-print-t-shirts/brand/1945766-twojeys
+  Heron Preston: [389625]  # https://www.vinted.es/catalog/178-mini-dresses/brand/389625-heron-preston
+  Supreme: [14969]  # https://www.vinted.es/catalog/267-hoodies-and-sweaters/brand/14969-supreme
+  Yeezy Gap: [6582025]  # https://www.vinted.com/brand/6582025-yeezy-x-gap
+  Rhude: [435315]  # https://www.vinted.com/brand/435315-rhude
+  Palm Angels: [395367]  # https://www.vinted.com/catalog/267-hoodies-and-sweaters/brand/395367-palm-angels
+  Palace: [222038]  # https://www.vinted.es/catalog/1078-bomber-jackets/brand/222038-palace-skateboards
+brand_names:
+  TwoJeys: [Two Jeys]
+  Yeezy Gap: [Yeezy x Gap, YZY GAP, Gap x Yeezy]
+  Palace: [Palace Skateboards]
+size_ids: {}
+# ID XL mostrado por la ficha. El mismo valor devolvió cero tarjetas al filtrar.
+# https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo
+item_size_ids:
+  XL: 515
+catalog_ids:
+  sweatshirts: 267  # https://www.vinted.es/catalog/267-hoodies-and-sweaters
+  sweatshirts_parent: 79  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
+  zip_sweatshirts: 1812  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
+status_ids:
+  very_good: 50  # https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo
+color_ids: {}
