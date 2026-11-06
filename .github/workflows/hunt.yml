@@ -1,0 +1,83 @@
+name: Scheduled refresh
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+concurrency:
+  group: hunt
+  cancel-in-progress: false
+permissions: {}
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    outputs:
+      ready: ${{ steps.render.outcome == 'success' && steps.artifact.outcome == 'success' }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e
+        with:
+          version: '0.13.5'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install environment
+        run: uv sync --locked --python 3.12
+      - name: Restore encrypted state
+        id: restore
+        env:
+          BOARD_KEY: ${{ secrets.BOARD_KEY }}
+        run: uv run --no-sync python -m vinted_hunter.cloud restore
+      - name: Refresh catalog
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
+          BOARD_URL: ${{ vars.BOARD_URL }}
+        run: uv run --no-sync vh run
+      - name: Save encrypted state
+        id: save
+        if: always() && steps.restore.outcome == 'success'
+        env:
+          BOARD_KEY: ${{ secrets.BOARD_KEY }}
+          CATALOG_SYNC_TOKEN: ${{ github.token }}
+        run: uv run --no-sync python -m vinted_hunter.cloud save
+      - name: Seal public panel
+        id: render
+        if: always() && steps.save.outcome == 'success'
+        env:
+          BOARD_KEY: ${{ secrets.BOARD_KEY }}
+        run: uv run --no-sync python -m vinted_hunter.cloud render
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
+        id: artifact
+        if: always() && steps.render.outcome == 'success'
+        with:
+          path: out/pages
+  deploy:
+    if: always() && needs.refresh.outputs.ready == 'true'
+    needs: refresh
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    steps:
+      - name: Verify Pages configuration
+        id: page
+        env:
+          CATALOG_SYNC_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            -H "Authorization: Bearer $CATALOG_SYNC_TOKEN" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")"
+          echo "Pages HTTP $status"
+          if [ "$status" = 200 ]; then echo "enabled=true" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+        if: steps.page.outputs.enabled == 'true'
+        id: publish

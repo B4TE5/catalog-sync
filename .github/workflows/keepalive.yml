@@ -1,0 +1,24 @@
+name: Monthly heartbeat
+on:
+  schedule:
+    - cron: '43 4 1 * *'
+permissions:
+  contents: write
+jobs:
+  heartbeat:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e
+        with:
+          version: '0.13.5'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --locked --python 3.12
+      - name: Record default-branch activity
+        env:
+          CATALOG_SYNC_TOKEN: ${{ github.token }}
+        run: uv run --no-sync python -m vinted_hunter.cloud keepalive

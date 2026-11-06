@@ -1,6 +1,6 @@
-# Vinted Hunter
+# Catalog Sync
 
-Radar local de sudaderas en Vinted España. Busca por filtros públicos y por texto,
+Radar local de sudaderas en un catálogo público. Busca por filtros públicos y por texto,
 recuerda lo ya visto y analiza los candidatos por precio, talla, estado, vendedor,
 texto y fotos. Cada resultado conserva su rastro de decisión en SQLite.
 
@@ -28,7 +28,7 @@ En Linux, la variable equivalente es `export UV_CACHE_DIR="$PWD/.uv-cache"`.
 | `uv run vh board` | Genera `out/board/index.html`. Ábrelo con doble clic. |
 | `uv run vh serve` | Sirve el tablero local en [localhost:8787](http://localhost:8787). Puedes ejecutar `watch` en otra terminal. |
 | `uv run vh stats` | Muestra precios y el embudo por perfil, con el inventario y la cohorte del último backfill. |
-| `uv run vh vision-check --profile stone-island --limit 30` | Mide QR, pHash y ORB en los anuncios recientes de la marca y categoría, con cualquier talla y precio. Guarda los tiempos por anuncio en `out/vision-check-stone-island.json`. |
+| `uv run vh vision-check --profile PERFIL --limit 30` | Mide QR, pHash y ORB en los anuncios recientes de la marca y categoría, con cualquier talla y precio. Guarda los tiempos por anuncio en `out/vision-check-PERFIL.json`. |
 | `uv run vh explain 123` | Muestra los gates y señales de un anuncio guardado. |
 | `uv run vh label 123 fake` | Etiqueta un anuncio e incorpora a la lista negra las huellas de sus fotos guardadas. También admite `good` y `meh`. |
 | `uv run vh doctor` | Comprueba la salud persistida, la sesión pública, el parser y los filtros. |
@@ -53,7 +53,7 @@ observadas y las bajadas de precio alimentan el contador de nuevos.
   resultados reales. Los perfiles sin un ID verificado siguen buscándose por texto.
   Los gates de talla, capucha, color y estado esperan a la ficha. Un atributo ausente queda como no confirmado.
 - Usa `config/scoring.yaml` para ajustar palabras, pesos, umbrales, presupuesto y
-  estimaciones. El total usa la protección publicada por Vinted cuando existe y suma
+  estimaciones. El total usa la protección publicada por el catálogo cuando existe y suma
   el envío estimado configurado. En su defecto se estima la protección con la fórmula
   del YAML. Revisa el impacto de los cambios con `stats`, `explain` y las etiquetas.
 - Añade referencias locales de etiquetas, parches y fotos de catálogo según
@@ -81,3 +81,23 @@ en vivo consumen parte del presupuesto de peticiones, así que ejecútalas fuera
 de un ciclo de `watch`. Consulta [TEST_REPORT.md](TEST_REPORT.md),
 [BLOCKERS.md](BLOCKERS.md) y [SESSION_REPORT.md](SESSION_REPORT.md) para ver
 la validación y los límites observados en esta sesión.
+
+
+## Captura programada y avisos
+
+El flujo programado y el manual restauran la instantánea cifrada de SQLite de
+la rama de estado. Después de capturar, sustituyen su única revisión. El
+artefacto del panel usa AES-GCM y WebCrypto. Una vez habilitado Pages, el comando
+local `uv run vh board-url` prepara un enlace privado para abrir en el navegador.
+La pantalla pública tiene metadatos genéricos y requiere la clave en el fragmento.
+
+En local, `uv run vh watch` usa los topics configurados en `.env`. En Actions,
+los mismos nombres se leen desde los secretos del repositorio. El modo sombra
+envía únicamente transiciones de salud. Para activar avisos de anuncios en una
+configuración futura, cambia `shadow_mode` a `false`. El comando `vh notify-test`
+envía un ejemplo a cada topic. El botón Tablero se añade cuando `BOARD_URL`
+apunta a un tablero HTTPS accesible.
+
+Los botones Fake, Buena y No me interesa abren una solicitud prellenada en
+GitHub. El flujo de feedback acepta solicitudes válidas del dueño del repositorio
+y comparte la exclusión mutua con la captura. En local se puede usar `vh label`.

@@ -297,3 +297,11 @@ Palm Angels de 28 € (10685333948) tenía 95 puntos. De nueve fotos cacheadas, 
 ## 2026-11-06 · F2.0, rendimiento y cola
 
 La pasada normal usó 25 peticiones y tardó 117.31 s. Vio 884 anuncios y puntuó 1. Tiempos por candidato en segundos [16.38, 17.39]. Se conserva el presupuesto de peticiones. Las fotos del CDN se descargan con cuatro hilos y un reintento acotado. Las páginas mantienen la pausa. Los primeros avistamientos y las bajadas de esta pasada preceden al backlog. Dentro de ese grupo se usa fecha disponible y precio relativo al tope, con prioridad a piezas que alcanzan el suelo de precio.
+
+## 2026-11-06 · F2.1 y F2.2, puerta y estado
+
+- Sonda 1 · 2026-11-06T19:28:09.969974+00:00 · run 42279884459 · HTTP 200 · 96 anuncios.
+- Sonda 2 · 2026-11-06T19:33:11.983949+00:00 · run 42280627200 · HTTP 200 · 96 anuncios.
+- Sonda 3 · 2026-11-06T19:38:13.979834+00:00 · run 42281374832 · HTTP 200 · 96 anuncios.
+
+Las tres sondas superaron el mínimo con 302 s entre despachos. GitHub aceptó los tres secretos cifrados y devolvió 403 al crear Pages. El flujo puede guardar estado y producir un artefacto cifrado aunque falte el sitio. La rama pública contiene un solo commit huérfano con state.enc. Se cifra la copia SQLite comprimida para respetar la regla de no versionar la base legible. GitHub documenta la suspensión tras 60 días sin actividad y no aclara que la rama de estado baste, así que se añadió un latido mensual en la rama por defecto. [Eventos programados](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)

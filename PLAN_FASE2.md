@@ -13,9 +13,9 @@ Credenciales disponibles en `.env` (gitignored, NUNCA commitear ni imprimir en l
 **Hecho cuando:** test de prioridad en verde y medición documentada.
 
 ## F2.1 — Viabilidad de GitHub Actions (puerta de todo lo demás)
-- [ ] Subir el repo local a `GITHUB_REPO` (ya creado, público y vacío) usando GH_TOKEN como variable de entorno; nunca dentro de la URL del remote ni en .git/config. Verificar antes que .gitignore excluye data/, out/, .env, scratch/.venv, cachés.
-- [ ] Workflow `probe.yml` (workflow_dispatch): instala con uv, ejecuta `vh doctor` y una búsqueda real; imprime HTTP status y nº de anuncios parseados. Lanzarlo 3 veces separadas ≥ 5 min y leer resultados vía API.
-- [ ] Si alguna da 403/429 sistemático o 0 anuncios → `[!]`, documentar en BLOCKERS.md con evidencia, y saltar a F2.3 implementando ntfy para el modo local (`vh watch` en el PC). No insistir con trucos de evasión.
+- [x] Subir el repo local a `GITHUB_REPO` (ya creado, público y vacío) usando GH_TOKEN como variable de entorno; nunca dentro de la URL del remote ni en .git/config. Verificar antes que .gitignore excluye data/, out/, .env, scratch/.venv, cachés.
+- [x] Workflow `probe.yml` (workflow_dispatch): instala con uv, ejecuta `vh doctor` y una búsqueda real; imprime HTTP status y nº de anuncios parseados. Lanzarlo 3 veces separadas ≥ 5 min y leer resultados vía API.
+- [x] Si alguna da 403/429 sistemático o 0 anuncios → `[!]`, documentar en BLOCKERS.md con evidencia, y saltar a F2.3 implementando ntfy para el modo local (`vh watch` en el PC). No insistir con trucos de evasión.
 **Hecho cuando:** 3/3 ejecuciones en Actions devuelven 200 y ≥ 10 anuncios.
 
 ## F2.2 — Ejecución programada y estado

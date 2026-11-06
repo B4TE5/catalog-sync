@@ -189,3 +189,17 @@
 - Comandos clave: Ruff → 0. Pytest → 61 pasados, incluidas las pruebas HTTP simuladas.
 - Evidencia: tests/test_ntfy.py y vinted_hunter/notify/ntfy.py.
 - Problemas y cómo se resolvieron: la deduplicación reclama la transición en SQLite antes del envío. Así se evita repetir avisos ante un resultado de transporte incierto.
+
+## 2026-11-06 20:44 — F2.1 · Puerta de Actions
+- Objetivo: verificar acceso desde el runner sin publicar credenciales.
+- Hecho: destino público exacto confirmado, historial auditado y tres sondas con 302 s entre despachos.
+- Comandos clave: Git push → 0. Dispatch → HTTP 200 tres veces. Runners → 3/3 con HTTP 200 y 96 anuncios.
+- Evidencia: runs 42279884459, 42280627200 y 42281374832. Logs descargados por API y contrastados sin coincidencias de secretos.
+- Problemas y cómo se resolvieron: el destino local incluía sufijo .git. Se normalizó el formato sin mostrar el valor. La API de administración devolvió 403 y el GET de Pages 404.
+
+## 2026-11-06 20:44 — F2.2 y F2.4 · Estado, panel y feedback
+- Objetivo: programar capturas, conservar estado cifrado y admitir etiquetas del dueño.
+- Hecho: flujos con SHAs, permisos acotados, instantánea gzip cifrada y force-with-lease, y artefacto de Pages con descifrado WebCrypto. Se añadió latido mensual y validación estricta de feedback.
+- Comandos clave: API GitHub secretos → 201 para los tres. Crear Pages → HTTP 403. Ruff → 0. Pytest → 69 pasados. Render local cifrado → 0.
+- Evidencia: .github/workflows, tests/test_cloud.py y out/pages/index.html.
+- Problemas y cómo se resolvieron: se omitirá el deploy si Pages carece de sitio configurado. El estado y los artefactos de prueba pueden seguir ejecutándose.
