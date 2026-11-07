@@ -213,7 +213,10 @@ class Pipeline:
             "gate_rejected": rejection,
             "evidence": evidence.model_dump(mode="json"),
             "text": {
-                key: matches(f"{listing.title} {listing.description or ''}", keywords)
+                key: matches(
+                    f"{listing.title} {listing.description or ''}", keywords,
+                    accent_sensitive=key == "knitwear_exact",
+                )
                 for key, keywords in self.config.scoring.words.items()
                 if key != profile.color
             },

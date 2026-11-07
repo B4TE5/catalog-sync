@@ -31,8 +31,11 @@ def garment_reason(
         return "not_sweatshirt"
     if (
         listing.category_id == config.ids.catalog_ids.get("knitted")
-        or matches(text, words.get("knitwear", []))
-        or matches(listing.material or "", words.get("knitwear", []))
+        or any(
+            matches(value, words.get("knitwear", []))
+            or matches(value, words.get("knitwear_exact", []), accent_sensitive=True)
+            for value in (text, listing.material or "")
+        )
     ):
         return "knitwear"
     categories = sweatshirt_categories(config, profile)

@@ -1,5 +1,5 @@
 shadow_mode: true
-revision: correction-2.1
+revision: correction-2.2
 capture:
   catalog_limit: 12
   enrich_limit: 12
@@ -26,7 +26,8 @@ words:
   grey: ["gris", "grey", "gray", "grigio", "grau", "grijs", "grijze", "cinza", "cinzento"]
   sweatshirt_explicit: ["sudadera", "sweatshirt", "sweat", "hoodie", "hoody", "crewneck", "crew neck", "felpa", "katoenen trui", "cotton sweater", "sweater de algodón", "moletom", "sweatshirt de algodão", "camisola de algodão"]
   cotton: ["algodón", "cotton", "coton", "cotone", "baumwolle", "katoen", "algodão"]
-  knitwear: ["punto", "de punto", "knit", "knitted", "wool", "lana", "laine", "maglia", "maglione", "strick", "wolle", "gebreid", "wol", "cárdigan", "cardigan", "cuello vuelto", "cuello alto", "turtleneck", "col roulé", "malha", "lã", "tricot", "gola alta"]
+  knitwear: ["punto", "de punto", "knit", "knitted", "wool", "lana", "laine", "maglia", "maglione", "strick", "wolle", "gebreid", "wol", "cárdigan", "cardigan", "cuello vuelto", "cuello alto", "turtleneck", "col roulé", "malha", "tricot", "gola alta"]
+  knitwear_exact: ["lã"] # La tilde distingue lana del artículo ES/FR/IT «la».
   authenticity_mentioned: ["QR", "QR-code", "Certilogo", "código de autenticidad", "authenticity code", "code d’authenticité", "codice di autenticità", "authentizitätscode", "authenticiteitscontrole", "authenticiteitscode", "código de autenticidade"]
 weights:
   base: 40

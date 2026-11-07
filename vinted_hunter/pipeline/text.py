@@ -1,6 +1,7 @@
 """Detección multilingüe mediante palabras y frases completas."""
 
 import re
+import unicodedata
 from collections.abc import Iterable
 
 from unidecode import unidecode
@@ -10,12 +11,17 @@ def normalize(text: str) -> str:
     return " ".join(unidecode(text).lower().replace("’", "'").split())
 
 
-def matches(text: str, words: Iterable[str]) -> list[str]:
-    normalized = normalize(text)
+def matches(text: str, words: Iterable[str], *, accent_sensitive: bool = False) -> list[str]:
+    def comparable(value: str) -> str:
+        if accent_sensitive:
+            return " ".join(unicodedata.normalize("NFC", value).casefold().split())
+        return normalize(value)
+
+    normalized = comparable(text)
     return [
         word
         for word in words
-        if re.search(r"(?<!\w)" + re.escape(normalize(word)) + r"(?!\w)", normalized)
+        if re.search(r"(?<!\w)" + re.escape(comparable(word)) + r"(?!\w)", normalized)
     ]
 
 

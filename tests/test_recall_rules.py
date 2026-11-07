@@ -43,6 +43,9 @@ def test_all_queries_use_verified_parent_category() -> None:
         ({"description": "Camisola de malha, lã"}, "knitwear"),
         ({"description": "Sweatshirt de algodão com código de autenticidade"}, None),
         ({"description": "Crewneck van katoen, QR-code"}, None),
+        ({"description": "La vendo porque no la uso"}, None),
+        ({"description": "Camisola de LÃ"}, "knitwear"),
+        ({"material": "Lã", "description": "Camisola"}, "knitwear"),
     ],
 )
 def test_jumper_category_requires_sweatshirt_evidence(update: dict, expected: str | None) -> None:
@@ -65,6 +68,8 @@ def test_nl_and_pt_signals_have_word_boundaries() -> None:
     assert matches("kassabon en factuur", words["proof"])
     assert matches("recibo e fatura", words["proof"])
     assert not matches("equatorial", words["authenticity_mentioned"])
+    assert matches("de la tienda", words["knitwear_exact"], accent_sensitive=True) == []
+    assert matches("La\u0303 merino", words["knitwear_exact"], accent_sensitive=True) == ["lã"]
 
 
 def test_priority_prefers_fresh_then_stone_then_relative_price() -> None:

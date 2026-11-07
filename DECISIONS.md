@@ -357,3 +357,7 @@ La foto de la etiqueta sobre tela causaba una penalización de catálogo. Se mid
 La revisión visual de Rhude 10653233816 mostró una sudadera sobre una manta. El criterio de textura la acepta y se añadió como segundo caso de recall. La captura de tienda de Palm Angels 10685333948 sirve como caso real de precisión y como regresión independiente de detección visual. No se inventa un anuncio adicional para duplicar esa evidencia.
 
 La revisión automática rechazó deshabilitar el workflow y cancelar el coordinador por el cambio de disponibilidad. Esa operación no se ejecutó. La limpieza se hará en pasadas acotadas del workflow, con el bloqueo existente, guardado y Pages, mientras el coordinador sigue activo.
+
+## 2026-11-07 20:46 · C2, portugués y recuperación de falsos negativos
+
+La auditoría del estado real detectó 65 descartes knitwear cuya única palabra coincidente era «lã». La normalización sin tildes la convertía en «la», presente en descripciones españolas, francesas e italianas. Se mueve a knitwear_exact y se compara en Unicode NFC conservando la tilde. Se descartó eliminar el término portugués: el material Lã sigue siendo evidencia válida de lana. La revisión correction-2.2 reevaluará también los descartes antiguos antes de medir las tres iteraciones finales.

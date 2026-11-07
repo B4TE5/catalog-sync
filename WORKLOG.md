@@ -329,3 +329,10 @@
 - Comandos clave: doctor real → salida 0, HTTP 200, 96 anuncios parseados y filtros L/XL válidos. Ruff → 0. Pruebas focalizadas de CLI y reglas → 12 pasadas en 1,41 s.
 - Evidencia: diagnostics.py, board/template.html y tests/fixtures/README.md.
 - Problemas y cómo se resolvieron: un latido de limpieza mostraba cero vistos aunque estuviera procesando fichas. Ahora muestra fichas enriquecidas y pendientes. La explicación histórica del anuncio distingue el hecho de haberlo visto de la inferencia sobre su consulta de origen.
+
+## 2026-11-07 20:46 — C2.2 · Colisión de «lã» con el artículo «la»
+- Objetivo: evitar falsos descartes al incorporar portugués sin perder la detección de lana.
+- Hecho: auditoría real de 185 descartes knitwear detectó 65 con «lã» como única coincidencia tras quitar tildes. Se separa knitwear_exact, con comparación Unicode NFC que conserva la tilde. La revisión correction-2.2 reevaluará el estado automáticamente. El rastro usa la misma comparación.
+- Comandos clave: Ruff → 0. Pytest → 106 pasadas, 4 excluidas, en 8,40 s; casos «la vendo», «LÃ», material Lã y tilde descompuesta aprobados.
+- Evidencia: pipeline/text.py, gates.py, run.py, scoring.yaml y tests/test_recall_rules.py; auditoría sobre la instantánea real data/loop-proof.sqlite.
+- Problemas y cómo se resolvieron: la transliteración general confundía una palabra portuguesa con un artículo de otros idiomas. Las demás listas conservan la búsqueda sin tildes. Un comando de inspección anterior intentó llamar a close en SQLiteStore; la consulta se había completado y se corrigió usando su conexión/context manager. No cambió datos.
