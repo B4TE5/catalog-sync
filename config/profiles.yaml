@@ -22,6 +22,8 @@ profiles:
     price_floor: 30
     price_max: 60
     certilogo: true          # usa la detección QR Certilogo como señal fuerte
+    priority: 0
+    seller_min_rating: 4.0   # recall verificado con 10690539539; la nota permanece visible
     text_queries:
       - { q: "stone island", priority: high }
       - { q: "stoneisland", priority: high }
@@ -69,7 +71,7 @@ profiles:
     brand_rules: []
 
   - id: supreme
-    enabled: true
+    enabled: false
     brand: Supreme
     size: L
     hood: with
@@ -95,7 +97,7 @@ profiles:
     brand_rules: []
 
   - id: palm-angels
-    enabled: true
+    enabled: false
     brand: Palm Angels
     size: L
     hood: with

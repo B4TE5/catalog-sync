@@ -341,3 +341,11 @@ Coordinador de validación 42391701686, límite de 35 minutos. Se completaron 3 
 | 3 | 42393322260 | 2026-11-07 17:50:39 | 949 | 47 | 43 | 4 |
 
 El relevo solicitó el run 42393577665 mediante `gh workflow run hunt.yml` con `github.token`. El despertar duplicado 42391821189 terminó en verde con loop, refresh y deploy omitidos. La consulta de logs del job aún activo redirigió a un blob HTTP 404. La evidencia completa se descargó una vez terminado el coordinador.
+
+## 2026-11-07 19:07 · C2, causas del anuncio perdido y umbral de vendedor
+
+La ficha pública 10690539539 confirmó categoría 1811 (Jerséis), Algodón, talla XL, gris y 60 EUR. El texto neerlandés dice crewneck y QR-code. La base local y la instantánea remota conservaron el anuncio como pendiente, sin vendedor ni ficha enriquecida. La captura sí lo encontró mediante las búsquedas de texto amplias. El estado no guarda la query concreta para cada ID, por lo que esa atribución individual queda sin acreditar. El rastro demuestra que no había fallado ningún gate. La categoría anterior de Sudaderas 267 habría excluido el anuncio de las búsquedas filtradas por marca.
+
+El API real del vendedor devolvió feedback_count=7 y feedback_reputation=0,8, equivalente a 4,0/5, con cinco valoraciones positivas y dos negativas. El mínimo del perfil Stone Island se reduce de 4,5 a 4,0 para cumplir el recall prioritario. Se descarta una excepción por ID y se conserva el número y la nota reales en el rastro. Los demás perfiles conservan su mínimo.
+
+La foto de la etiqueta sobre tela causaba una penalización de catálogo. Se mide textura solo dentro del fondo, erosionando su borde. En esa foto la media absoluta del Laplaciano es 4,91 frente a 0,29 en la captura de tienda Palm Angels de 28 EUR. El límite configurable 2,0 separa estos casos. La prueba real de recall usa las cinco fotos descargadas.

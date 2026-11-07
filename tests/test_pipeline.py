@@ -46,7 +46,7 @@ def candidate() -> Listing:
         ({"description": "une contrefaçon"}, None, None, "replica"),
         ({"color": "Blanco"}, None, None, "color"),
         ({}, Seller(id=1, feedback_count=2), None, "seller_feedback"),
-        ({}, Seller(id=1, rating=4.4), None, "seller_rating"),
+        ({}, Seller(id=1, rating=3.9), None, "seller_rating"),
         ({}, None, Evidence(qr="qr_foreign_domain"), "fake_certilogo_domain"),
         ({}, None, Evidence(shared_photo=True), "shared_photo"),
         ({}, None, Evidence(blacklisted_photo=True), "blacklisted_photo"),
@@ -79,7 +79,9 @@ def test_hood_and_brand_specific_rules(config: Config, candidate: Listing) -> No
     assert "hood_unconfirmed" in gate(candidate, stone, config)[1]
     no_hood = candidate.model_copy(update={"title": "Sans capuche"})
     assert "hood_unconfirmed" not in gate(no_hood, stone, config)[1]
-    supreme = next(p for p in config.profiles if p.id == "supreme")
+    supreme = next(
+        p for p in load_config(ROOT, include_disabled=True).profiles if p.id == "supreme"
+    )
     box = candidate.model_copy(update={"size": "L", "title": "Box Logo Hoodie"})
     assert gate(box, supreme, config)[0] == supreme.brand_rules[0].reason
     assert (
@@ -273,7 +275,10 @@ def test_motivated_seller_across_languages(config: Config, phrase: str) -> None:
 
 
 def test_tag_condition_rule_waits_for_detail(config: Config, candidate: Listing) -> None:
-    palm = next(profile for profile in config.profiles if profile.id == "palm-angels")
+    palm = next(
+        profile for profile in load_config(ROOT, include_disabled=True).profiles
+        if profile.id == "palm-angels"
+    )
     listing = candidate.model_copy(
         update={
             "title": "Felpa con cappuccio",

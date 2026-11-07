@@ -259,3 +259,10 @@
 - Comandos clave: Snapshot → 3 verdes con restauración, guardado y deploy-pages. Intervalos → 498.57 s, 646.96 s. Ruff → 0. Pytest → 82 pasadas en 4,78 s. Pytest live → 4 pasadas en 40,75 s.
 - Evidencia: runs de la tabla de DECISIONS.md, logs del coordinador, referencias de state, HTML de Pages y `scratch/loop-proof.json`.
 - Problemas y cómo se resolvieron: el blob de logs del coordinador activo respondió HTTP 404, por lo que se descargó tras su cierre. La autoprueba quedó en 6/8, 7/8 y 7/8 al descartar sus muestras antes de score. Se documenta esa verificación pendiente.
+
+## 2026-11-07 19:07 — C2.1 · Perfiles y auditoría inicial
+- Objetivo: aplicar la selección de marcas y explicar el anuncio perdido con datos reales.
+- Hecho: Palm Angels y Supreme desactivadas, Palace desactivada. Capturada la ficha 10690539539, vendedor, armario y cinco fotos. Copia del estado remoto conservada en data/correction2-cloud-before.sqlite.
+- Comandos clave: ficha, vendedor y catálogo padre → HTTP 200. Base remota → 823 pendientes y anuncio objetivo pendiente sin enriquecer. Ruff → 0. Pytest → 82 pasadas.
+- Evidencia: tests/recall/10690539539, tests/fixtures/catalog-parent.html.gz y consultas de SQLite.
+- Problemas y cómo se resolvieron: la ficha confirma Jerséis 1811 y Algodón. El vendedor tiene siete valoraciones y nota 4,0. Se ajusta el mínimo de Stone Island a 4,0 para el recall solicitado y se mantiene la nota visible.

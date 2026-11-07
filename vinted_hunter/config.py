@@ -24,6 +24,7 @@ class BrandRule(BaseModel):
 class Profile(BaseModel):
     id: str
     enabled: bool
+    priority: int = 10
     brand: str
     size: str
     hood: Literal["with", "without"]
@@ -59,7 +60,9 @@ class IDs(BaseModel):
 
 class Capture(BaseModel):
     catalog_limit: int = Field(12, ge=1, le=12)
-    enrich_limit: int = Field(12, ge=1, le=12)
+    enrich_limit: int = Field(12, ge=1, le=120)
+    cloud_enrich_limit: int = Field(72, ge=1, le=120)
+    max_pass_seconds: float = Field(270, gt=0, le=300)
     wait: tuple[float, float] = (3, 8)
     max_photos: int = Field(12, ge=1, le=12)
     cdn_workers: int = Field(4, ge=1, le=4)
@@ -97,7 +100,7 @@ def read_yaml(path: Path) -> dict:
         return yaml.safe_load(source) or {}
 
 
-def load_config(root: Path) -> Config:
+def load_config(root: Path, *, include_disabled: bool = False) -> Config:
     folder = root / "config"
     profiles = read_yaml(folder / "profiles.yaml")
     ids = folder / "vinted_ids.yaml"
@@ -106,7 +109,7 @@ def load_config(root: Path) -> Config:
         profiles=[
             Profile.model_validate({**profiles["defaults"], **p})
             for p in profiles["profiles"]
-            if p["enabled"]
+            if p["enabled"] or include_disabled
         ],
         ids=IDs.model_validate(read_yaml(ids) if ids.exists() else {}),
         scoring=Scoring.model_validate(read_yaml(scoring) if scoring.exists() else {}),
