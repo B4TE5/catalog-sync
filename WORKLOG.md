@@ -336,3 +336,10 @@
 - Comandos clave: Ruff → 0. Pytest → 106 pasadas, 4 excluidas, en 8,40 s; casos «la vendo», «LÃ», material Lã y tilde descompuesta aprobados.
 - Evidencia: pipeline/text.py, gates.py, run.py, scoring.yaml y tests/test_recall_rules.py; auditoría sobre la instantánea real data/loop-proof.sqlite.
 - Problemas y cómo se resolvieron: la transliteración general confundía una palabra portuguesa con un artículo de otros idiomas. Las demás listas conservan la búsqueda sin tildes. Un comando de inspección anterior intentó llamar a close en SQLiteStore; la consulta se había completado y se corrigió usando su conexión/context manager. No cambió datos.
+
+## 2026-11-07 20:51 — C2.7 · Pruebas reales con las reglas finales
+- Objetivo: repetir los tres niveles y el diagnóstico después de corregir la colisión de tildes.
+- Hecho: suite offline completa, suite live, selftest y doctor aprobados con correction-2.2; BLOCKERS y TEST_REPORT reflejan la resolución de la autoprueba.
+- Comandos clave: Ruff → 0; pytest → 106 pasadas y 4 excluidas en 8,40 s; live → 4 pasadas y 106 excluidas en 39,86 s; selftest → salida 0, 8/8, 75,0 s y 13 peticiones; doctor → salida 0, HTTP 200 y filtros L/XL válidos.
+- Evidencia: data/correction2-release-checks.log y TEST_REPORT.md. La autoprueba usó catálogo y tres fichas en vivo; al descartarse las tres, verificó visión/score con el caso real de recall 10653233816 (good 70), indicando el fallback.
+- Problemas y cómo se resolvieron: la muestra de tres anuncios no garantiza uno puntuable. Se conserva la comprobación real del descarte y se usa el caso capturado permitido, sin sustituir la fase live.

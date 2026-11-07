@@ -67,3 +67,12 @@ Salida 0.
 - Regresiones · carreras de inicio y relevo, continuación tras un fallo, duración de 340 minutos, despacho de respuesta incierta, reintento de lectura y cancelación de una pasada agotada. Las pruebas de ntfy mantienen las transiciones de incidencia y recuperación.
 - Actions · coordinador 42391701686 y 3 Snapshots en verde, con estado y Pages actualizados en cada uno. Intervalos de 498.57 s, 646.96 s. Sucesor 42393577665 creado por Actions y despertar duplicado 42391821189 omitido. Logs auditados sin coincidencias de los secretos locales.
 - `vh selftest` · salidas 1 con 6/8 en 75,0 s y 15 peticiones, 7/8 en 91,9 s y 17 peticiones, y 7/8 en 99,8 s y 17 peticiones. Tres fichas por muestra, descartadas antes de score. Se conserva la verificación pendiente en BLOCKERS.md.
+
+## CORRECCION_2 · Revisión correction-2.2 · 2026-11-07
+
+- `uv run --offline ruff check` · salida 0.
+- `uv run --offline pytest -q` · salida 0, **106 aprobadas**, 4 excluidas, **8,40 s**. Incluye recall, precisión, prioridad, recuperación de backlog, filtros padre 79, NL/PT, material y conservación de la tilde portuguesa.
+- `uv run --offline pytest -q -m live` · salida 0, **4 aprobadas**, 106 excluidas, **39,86 s**. Catálogo, fichas, vendedor/armario y tallas reales.
+- `uv run --offline vh selftest` · salida 0, **8/8**, **75,0 s**, 13 peticiones, 480 vistos y tres fichas enriquecidas. Las tres se descartaron antes de score; visión y score se verificaron con el caso real capturado 10653233816, **good 70**, identificado expresamente en la salida. Tablero temporal generado. Las primeras verificaciones de la corrección alcanzaron también 8/8 con score en vivo.
+- `uv run --offline vh doctor` · salida 0. Home/cookies HTTP 200, 96 anuncios parseados, marcas activas combinadas válidas, L y XL con 96 Stone Island de la talla solicitada, salud healthy.
+- Salida local de estos comandos conservada en `data/correction2-release-checks.log`, sin credenciales. La observación final de Actions y la consulta SQL se incorporan a continuación al completarse.

@@ -26,6 +26,6 @@ Se consultó la API de runs con `event=schedule` entre aproximadamente las 20:47
 
 La petición del 7 de noviembre sustituye la cadencia del cron por un bucle y relevo. Se verificaron 3 iteraciones completas del coordinador 42391701686, con intervalos de 498.57 s, 646.96 s, guardado cifrado y Pages en cada una. El sucesor 42393577665 se inició con la identidad automática de Actions. El despertar duplicado 42391821189 omitió la captura y el bucle. El criterio anterior de tres eventos schedule queda sustituido por esta verificación del bucle.
 
-## [!] Verificación pendiente · Autoprueba con tres candidatos
+## Resuelto · Autoprueba con tres candidatos
 
-Las tres autopruebas reales terminaron en 6/8, 7/8 y 7/8 etapas. Las tres fichas de cada muestra se descartaron antes de score. Se confirmaron descartes por seller_feedback, seller_rating y catalog_photos_only. Las dos últimas ejecutaron visión sobre una ficha. La suite live aprobó cuatro casos y las pasadas de Actions completaron captura, guardado y Pages. Hace falta una muestra pública que supere los gates dentro del límite de tres fichas para acreditar también score en selftest.
+Las tres autopruebas anteriores terminaron en 6/8, 7/8 y 7/8 porque las fichas se descartaban antes de score. CORRECCION_2 añade el fallback permitido a un caso real de recall, identificado en la salida y guardado en el tablero temporal. La verificación final de correction-2.2 completó 8/8 en 75,0 s: catálogo en vivo, tres fichas reales y visión/score del caso capturado 10653233816, good con 70 puntos. Las ejecuciones previas de esta corrección también alcanzaron 8/8 con un score de la muestra en vivo. La suite live final aprobó cuatro casos y doctor terminó en verde.
