@@ -294,3 +294,10 @@
 - Comandos clave: Ruff → 0. Pruebas focalizadas de CLI, recall y precisión → 20 pasadas en 4,04 s.
 - Evidencia: cli.py y replay.py.
 - Problemas y cómo se resolvieron: la primera salida conservaba claves internas en inglés. Se tradujeron manteniendo los códigos en el rastro persistido.
+
+## 2026-11-07 19:45 — C2.3/C2.7 · Primer checkpoint real y contadores
+- Objetivo: medir pendientes y descartes de cada pasada desde el estado publicado.
+- Hecho: limpieza 42401964117 en verde, Pages actualizado, 319 pendientes y 0 incompatibles conocidos. Se añade el total y el desglose de pendientes por perfil a cada run_log y el total a consola. QA del tablero público aprobada.
+- Comandos clave: limpieza → 226,47 s, 34 fichas enriquecidas y 36 peticiones de enriquecimiento. Ruff → 0. Pytest → 101 pasadas en 7,70 s.
+- Evidencia: scratch/correction2-actions.json y el checkpoint cifrado correspondiente. Descartes de la limpieza, 10 por talla, 16 por prenda, 5 por punto, 2 por ficha no disponible, 1 por capucha y 2 por color.
+- Problemas y cómo se resolvieron: los contadores históricos de pendientes no estaban en run_log. Se guardan ahora al cerrar la pasada para poder cotejar las tres iteraciones sin inferir estados intermedios.

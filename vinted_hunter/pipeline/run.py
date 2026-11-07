@@ -561,7 +561,8 @@ class Pipeline:
     ) -> dict[str, Any]:
         capture = self.config.scoring.capture
         self.run.update(
-            pages=pages, backfill=backfill, selftest=selftest, pending_only=pending_only
+            pages=pages, backfill=backfill, selftest=selftest, pending_only=pending_only,
+            rules_revision=self.config.scoring.revision,
         )
         self.emit("run_start", pages=pages, backfill=backfill, selftest=selftest)
         started = time.monotonic()
@@ -627,6 +628,12 @@ class Pipeline:
             if not self.run["errors"]:
                 self.store.set_setting("retry_at", "")
         self.run["rejected"] = dict(self.reasons)
+        rows = self.store.records()
+        self.run["pending"] = sum(row["tier"] is None for row in rows)
+        self.run["pending_by_profile"] = {
+            profile.id: sum(row["tier"] is None and row["profile"] == profile.id for row in rows)
+            for profile in self.config.profiles
+        }
         self.run["duration"] = round(time.monotonic() - started, 2)
         self.run["end"] = datetime.now(UTC).isoformat()
         for profile in self.config.profiles:

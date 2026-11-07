@@ -12,7 +12,8 @@ class ConsoleNotifier(Notifier):
         Console().print(
             f"{summary['requests']} peticiones · {summary['seen']} vistos · "
             f"{summary['new']} nuevos · {summary['candidates']} candidatos · "
-            f"{summary['scored']} puntuados · {summary['duration']:.1f} s",
+            f"{summary['scored']} puntuados · {summary['duration']:.1f} s · "
+            f"{summary.get('pending', 0)} pendientes",
         )
         for error in summary["errors"]:
             Console().print(f"[red]{error}[/red]", highlight=False)

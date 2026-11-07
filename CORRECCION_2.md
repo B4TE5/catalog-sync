@@ -18,7 +18,7 @@ Mismas reglas de AGENTS.md §0 (autónomo, sin preguntas, WORKLOG al día, commi
   - Las demás → descarte `not_sweatshirt`.
 - [x] Añade **neerlandés (NL)** y **portugués (PT)** a todas las listas de palabras (tipo de prenda, capucha, punto, réplica, vendedor motivado, desgaste, prueba de compra, QR/Certilogo). Ej. NL: trui, sweater, capuchon, hoodie, gebreid, wol, nieuw, cadeau, past niet, te groot, QR-code, echt, origineel.
 - [x] La mención de "QR", "Certilogo", "código de autenticidad" en la descripción (cualquier idioma) suma como señal propia (+10) aunque la visión no lea el QR.
-- [ ] Purga y re-evalúa la base: todo lo pendiente o aceptado que no sea sudadera según las reglas nuevas → descartado con su razón. Consulta SQL de comprobación antes/después en DECISIONS.md.
+- [x] Purga y re-evalúa la base: todo lo pendiente o aceptado que no sea sudadera según las reglas nuevas → descartado con su razón. Consulta SQL de comprobación antes/después en DECISIONS.md.
 
 ## C2.3 — Pendientes bajo control
 - [x] Prioridad de enriquecimiento: (1) nuevos de esta pasada, ordenados por perfil prioritario (stone-island primero) y precio relativo al tope; (2) backlog. Sube el presupuesto de enriquecimiento por pasada en la nube si el tiempo de pasada lo permite (objetivo < 5 min por pasada).
