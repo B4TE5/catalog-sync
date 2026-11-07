@@ -21,8 +21,8 @@ Mismas reglas de AGENTS.md §0 (autónomo, sin preguntas, WORKLOG al día, commi
 - [ ] Purga y re-evalúa la base: todo lo pendiente o aceptado que no sea sudadera según las reglas nuevas → descartado con su razón. Consulta SQL de comprobación antes/después en DECISIONS.md.
 
 ## C2.3 — Pendientes bajo control
-- [ ] Prioridad de enriquecimiento: (1) nuevos de esta pasada, ordenados por perfil prioritario (stone-island primero) y precio relativo al tope; (2) backlog. Sube el presupuesto de enriquecimiento por pasada en la nube si el tiempo de pasada lo permite (objetivo < 5 min por pasada).
-- [ ] En el tablero, "Todos" no muestra pendientes por defecto; tienen su pestaña.
+- [x] Prioridad de enriquecimiento: (1) nuevos de esta pasada, ordenados por perfil prioritario (stone-island primero) y precio relativo al tope; (2) backlog. Sube el presupuesto de enriquecimiento por pasada en la nube si el tiempo de pasada lo permite (objetivo < 5 min por pasada).
+- [x] En el tablero, "Todos" no muestra pendientes por defecto; tienen su pestaña.
 - [ ] Objetivo medible: tras 3 iteraciones del bucle con las reglas nuevas, pendientes < 100 y 0 no-sudaderas en pendientes (consulta SQL).
 
 ## C2.4 — `vh replay <url>` (diagnóstico de anuncios encontrados a mano)

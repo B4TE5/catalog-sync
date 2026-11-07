@@ -1,6 +1,7 @@
 """Eventos JSONL, rotación y ejecución de una pasada."""
 
 import json
+import os
 import time
 from collections import Counter
 from dataclasses import asdict
@@ -108,13 +109,14 @@ def enrichment_priority(
     profile: Profile,
     fresh: bool,
     now: datetime,
-) -> tuple[bool, bool, float, float]:
+) -> tuple[bool, int, bool, float, float]:
     age = listing.uploaded_at or listing.first_seen or now
     return (
         not fresh,
+        profile.priority,
         listing.price < profile.price_floor,
-        -age.timestamp(),
         float(listing.price / profile.price_max),
+        -age.timestamp(),
     )
 
 
@@ -127,6 +129,7 @@ class Pipeline:
         self.emit = EventLog(root / "data" / "logs")
         self.reasons: Counter[str] = Counter()
         self.fetched_details: set[int] = set()
+        self.deadline: float | None = None
         self.markets = {
             profile.id: market_for(store, profile, config) for profile in config.profiles
         }
@@ -383,6 +386,12 @@ class Pipeline:
             )
             raise
         except REMOTE_ERRORS as error:
+            if not enriched and isinstance(error, HttpFailure) and error.status == 404:
+                self.record(
+                    listing, profile, [], evidence, backfill,
+                    rejection="listing_unavailable",
+                )
+                return
             self.error(error, "enrich")
             self.record(
                 listing, profile, [], evidence, backfill, seller, pending=True, enriched=enriched
@@ -462,6 +471,16 @@ class Pipeline:
                 *primary[2:],
             )
 
+        profiles = {profile.id: profile for profile in self.config.profiles}
+        for row in self.store.records():
+            if row["tier"] is not None or row["id"] in found or row["profile"] not in profiles:
+                continue
+            listing = Listing.model_validate(row["body"])
+            profile = profiles[row["profile"]]
+            work.append((listing, profile, Evidence.model_validate(
+                row["trace"].get("evidence", {})
+            ), False, False))
+        self.run["candidates"] = len(work)
         work.sort(key=priority)
         ordered = work
         if candidate_cap is not None:
@@ -475,7 +494,9 @@ class Pipeline:
                     first_per_profile[profile_id] = job
             ordered = sorted([*first_per_profile.values(), *remaining], key=lambda job: not job[4])
         for listing, profile, evidence, is_new, _ in ordered[:candidate_cap]:
-            if not client.remaining("enrich"):
+            if not client.remaining("enrich") or (
+                self.deadline is not None and time.monotonic() >= self.deadline
+            ):
                 break
             self.emit("candidate", id=listing.id, profile=profile.id)
             started = time.monotonic()
@@ -501,7 +522,7 @@ class Pipeline:
     def revalidate(self) -> int:
         """Aplica los gates actuales a las tarjetas enriquecidas guardadas."""
         profiles = {profile.id: profile for profile in self.config.profiles}
-        rows = self.store.records(scored=True)
+        rows = [row for row in self.store.records() if row["tier"] != "rejected"]
         changed = 0
         for row in rows:
             profile = profiles.get(row["profile"])
@@ -511,7 +532,13 @@ class Pipeline:
             trace = row["trace"]
             seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
             evidence = Evidence.model_validate(trace.get("evidence", {}))
-            reason, passed = gate(listing, profile, self.config, seller, evidence, detailed=True)
+            enriched = trace.get("enriched", listing.category_id is not None)
+            reason, passed = gate(
+                listing, profile, self.config, seller,
+                evidence if evidence.hashes else None, detailed=enriched,
+            )
+            if not reason and listing.price < profile.price_floor and evidence.qr != "certilogo_ok":
+                reason = "too_cheap_for_brand"
             if needs_confirmed_detail(reason, profile) and not trace.get("enriched"):
                 continue
             if reason:
@@ -523,24 +550,38 @@ class Pipeline:
                     bool(row["backfill"]),
                     seller,
                     reason,
-                    enriched=True,
+                    enriched=enriched,
                 )
                 changed += 1
         self.store.flush()
         return changed
 
-    def execute(self, pages: int, backfill: bool, selftest: bool) -> dict[str, Any]:
+    def execute(
+        self, pages: int, backfill: bool, selftest: bool, pending_only: bool = False
+    ) -> dict[str, Any]:
         capture = self.config.scoring.capture
-        self.run.update(pages=pages, backfill=backfill, selftest=selftest)
+        self.run.update(
+            pages=pages, backfill=backfill, selftest=selftest, pending_only=pending_only
+        )
         self.emit("run_start", pages=pages, backfill=backfill, selftest=selftest)
         started = time.monotonic()
+        self.deadline = started + capture.max_pass_seconds - 45
+        if self.store.setting("rules_revision") != self.config.scoring.revision:
+            from vinted_hunter.pipeline.rescore import rescore
+
+            self.run["rescored"] = rescore(self.root, self.store)
+            self.store.set_setting("rules_revision", self.config.scoring.revision)
+            self.store.flush()
         base = (
             f"https://www.{self.config.profiles[0].domain}"
             if self.config.profiles
             else ("https://www.vinted.es")
         )
         with VintedClient(
-            base, capture.catalog_limit, capture.enrich_limit, capture.wait, self.emit
+            base, capture.catalog_limit,
+            capture.cloud_enrich_limit if os.environ.get("GITHUB_ACTIONS") == "true"
+            else capture.enrich_limit,
+            capture.wait, self.emit,
         ) as client:
             try:
                 retry_at = self.store.setting("retry_at")
@@ -552,7 +593,7 @@ class Pipeline:
                     client.home()
                     self.run["cookies"] = bool(client.session.cookies)
                     catalog_start = time.monotonic()
-                    found = self.catalog(client, pages, selftest)
+                    found = {} if pending_only else self.catalog(client, pages, selftest)
                     self.run["phases"]["catalog"] = round(time.monotonic() - catalog_start, 2)
                     pipeline_start = time.monotonic()
                     try:
@@ -603,7 +644,10 @@ def run_pass(
     backfill: bool = False,
     selftest: bool = False,
     database: str = "vh.sqlite",
+    pending_only: bool = False,
 ) -> dict[str, Any]:
     config = load_config(root)
     with SQLiteStore(root / "data" / database) as store:
-        return Pipeline(root, store, config, datetime.now(UTC)).execute(pages, backfill, selftest)
+        return Pipeline(root, store, config, datetime.now(UTC)).execute(
+            pages, backfill, selftest, pending_only
+        )

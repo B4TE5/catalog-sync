@@ -273,3 +273,10 @@
 - Comandos clave: replay de 10690539539 → salida 0, good, 65 puntos. Ruff → 0. Pytest → 99 pasadas. Purga local → 602 a 446 pendientes y 48 a 0 prendas incompatibles. Purga sobre copia de nube → 823 a 357 y 61 a 0.
 - Evidencia: tests/recall, tests/precision y tests/fixtures/catalog-parent.html.gz. La captura de Palm Angels comprueba tanto el descarte de 28 EUR como la foto de tienda.
 - Problemas y cómo se resolvieron: el primer replay falló al cerrar su directorio temporal por un SQLite abierto en Windows. Se cerraron las conexiones de copia y la repetición aprobó. Rhude 10653233816 es una foto sobre manta, por lo que se movió de la muestra de precisión a recall.
+
+## 2026-11-07 19:31 — C2.3 · Cola y limpieza acotada
+- Objetivo: atender nuevos y backlog sin perder la cadencia ni el estado de Actions.
+- Hecho: nuevos primero, prioridad Stone Island y precio relativo. El backlog se procesa aunque no reaparezca en catálogo. Cuota cloud de 72 peticiones de enriquecimiento, incluidas fotos, con fin de selección a 225 s y objetivo de pasada bajo 5 min. Añadido `vh run --pending-only` para la limpieza.
+- Comandos clave: Ruff → 0. Pytest → 101 pasadas, incluidas prioridad por perfil y entrada del backlog ausente del catálogo. Chromium → Todos excluye pendientes y su pestaña los muestra.
+- Evidencia: tests/test_recall_rules.py, pipeline/run.py y el input pending_only del workflow.
+- Problemas y cómo se resolvieron: el estado antiguo necesitaba confirmar cientos de tallas en ficha. Las pasadas de limpieza usan el mismo bloqueo, guardado y Pages que las normales. Las fichas con HTTP 404 quedan como no disponibles.

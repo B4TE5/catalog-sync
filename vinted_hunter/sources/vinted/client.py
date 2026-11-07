@@ -22,6 +22,10 @@ class BudgetExhausted(RuntimeError):
 class HttpFailure(RuntimeError):
     """Respuesta no utilizable."""
 
+    def __init__(self, message: str, status: int | None = None) -> None:
+        super().__init__(message)
+        self.status = status
+
 
 class CircuitOpen(HttpFailure):
     """El servidor ha pedido interrumpir la pasada."""
@@ -92,7 +96,7 @@ class VintedClient:
                 self.blocked = True
             raise CircuitOpen(f"HTTP {response.status_code}")
         if response.status_code != 200:
-            raise HttpFailure(f"HTTP {response.status_code}")
+            raise HttpFailure(f"HTTP {response.status_code}", response.status_code)
         return response
 
     def get(self, path: str, budget: Budget | None = None, params: Any = None) -> Response:

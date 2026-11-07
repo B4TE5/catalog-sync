@@ -18,6 +18,9 @@ on:
       max_minutes:
         type: number
         default: 340
+      pending_only:
+        type: boolean
+        default: false
 concurrency:
   group: ${{ inputs.mode == 'iteration' && 'hunt' || format('hunt-wakeup-{0}', github.run_id) }}
   cancel-in-progress: false
@@ -102,12 +105,19 @@ jobs:
           BOARD_KEY: ${{ secrets.BOARD_KEY }}
         run: uv run --no-sync python -m vinted_hunter.cloud restore
       - name: Refresh catalog
-        timeout-minutes: 4
+        timeout-minutes: 5
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
           BOARD_URL: ${{ vars.BOARD_URL }}
-        run: uv run --no-sync vh run
+          PENDING_ONLY: ${{ inputs.pending_only }}
+        shell: bash
+        run: |
+          if [ "$PENDING_ONLY" = true ]; then
+            uv run --no-sync vh run --pending-only
+          else
+            uv run --no-sync vh run
+          fi
       - name: Save encrypted state
         id: save
         if: always() && steps.restore.outcome == 'success'

@@ -51,9 +51,9 @@ def publish_notifications(result: dict) -> None:
 
 
 @app.command()
-def run() -> None:
+def run(pending_only: Annotated[bool, typer.Option("--pending-only")] = False) -> None:
     """Realiza una pasada de captura."""
-    result = run_pass(ROOT)
+    result = run_pass(ROOT, pending_only=pending_only)
     ConsoleNotifier().publish(result)
     publish_notifications(result)
     if result["errors"]:

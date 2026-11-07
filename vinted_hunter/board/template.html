@@ -109,7 +109,8 @@ Object.assign(reasons, {
   not_sweatshirt: "Prenda ajena a la categoría de sudaderas",
   too_cheap_for_brand: "Precio por debajo del suelo de la marca",
   catalog_photos_only: "Fotos de catálogo sin suficientes fotos propias",
-  labelled_fake: "Marcado como falso"
+  labelled_fake: "Marcado como falso",
+  knitwear: "Prenda de punto o lana", profile_disabled: "Perfil desactivado"
 });
 const gates = {
   garment:"Tipo de prenda", price:"Precio y moneda", size:"Talla", hood:"Capucha",
@@ -127,7 +128,8 @@ const signals = {
   satisfactory:"Estado satisfactorio", cheap_new:"Nuevo a precio bajo", motivated:"Vendedor motivado",
   proof:"Prueba de compra", wear:"Desgaste", short_description:"Descripción breve",
   many_photos:"Cantidad de fotos", parts:"Partes de autenticación", stock_photo:"Foto de catálogo",
-  price_drop:"Bajada de precio", bargain:"Cuartil inferior", hood_unconfirmed:"Capucha sin confirmar"
+  price_drop:"Bajada de precio", bargain:"Cuartil inferior", hood_unconfirmed:"Capucha sin confirmar",
+  authenticity_mentioned:"Autenticación mencionada"
 };
 function decision(row) {
   const trace = row.trace;
@@ -268,7 +270,7 @@ const cards = document.querySelector("#cards");
 const more = document.querySelector("#more");
 const sort = document.querySelector("#sort");
 function render() {
-  const filtered = data.listings.filter(row => (active === "all" ? row.tier !== "rejected" : tierOf(row) === active) &&
+  const filtered = data.listings.filter(row => (active === "all" ? row.tier && row.tier !== "rejected" : tierOf(row) === active) &&
     (!brand.value || row.profile === brand.value));
   const recent = row => Date.parse(row.body.uploaded_at || row.body.first_seen);
   filtered.sort((a, b) => sort.value === "recent" ? recent(b) - recent(a) :
@@ -280,7 +282,7 @@ function render() {
   if (!filtered.length) cards.append(node("p", "Aún no hay anuncios para estos filtros.", "empty"));
 }
 for (const [id, label] of Object.entries(tiers)) {
-  const count = data.listings.filter(row => id === "all" ? row.tier !== "rejected" : tierOf(row) === id).length;
+  const count = data.listings.filter(row => id === "all" ? row.tier && row.tier !== "rejected" : tierOf(row) === id).length;
   const button = node("button", `${label} · ${count}`);
   button.setAttribute("aria-pressed", String(active === id));
   button.onclick = () => {
