@@ -110,7 +110,8 @@ Object.assign(reasons, {
   too_cheap_for_brand: "Precio por debajo del suelo de la marca",
   catalog_photos_only: "Fotos de catálogo sin suficientes fotos propias",
   labelled_fake: "Marcado como falso",
-  knitwear: "Prenda de punto o lana", profile_disabled: "Perfil desactivado"
+  knitwear: "Prenda de punto o lana", profile_disabled: "Perfil desactivado",
+  listing_unavailable: "Ficha no disponible · HTTP 404"
 });
 const gates = {
   garment:"Tipo de prenda", price:"Precio y moneda", size:"Talla", hood:"Capucha",
@@ -118,7 +119,9 @@ const gates = {
   brand_rules:"Reglas de marca", seller_feedback:"Valoraciones del vendedor",
   seller_rating:"Nota del vendedor", fake_certilogo_domain:"Dominio del QR",
   catalog_photos_only:"Fotos propias", too_cheap_for_brand:"Suelo de precio y Certilogo",
-  blacklisted_photo:"Lista negra de fotos", shared_photo:"Foto compartida"
+  blacklisted_photo:"Lista negra de fotos", shared_photo:"Foto compartida",
+  knitwear:"Tejido compatible con una sudadera", profile_disabled:"Perfil activo",
+  listing_unavailable:"Ficha disponible"
 };
 const signals = {
   base:"Base", certilogo_ok:"Dominio Certilogo", qr_detected_unreadable:"QR sin lectura",
@@ -138,7 +141,7 @@ function decision(row) {
   const checks = node("ul");
   const passed = trace.gates_passed || [];
   for (const [key, label] of Object.entries(gates)) {
-    const failed = key === trace.gate_rejected || (key === "garment" && trace.gate_rejected === "not_sweatshirt");
+    const failed = key === trace.gate_rejected || (key === "garment" && ["not_sweatshirt", "knitwear"].includes(trace.gate_rejected));
     const symbol = failed ? "❌ " : passed.includes(key) ? "✅ " : passed.includes(key + "_unconfirmed") ? "⚪ " : "— ";
     checks.append(node("li", symbol + label));
   }

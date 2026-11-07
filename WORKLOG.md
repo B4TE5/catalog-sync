@@ -308,3 +308,10 @@
 - Comandos clave: consulta SQLite sobre categoría 1811 y material NULL → 45 y 1 filas. Ruff → 0. Pytest → 102 pasadas en 8,34 s.
 - Evidencia: tests/test_recall_rules.py, rescore.py y gates.py.
 - Problemas y cómo se resolvieron: el modelo anterior no almacenaba material. Mantener su descarte impediría aplicar la regla nueva de algodón aunque el catálogo ampliado volviera a mostrar el anuncio.
+
+## 2026-11-07 20:12 — C2.3/C2.7 · Confirmación del tipo pendiente
+- Objetivo: acreditar el tipo de los pendientes con datos de ficha, además del filtro textual.
+- Hecho: se cuenta pending_unconfirmed al cerrar cada pasada. La limpieza exige que los pendientes restantes ya estén enriquecidos antes de terminar, con menos de 35 como margen de validación. Los nuevos motivos de punto, perfil desactivado y ficha no disponible tienen etiquetas legibles en el tablero.
+- Comandos clave: Ruff → 0. Pytest → 102 pasadas en 8,25 s.
+- Evidencia: run_log y los monitores de Actions.
+- Problemas y cómo se resolvieron: cero incompatibles textuales no acredita el tipo de una ficha nunca descargada. Se separa ese contador para verificar también los pendientes sin ficha.

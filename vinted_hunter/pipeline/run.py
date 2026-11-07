@@ -630,6 +630,9 @@ class Pipeline:
         self.run["rejected"] = dict(self.reasons)
         rows = self.store.records()
         self.run["pending"] = sum(row["tier"] is None for row in rows)
+        self.run["pending_unconfirmed"] = sum(
+            row["tier"] is None and not row["trace"].get("enriched") for row in rows
+        )
         self.run["pending_by_profile"] = {
             profile.id: sum(row["tier"] is None and row["profile"] == profile.id for row in rows)
             for profile in self.config.profiles
