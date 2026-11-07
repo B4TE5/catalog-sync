@@ -343,3 +343,10 @@
 - Comandos clave: Ruff → 0; pytest → 106 pasadas y 4 excluidas en 8,40 s; live → 4 pasadas y 106 excluidas en 39,86 s; selftest → salida 0, 8/8, 75,0 s y 13 peticiones; doctor → salida 0, HTTP 200 y filtros L/XL válidos.
 - Evidencia: data/correction2-release-checks.log y TEST_REPORT.md. La autoprueba usó catálogo y tres fichas en vivo; al descartarse las tres, verificó visión/score con el caso real de recall 10653233816 (good 70), indicando el fallback.
 - Problemas y cómo se resolvieron: la muestra de tres anuncios no garantiza uno puntuable. Se conserva la comprobación real del descarte y se usa el caso capturado permitido, sin sustituir la fase live.
+
+## 2026-11-07 20:54 — C2.3/C2.4/C2.6 · Replay final y décima limpieza
+- Objetivo: acreditar el anuncio prioritario y el comportamiento del tablero publicado mientras progresa la cola real.
+- Hecho: replay real repetido con correction-2.2 → good 65; las diez primeras limpiezas de Actions terminaron en verde. El último estado dejó 52 pendientes, todavía con revisión 2.1. La limpieza 11 y la siguiente captura tomarán las reglas 2.2 y reevaluarán los falsos negativos.
+- Comandos clave: replay → salida 0; Chromium sobre Pages → salida 0, Todos/Pendientes, clave persistente, fragmento limpio, olvidar, clave inválida y almacenamiento bloqueado aprobados. Limpieza 42407702784 → 232,43 s, 52 pendientes, 0 incompatibles conocidos y sin errores.
+- Evidencia: data/correction2-replay-final.log, scratch/correction2-actions.json, run 42407702784 y QA del sitio público.
+- Problemas y cómo se resolvieron: la primera QA nueva comparaba el total de pendientes con solo las 48 tarjetas de la primera página. Se recorrió el botón de paginación antes de comparar. El producto funcionaba correctamente.
