@@ -61,10 +61,16 @@ def query_coverage(root: Path, record: dict[str, Any]) -> list[dict[str, Any]]:
             config.ids.catalog_ids.get(key)
             for key in ("sweatshirts", "zip_sweatshirts", "jumpers")
         }
+        mismatches = []
+        if not text_match:
+            mismatches.append("El texto no contiene todos los términos de la consulta")
+        if not size_match:
+            mismatches.append("La talla difiere del filtro")
+        if not category_match:
+            mismatches.append("La categoría queda fuera del grupo de sudaderas y jerséis")
         covered.append({
             "query": search.query(1), "compatible": text_match and size_match and category_match,
-            "reason": "Texto, talla y categoría compatibles" if text_match and size_match
-            and category_match else "Texto, talla o categoría incompatibles",
+            "reason": " · ".join(mismatches) or "Texto, talla y categoría compatibles",
         })
     return covered
 

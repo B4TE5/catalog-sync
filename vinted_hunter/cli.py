@@ -94,17 +94,45 @@ def replay_item(
     except (ValueError, HttpFailure, ParseError) as error:
         raise typer.BadParameter(str(error)) from None
     trace = record["trace"]
+    labels = {
+        "garment": "Tipo de prenda", "price": "Precio y moneda", "replica": "Texto de réplica",
+        "size": "Talla", "hood": "Capucha", "status": "Estado", "color": "Color",
+        "photos": "Cantidad de fotos", "brand_rules": "Reglas de marca",
+        "seller_feedback": "Valoraciones del vendedor", "seller_rating": "Nota del vendedor",
+        "fake_certilogo_domain": "Dominio del QR", "catalog_photos_only": "Fotos propias",
+        "too_cheap_for_brand": "Suelo de precio y Certilogo",
+        "blacklisted_photo": "Lista negra de fotos", "shared_photo": "Foto compartida",
+        "knitwear": "Prenda de punto o lana", "not_sweatshirt": "Tipo ajeno a sudaderas",
+    }
     show(f"{record['body']['title']} · {record['body']['price']} EUR")
     show(f"Resultado {record['tier']} · {record['score']} puntos")
     for name in trace["gates_passed"]:
-        typer.echo(f"✓ {name}")
+        typer.echo(f"✓ {labels.get(name, name)}")
     if trace["gate_rejected"]:
-        typer.echo(f"✗ Descartado · {trace['gate_rejected']}")
+        reason = trace["gate_rejected"]
+        typer.echo(f"✗ Descartado · {labels.get(reason, reason)}")
     if trace["seller"]:
         seller = trace["seller"]
         typer.echo(f"Vendedor · {seller['feedback_count']} valoraciones · nota {seller['rating']}")
     evidence = trace["evidence"]
     typer.echo(f"Visión · {evidence['qr']} · fotos de catálogo {evidence['catalog_photo_count']}")
+    typer.echo(
+        f"pHash · {len(evidence['hashes'])} fotos · "
+        f"partes ORB · {', '.join(evidence['parts_present']) or 'sin coincidencias'}"
+    )
+    if trace.get("wardrobe"):
+        wardrobe = trace["wardrobe"]
+        typer.echo(
+            f"Armario · {wardrobe['reviewed']} revisados · "
+            f"{wardrobe['same_brand']} de la marca"
+        )
+    for key, label in (
+        ("motivated", "Motivación"), ("replica", "Réplica"), ("wear", "Desgaste"),
+        ("proof", "Prueba de compra"), ("authenticity_mentioned", "Autenticación"),
+        ("hood_with", "Con capucha"), ("hood_without", "Sin capucha"),
+    ):
+        if phrases := trace["text"].get(key):
+            typer.echo(f"Texto · {label} · {', '.join(phrases)}")
     for reason in trace["score"]["reasons"]:
         typer.echo(f"  {reason}")
     for query in record["query_coverage"]:

@@ -287,3 +287,10 @@
 - Comandos clave: Chromium → todos los casos aprobados, incluido almacenamiento bloqueado. Doctor → salida 0 y catálogo HTTP 200 con 96 anuncios. Live → 4 pasadas en 37,45 s. Selftest → salida 0, 8/8, 17 peticiones y 76,0 s, con un score de la muestra en vivo.
 - Evidencia: encrypted.html, selftest.py y capturas reales de recall. El fallback no fue necesario en esta ejecución en vivo.
 - Problemas y cómo se resolvieron: la primera QA comprobó el borrado antes de finalizar el descifrado de la clave inválida. Se añadió espera explícita a localStorage vacío y pasó. La primera ejecución sin elevación quedó esperando al navegador y se repitió con el entorno autorizado.
+
+## 2026-11-07 19:38 — C2.4 · Explicación de replay
+- Objetivo: hacer legible el diagnóstico sin cambiar su resultado ni el estado principal.
+- Hecho: nombres de gates en español, señales de texto, cantidad de pHash, partes ORB y resumen de armario. Las consultas incompatibles detallan si falla el texto, la talla o la categoría.
+- Comandos clave: Ruff → 0. Pruebas focalizadas de CLI, recall y precisión → 20 pasadas en 4,04 s.
+- Evidencia: cli.py y replay.py.
+- Problemas y cómo se resolvieron: la primera salida conservaba claves internas en inglés. Se tradujeron manteniendo los códigos en el rastro persistido.
