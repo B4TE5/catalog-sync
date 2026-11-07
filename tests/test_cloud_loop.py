@@ -27,17 +27,22 @@ def test_claim_handles_duplicate_races_and_handoff(
     assert cloud_loop.allowed() is expected
 
 
+@pytest.mark.parametrize(
+    ("minutes", "expected_starts", "finished", "next_at"),
+    [(35, [0, 600, 1200], 1320, 101800),
+     (340, list(range(0, 19801, 600)), 19920, 120400)],
+)
 def test_loop_keeps_cadence_after_failure_and_leaves_time_for_handoff(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+    minutes: int, expected_starts: list[int], finished: int, next_at: int,
 ) -> None:
     clock = [0.0]
     starts = []
-    results = iter(["success", "failure", "success"])
     marker = tmp_path / "output"
     monkeypatch.setenv("GITHUB_OUTPUT", str(marker))
     monkeypatch.setenv("GITHUB_RUN_ID", "10")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
-    monkeypatch.setenv("LOOP_MAX_MINUTES", "35")
+    monkeypatch.setenv("LOOP_MAX_MINUTES", str(minutes))
     monkeypatch.setenv("LOOP_NOT_BEFORE", "0")
     monkeypatch.setattr(cloud_loop.time, "monotonic", lambda: clock[0])
     monkeypatch.setattr(cloud_loop.time, "time", lambda: clock[0] + 100000)
@@ -50,13 +55,13 @@ def test_loop_keeps_cadence_after_failure_and_leaves_time_for_handoff(
         starts.append(clock[0])
         assert deadline - clock[0] == 540
         clock[0] += 120
-        return next(results)
+        return "failure" if len(starts) == 2 else "success"
 
     monkeypatch.setattr(cloud_loop, "iteration", iteration)
     cloud_loop.loop()
-    assert starts == [0, 600, 1200]
-    assert clock[0] == 1320
-    assert marker.read_text().strip() == "not_before=101800.0"
+    assert starts == expected_starts
+    assert clock[0] == finished
+    assert marker.read_text().strip() == f"not_before={next_at}.0"
 
 
 def test_iteration_observes_dispatch_after_uncertain_transport_and_retries_poll(
@@ -84,6 +89,23 @@ def test_iteration_observes_dispatch_after_uncertain_transport_and_retries_poll(
     )
     assert cloud_loop.iteration("test", 120) == "success"
     assert attempts == [] and clock[0] == 15
+
+
+def test_iteration_cancels_timed_out_snapshot(monkeypatch: pytest.MonkeyPatch) -> None:
+    clock = [0.0]
+    cancelled = []
+    monkeypatch.setattr(cloud_loop, "dispatch", lambda _: None)
+    monkeypatch.setattr(cloud_loop, "gh", lambda *args: cancelled.append(args))
+    monkeypatch.setattr(cloud_loop, "api", lambda path: {
+        "workflow_runs": [{"id": 19, "display_title": "Snapshot test"}]
+    } if "runs?" in path else {"status": "in_progress"})
+    monkeypatch.setattr(cloud_loop.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(
+        cloud_loop.time, "sleep", lambda wait: clock.__setitem__(0, clock[0] + wait)
+    )
+    assert cloud_loop.iteration("test", 31) == "timed_out"
+    assert cancelled == [("run", "cancel", "19")]
+    assert clock[0] == 31
 
 
 def test_relay_uses_workflow_dispatch_with_default_full_duration(

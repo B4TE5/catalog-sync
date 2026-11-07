@@ -55,6 +55,8 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       LOOP_PREDECESSOR: ${{ inputs.predecessor }}
+      LOOP_INTERVAL_SECONDS: '600'
+      LOOP_JITTER_SECONDS: '120'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

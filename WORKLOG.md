@@ -245,3 +245,10 @@
 - Comandos clave: Ruff → salida 0 tras corregir dos líneas demasiado largas en los tests. Pruebas de carreras de inicio, relevo, fallo de pasada y respuesta de dispatch incierta añadidas.
 - Evidencia: `.github/workflows/hunt.yml`, `vinted_hunter/cloud_loop.py` y `tests/test_cloud_loop.py`.
 - Problemas y cómo se resolvieron: un bloqueo global durante cinco horas impediría feedback. Se conserva el bloqueo del estado para cada pasada y se usa otro para el coordinador.
+
+## 2026-11-07 17:34 — Bucle · Límites y validación inicial
+- Objetivo: verificar duración, respuesta ante fallos y salida de un despertar duplicado.
+- Hecho: coordinador 42391701686 iniciado con límite de validación de 35 minutos. El despertar 42391821189 terminó en verde con loop, refresh y deploy omitidos. El intervalo y el jitter se configuran en el YAML. Se probaron el límite de 340 minutos y la cancelación de una pasada que agota su tiempo.
+- Comandos clave: Ruff → salida 0. Suite offline inicial → 80 pasadas en 25,62 s. Suite focalizada posterior → 24 pasadas en 1,35 s. Suite live → 4 pasadas en 40,75 s.
+- Evidencia: runs de Actions, `tests/test_cloud_loop.py` y `scratch/loop-proof.json`.
+- Problemas y cómo se resolvieron: la autoprueba pública completó 6/8 etapas en 75 s. Sus tres fichas se descartaron antes de visión y score. Se conserva ese resultado y se repetirá con la siguiente muestra real de catálogo.

@@ -101,10 +101,14 @@ def iteration(correlation: str, deadline: float) -> str:
 
 def loop() -> None:
     minutes = float(os.environ.get("LOOP_MAX_MINUTES", "340"))
+    interval = float(os.environ.get("LOOP_INTERVAL_SECONDS", "600"))
+    jitter = float(os.environ.get("LOOP_JITTER_SECONDS", "120"))
     if not 10 <= minutes <= 340:
         raise ValueError("La duración debe estar entre 10 y 340 minutos")
+    if not 0 <= jitter < interval:
+        raise ValueError("El intervalo debe ser positivo y mayor que el jitter")
     deadline = time.monotonic() + minutes * 60
-    emit("loop_started", max_minutes=minutes, interval_seconds=600, jitter_seconds=120)
+    emit("loop_started", max_minutes=minutes, interval_seconds=interval, jitter_seconds=jitter)
     not_before = float(os.environ.get("LOOP_NOT_BEFORE") or "0")
     wait = max(0, min(720, not_before - time.time()))
     time.sleep(wait)
@@ -122,7 +126,7 @@ def loop() -> None:
             conclusion = iteration(correlation, min(deadline, started + ITERATION_TIMEOUT_SECONDS))
         except (OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as error:
             conclusion = type(error).__name__
-        next_start = started + random.uniform(480, 720)
+        next_start = started + random.uniform(interval - jitter, interval + jitter)
         emit(
             "loop_iteration_end", iteration=number, conclusion=conclusion,
             duration_seconds=round(time.monotonic() - started, 2),
