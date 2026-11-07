@@ -20,6 +20,12 @@ GitHub devolvió **HTTP 403** al crear el sitio con build_type workflow. El GET 
 
 El botón Tablero deriva la dirección pública de Pages. Ambos avisos de prueba devolvieron HTTP 200 y la API de ntfy devolvió la acción con la URL sin clave en cada canal. El modo sombra sigue activo.
 
-## F2.2 · Verificación del cron
+## Resuelto · Cadencia mediante bucle de Actions
 
-Se consultó la API de runs con `event=schedule` entre aproximadamente las 20:47 y las 21:30 del 6 de noviembre (hora de Madrid). El workflow de `main` estaba `active` y la última consulta devolvió HTTP 200 con `total_count: 0`. Hace falta observar tres ejecuciones programadas en verde y cotejar sus novedades con el estado restaurado. Las dos pasadas manuales y los issues confirmaron la persistencia cifrada. GitHub documenta posibles retrasos y omisiones en eventos programados. La API carece de un motivo para esta ventana. [Eventos programados de GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+Se consultó la API de runs con `event=schedule` entre aproximadamente las 20:47 y las 21:30 del 6 de noviembre (hora de Madrid). El workflow de `main` estaba `active` y la última consulta devolvió HTTP 200 con `total_count: 0`. En esa sesión quedó pendiente observar tres ejecuciones programadas en verde y cotejar sus novedades con el estado restaurado. Las dos pasadas manuales y los issues confirmaron la persistencia cifrada. GitHub documenta posibles retrasos y omisiones en eventos programados. La API carece de un motivo para esta ventana. [Eventos programados de GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+
+La petición del 7 de noviembre sustituye la cadencia del cron por un bucle y relevo. Se verificaron 3 iteraciones completas del coordinador 42391701686, con intervalos de 498.57 s, 646.96 s, guardado cifrado y Pages en cada una. El sucesor 42393577665 se inició con la identidad automática de Actions. El despertar duplicado 42391821189 omitió la captura y el bucle. El criterio anterior de tres eventos schedule queda sustituido por esta verificación del bucle.
+
+## [!] Verificación pendiente · Autoprueba con tres candidatos
+
+Las tres autopruebas reales terminaron en 6/8, 7/8 y 7/8 etapas. Las tres fichas de cada muestra se descartaron antes de score. Se confirmaron descartes por seller_feedback, seller_rating y catalog_photos_only. Las dos últimas ejecutaron visión sobre una ficha. La suite live aprobó cuatro casos y las pasadas de Actions completaron captura, guardado y Pages. Hace falta una muestra pública que supere los gates dentro del límite de tres fichas para acreditar también score en selftest.

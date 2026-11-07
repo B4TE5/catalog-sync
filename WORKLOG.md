@@ -252,3 +252,10 @@
 - Comandos clave: Ruff → salida 0. Suite offline inicial → 80 pasadas en 25,62 s. Suite focalizada posterior → 24 pasadas en 1,35 s. Suite live → 4 pasadas en 40,75 s.
 - Evidencia: runs de Actions, `tests/test_cloud_loop.py` y `scratch/loop-proof.json`.
 - Problemas y cómo se resolvieron: la autoprueba pública completó 6/8 etapas en 75 s. Sus tres fichas se descartaron antes de visión y score. Se conserva ese resultado y se repetirá con la siguiente muestra real de catálogo.
+
+## 2026-11-07 17:55 — Bucle · Verificación remota y relevo
+- Objetivo: acreditar al menos tres pasadas, sus intervalos, el guardado y la publicación, y el relevo con el token automático.
+- Hecho: 3 pasadas en verde en el coordinador 42391701686. Estado cifrado y tablero coincidieron en cada pasada. El sucesor 42393577665 quedó arrancado. El despertar duplicado 42391821189 salió sin captura. Plan, informes y bloqueos actualizados.
+- Comandos clave: Snapshot → 3 verdes con restauración, guardado y deploy-pages. Intervalos → 498.57 s, 646.96 s. Ruff → 0. Pytest → 82 pasadas en 4,78 s. Pytest live → 4 pasadas en 40,75 s.
+- Evidencia: runs de la tabla de DECISIONS.md, logs del coordinador, referencias de state, HTML de Pages y `scratch/loop-proof.json`.
+- Problemas y cómo se resolvieron: el blob de logs del coordinador activo respondió HTTP 404, por lo que se descargó tras su cierre. La autoprueba quedó en 6/8, 7/8 y 7/8 al descartar sus muestras antes de score. Se documenta esa verificación pendiente.

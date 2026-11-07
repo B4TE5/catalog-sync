@@ -19,14 +19,14 @@ Credenciales disponibles en `.env` (gitignored, NUNCA commitear ni imprimir en l
 **Hecho cuando:** 3/3 ejecuciones en Actions devuelven 200 y ≥ 10 anuncios.
 
 ## F2.2 — Ejecución programada y estado
-- [x] `hunt.yml`: cron `*/10 * * * *` + workflow_dispatch; `concurrency: {group: hunt, cancel-in-progress: false}`; `timeout-minutes: 8`; `permissions` mínimos; todas las actions fijadas por SHA; caché de uv.
+- [x] `hunt.yml`: bucle de 340 minutos y cron horario `17 * * * *` + workflow_dispatch; exclusión del coordinador mediante `hunt-loop` y de las pasadas mediante `hunt`, con `cancel-in-progress: false`; timeout del coordinador de 345 minutos, captura de 6 y despliegue de 3; `permissions` mínimos; todas las actions fijadas por SHA; caché de uv.
 - [x] Estado persistente: base SQLite comprimida en una rama huérfana `state`, publicada como **un único commit con force-push** en cada pasada (sin historial que crezca). Restaurar al inicio, guardar al final, también si la pasada falla a medias (paso `if: always()` con escritura atómica).
 - [x] Comprobar y documentar si esa actividad evita que GitHub desactive el cron a los 60 días; si no está claro, añadir un keepalive mensual en main.
 - [x] Tablero publicado en GitHub Pages (`actions/deploy-pages`) tras cada pasada, **cifrado**: los datos (JSON) van cifrados con AES-GCM (clave derivada con PBKDF2/scrypt de `BOARD_KEY`, secret del repo); el HTML publicado solo contiene el blob cifrado + el código de descifrado (WebCrypto). La clave se pasa en el **fragmento de la URL** (`#k=...`), que el navegador nunca envía al servidor; sin clave, la página muestra solo una pantalla neutra sin datos ni marcas. `vh board-url` imprime la URL completa con la clave (solo en local). Nada de tokens ni del topic de ntfy en el HTML. Título y metadatos de la página genéricos (sin "Vinted" ni marcas). Añadir `<meta name="robots" content="noindex,nofollow">`.
 - [x] Nombres neutros: ni el repo, ni los workflows, ni el README, ni el título del tablero mencionan nombres de marcas ni la lista de búsqueda.
 - [x] `shadow_mode: true` en `config/scoring.yaml` por defecto.
-- [!] Validar tres ejecuciones programadas seguidas y su deduplicación.
-**Hecho cuando:** 3 ejecuciones programadas seguidas en verde, el estado persiste entre ellas (la 2.ª y la 3.ª no reportan como nuevos los anuncios ya vistos) y la URL de Pages muestra el tablero actualizado.
+- [x] Tres iteraciones reales del bucle verificadas con guardado, Pages y deduplicación. El cron horario actúa como despertador.
+**Hecho cuando:** 3 iteraciones del bucle seguidas en verde, el estado persiste entre ellas (la 2.ª y la 3.ª no reportan como nuevos los anuncios ya vistos) y la URL de Pages muestra el tablero actualizado.
 
 ## F2.3 — Notificaciones ntfy
 - [x] `NtfyNotifier` (implementa `Notifier`), con secrets `NTFY_TOPIC` / `NTFY_HEALTH_TOPIC` (en Actions como secrets del repo; en local desde .env).

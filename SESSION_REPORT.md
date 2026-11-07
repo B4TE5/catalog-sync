@@ -101,3 +101,17 @@ Se reevaluaron 2.164 anuncios de SQLite con las fichas y las fotos guardadas. La
 - `vh notify-test` entregó los dos avisos con HTTP 200. La API de ntfy confirmó que ambos llevaban el botón Tablero con la URL pública sin clave. `BOARD_URL` sigue disponible para elegir un destino alternativo. El modo sombra continúa activo.
 - Se cotejaron `hunt`, `feedback`, `keepalive` y `probe` con la rama remota. `hunt`, `feedback` y `keepalive` usan el token automático de Actions a través de `github.token`. `probe` usa el token automático de checkout y una consulta pública. El PAT se utilizó localmente para iniciar el run y auditar GitHub. [Token automático de GitHub Actions](https://docs.github.com/en/actions/concepts/security/github_token)
 - Pages y el botón Tablero quedan desbloqueados. La comprobación de tres pasadas programadas sigue bloqueada. [Bloqueos](BLOCKERS.md)
+
+## Bucle autónomo de Actions · 2026-11-07 17:55
+
+El coordinador mantiene pasadas cada 10 minutos con jitter de 2 minutos y solicita relevo antes de agotar 340 minutos. Cada pasada del mismo workflow guarda el estado cifrado y publica Pages. Las pasadas comparten el bloqueo de estado con feedback. El cron horario comprueba por API si hay coordinador. El despertar duplicado 42391821189 terminó con los trabajos de captura, publicación y bucle omitidos.
+
+La validación usó un máximo de 35 minutos para observar también el relevo. El coordinador 42391701686 completó 3 iteraciones en verde con intervalos de 498.57 s, 646.96 s. El sucesor 42393577665 fue lanzado con la identidad automática de Actions y recupera el máximo de 340 minutos. Los logs de cada pasada, el commit cifrado sin padres y el payload publicado en Pages se verificaron por API.
+
+| Iteración | Run Snapshot | Inicio del coordinador (Madrid) | Vistos | Nuevos | Primeros | Bajadas |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | 42391726084 | 2026-11-07 17:31:33 | 964 | 290 | 287 | 3 |
+| 2 | 42392420807 | 2026-11-07 17:39:52 | 898 | 42 | 41 | 1 |
+| 3 | 42393322260 | 2026-11-07 17:50:39 | 949 | 47 | 43 | 4 |
+
+Ruff y 82 pruebas offline en verde, además de cuatro pruebas live. Las tres autopruebas acotadas quedaron en 6/8, 7/8 y 7/8 etapas por descartes previos a score. El detalle está en TEST_REPORT y BLOCKERS.

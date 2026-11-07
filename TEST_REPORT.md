@@ -59,3 +59,11 @@ Salida 0.
 - Actions · run 42296435101 en verde, incluido `deploy-pages`. Artefacto 13542332390 y HTML servido con el mismo SHA-256. Logs auditados sin coincidencias de secretos.
 - Chromium · HTTP 200 en los tres casos. Pantalla neutra sin clave, clave incorrecta rechazada y 48 tarjetas con `vh board-url`.
 - `vh notify-test` · dos HTTP 200. La API de suscripción devolvió ambos avisos con la acción `view` Tablero y la URL pública sin fragmento. [API de ntfy](https://docs.ntfy.sh/subscribe/api/#poll-for-messages)
+
+## Bucle y relevo · 2026-11-07 17:55
+
+- `uv run --offline ruff check` · salida 0. `uv run --offline pytest -q` · 82 aprobadas, 4 excluidas, 4,78 s.
+- `uv run --offline pytest -q -m live` · 4 aprobadas, 80 excluidas en esa revisión, 40,75 s.
+- Regresiones · carreras de inicio y relevo, continuación tras un fallo, duración de 340 minutos, despacho de respuesta incierta, reintento de lectura y cancelación de una pasada agotada. Las pruebas de ntfy mantienen las transiciones de incidencia y recuperación.
+- Actions · coordinador 42391701686 y 3 Snapshots en verde, con estado y Pages actualizados en cada uno. Intervalos de 498.57 s, 646.96 s. Sucesor 42393577665 creado por Actions y despertar duplicado 42391821189 omitido. Logs auditados sin coincidencias de los secretos locales.
+- `vh selftest` · salidas 1 con 6/8 en 75,0 s y 15 peticiones, 7/8 en 91,9 s y 17 peticiones, y 7/8 en 99,8 s y 17 peticiones. Tres fichas por muestra, descartadas antes de score. Se conserva la verificación pendiente en BLOCKERS.md.

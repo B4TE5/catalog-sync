@@ -329,3 +329,15 @@ El mismo `hunt.yml` admite un coordinador y pasadas `Snapshot` correlacionadas. 
 El intervalo de 480–720 segundos se mide entre comienzos. Se reserva tiempo para acabar la última pasada y solicitar el relevo antes de los 340 minutos. El sucesor recibe el próximo instante de inicio para conservar la cadencia. Un despertar horario consulta los coordinadores activos y las carreras se resuelven por ID y concurrencia. Una cancelación manual impide el relevo. La prueba real arrancará con un máximo de 35 minutos para observar tres pasadas y el relevo. El sucesor recuperará el máximo normal de 340 minutos.
 
 El nombre `GH_TOKEN` dentro del runner es la variable estándar de `gh`, asignada a `github.token`. Los secretos del repositorio siguen siendo los de cifrado y ntfy. [Autenticación y dispatch de GitHub](https://docs.github.com/en/actions/concepts/security/github_token), [CLI de workflow](https://cli.github.com/manual/gh_workflow_run)
+
+## 2026-11-07 17:55 · Evidencia del bucle y del relevo
+
+Coordinador de validación 42391701686, límite de 35 minutos. Se completaron 3 pasadas en verde. Intervalos entre comienzos del coordinador de 498.57 s, 646.96 s. El límite normal del sucesor es de 340 minutos. Se cruzaron los logs de cada Snapshot con la base remota descifrada y con el payload de Pages. Cada revisión de estado tiene cero padres y cada novedad queda dentro de primeros avistamientos más bajadas reales.
+
+| Iteración | Run Snapshot | Inicio del coordinador (Madrid) | Vistos | Nuevos | Primeros | Bajadas |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | 42391726084 | 2026-11-07 17:31:33 | 964 | 290 | 287 | 3 |
+| 2 | 42392420807 | 2026-11-07 17:39:52 | 898 | 42 | 41 | 1 |
+| 3 | 42393322260 | 2026-11-07 17:50:39 | 949 | 47 | 43 | 4 |
+
+El relevo solicitó el run 42393577665 mediante `gh workflow run hunt.yml` con `github.token`. El despertar duplicado 42391821189 terminó en verde con loop, refresh y deploy omitidos. La consulta de logs del job aún activo redirigió a un blob HTTP 404. La evidencia completa se descargó una vez terminado el coordinador.
