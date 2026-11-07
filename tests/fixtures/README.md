@@ -15,3 +15,7 @@ Cuerpos HTTP comprimidos, sin cabeceras ni cookies de la sesión. Se reemplazó 
 - `catalog-combined.html.gz` — [Stone Island y Supreme, dos claves repetidas](https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&brand_ids%5B%5D=14969&order=newest_first). HTTP 200, 96 tarjetas de las dos marcas.
 
 - `catalog-size-L.html.gz` y `catalog-size-XL.html.gz` conservan las respuestas de las URLs de talla en `config/vinted_ids.yaml`. HTTP 200, 96 Stone Island de la talla pedida en cada caso. RSC declara grupo MEN-DE y opciones 209 (L) y 210 (XL). JWT de telemetría redactado.
+
+- `catalog-parent.html.gz` — [padre de jerséis y sudaderas de hombre](https://www.vinted.es/catalog?catalog%5B%5D=79&order=newest_first), 2026-11-07, HTTP 200. Conserva la taxonomía real: padre 79, jerséis 1811, sudaderas 267, sudaderas con cremallera 1812 y punto grueso 1815. JWT de telemetría redactado.
+
+Los casos de `tests/recall/` y `tests/precision/` guardan ficha, vendedor, armario y fotos reales. Cada `capture.json` identifica su procedencia; los HTML se anonimizan igual que estas capturas. Se añaden mediante `vh replay <url> --save-fixture recall|precision`.

@@ -91,9 +91,14 @@ health.textContent = {healthy:"Operativo", degraded:"Revisar", unhealthy:"No ope
                       unknown:"Sin comprobación"}[data.health];
 health.classList.add(data.health);
 const minutesSince = date => Math.max(0, Math.floor((Date.now() - new Date(date)) / 60000));
-document.querySelector("#heartbeat").textContent = data.run
-  ? `Última pasada hace ${minutesSince(data.run.end)} min · ${data.run.seen} vistos · ${data.run.new} ${data.run.new === 1 ? "nuevo" : "nuevos"}`
-  : "A la espera de la primera pasada";
+let heartbeat = "A la espera de la primera pasada";
+if (data.run?.pending_only) {
+  const pending = data.listings.filter(row => !row.tier).length;
+  heartbeat = `Limpieza hace ${minutesSince(data.run.end)} min · ${data.run.enriched} fichas · ${pending} pendientes`;
+} else if (data.run) {
+  heartbeat = `Última pasada hace ${minutesSince(data.run.end)} min · ${data.run.seen} vistos · ${data.run.new} ${data.run.new === 1 ? "nuevo" : "nuevos"}`;
+}
+document.querySelector("#heartbeat").textContent = heartbeat;
 if (data.run?.errors?.length) {
   const incident = document.querySelector("#incident");
   incident.hidden = false;

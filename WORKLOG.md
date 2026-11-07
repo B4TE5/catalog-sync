@@ -322,3 +322,10 @@
 - Comandos clave: auditoría descomprimida → sin coincidencias de GH_TOKEN, BOARD_KEY ni topics configurados. Ruff → 0. Pytest → 103 pasadas en 8,22 s.
 - Evidencia: fixtures actuales y test_captured_fixtures_exclude_telemetry_jwt. Los JWT de las revisiones anteriores vencieron como máximo a las 19:40:23 del 7 de noviembre, hora de Madrid.
 - Problemas y cómo se resolvieron: guardé las primeras capturas sin aplicar la redacción de otelToken. Se corrigieron las capturas y el comando de captura. Las versiones previas permanecen en el historial auditable y contienen únicamente esos JWT públicos ya vencidos.
+
+## 2026-11-07 20:38 — C2.6/C2.7 · Diagnóstico de perfiles activos y latido de limpieza
+- Objetivo: que el diagnóstico y el tablero describan la configuración y la pasada reales.
+- Hecho: doctor comprueba las marcas activas combinadas en vez de exigir Supreme desactivada. El latido distingue la limpieza de fichas de una captura de catálogo. Se documenta la procedencia de la taxonomía y de los casos reales.
+- Comandos clave: doctor real → salida 0, HTTP 200, 96 anuncios parseados y filtros L/XL válidos. Ruff → 0. Pruebas focalizadas de CLI y reglas → 12 pasadas en 1,41 s.
+- Evidencia: diagnostics.py, board/template.html y tests/fixtures/README.md.
+- Problemas y cómo se resolvieron: un latido de limpieza mostraba cero vistos aunque estuviera procesando fichas. Ahora muestra fichas enriquecidas y pendientes. La explicación histórica del anuncio distingue el hecho de haberlo visto de la inferencia sobre su consulta de origen.

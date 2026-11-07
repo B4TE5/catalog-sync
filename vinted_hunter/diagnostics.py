@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from vinted_hunter.config import load_config
-from vinted_hunter.pipeline.run import health
+from vinted_hunter.pipeline.run import health, select_profiles
 from vinted_hunter.sources.vinted.catalog import parse_catalog
 from vinted_hunter.sources.vinted.client import VintedClient
 from vinted_hunter.sources.vinted.parse import ParseError
@@ -59,23 +59,28 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         )
         stone = config.ids.brand_ids.get("Stone Island")
         category = config.ids.catalog_ids.get("sweatshirts_parent")
-        supreme = config.ids.brand_ids.get("Supreme")
-        if stone and supreme and category:
+        active_brands = [
+            brand for profile in config.profiles
+            for brand in config.ids.brand_ids.get(profile.brand, [])
+        ]
+        if len(active_brands) > 1 and category:
             response = client.get(
                 "/catalog",
                 "catalog",
                 {
                     "catalog[]": str(category),
                     "order": "newest_first",
-                    "brand_ids[]": [str(stone[0]), str(supreme[0])],
+                    "brand_ids[]": [str(brand) for brand in active_brands],
                 },
             )
             combined = parse_catalog(response.text, client.base).listings
             brands = {item.brand for item in combined}
             results.append(
                 (
-                    "Marcas combinadas",
-                    brands == {"Stone Island", "Supreme"},
+                    "Marcas activas combinadas",
+                    bool(combined) and all(
+                        select_profiles(item, config.profiles, config) for item in combined
+                    ),
                     f"{len(combined)} anuncios · "
                     + ", ".join(sorted(brand or "sin marca" for brand in brands)),
                 )

@@ -127,7 +127,7 @@ Para añadir una prenda que debe alcanzar Buena, usa
 descartada, usa `--save-fixture precision`. Los casos guardan la ficha real,
 el vendedor y las fotos que se hayan consultado. Ejecuta `uv run pytest` después.
 Las pruebas descubren los directorios de casos y los evalúan con las reglas vigentes.
-La captura de tienda de Palm Angels también comprueba la detección de fotos de catálogo.
+El caso de captura de tienda también comprueba la detección de fotos de catálogo.
 
 La autoprueba usa el catálogo en vivo y hasta tres fichas. Si todas terminan
 descartadas, completa visión, score y tablero con un caso real de recall e indica
