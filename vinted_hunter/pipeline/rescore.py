@@ -44,6 +44,11 @@ def rescore(root: Path, store: SQLiteStore) -> int:
         listing = Listing.model_validate(row["body"])
         trace = row["trace"]
         enriched = trace.get("enriched", listing.category_id is not None)
+        if (
+            listing.category_id == config.ids.catalog_ids.get("jumpers")
+            and listing.material is None and trace.get("gate_rejected") == "not_sweatshirt"
+        ):
+            enriched = False
         seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
         if seller is not None:
             cached = store.seller(seller.id, datetime.min.replace(tzinfo=UTC))

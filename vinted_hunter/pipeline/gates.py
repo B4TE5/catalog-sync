@@ -22,7 +22,9 @@ def garment_mismatch(listing: Listing, profile: Profile, config: Config) -> bool
     return garment_reason(listing, profile, config) is not None
 
 
-def garment_reason(listing: Listing, profile: Profile, config: Config) -> str | None:
+def garment_reason(
+    listing: Listing, profile: Profile, config: Config, *, detailed: bool = False
+) -> str | None:
     words = config.scoring.words
     text = f"{listing.title} {listing.description or ''}"
     if matches(listing.title, words["garment_negative"]):
@@ -37,6 +39,8 @@ def garment_reason(listing: Listing, profile: Profile, config: Config) -> str | 
     if listing.category_id is None or listing.category_id in categories:
         return None
     if listing.category_id == config.ids.catalog_ids.get("jumpers"):
+        if listing.material is None and not detailed:
+            return None
         explicit = matches(text, words.get("sweatshirt_explicit", []))
         cotton = matches(listing.material or "", words.get("cotton", []))
         generic = matches(text, words["garment_positive"])
@@ -55,7 +59,7 @@ def gate(
     detailed: bool = False,
 ) -> tuple[str | None, list[str]]:
     passed = []
-    garment = garment_reason(listing, profile, config)
+    garment = garment_reason(listing, profile, config, detailed=detailed)
     if garment:
         return garment, passed
     text = " ".join(filter(None, (listing.title, listing.description)))

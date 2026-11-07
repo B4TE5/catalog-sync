@@ -1,5 +1,5 @@
 shadow_mode: true
-revision: correction-2
+revision: correction-2.1
 capture:
   catalog_limit: 12
   enrich_limit: 12

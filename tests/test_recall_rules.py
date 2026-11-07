@@ -1,11 +1,14 @@
 import gzip
 from datetime import UTC, datetime
 from pathlib import Path
+from shutil import copytree
 
 import pytest
 
 from vinted_hunter.config import load_config
 from vinted_hunter.pipeline.gates import gate
+from vinted_hunter.pipeline.models import Evidence
+from vinted_hunter.pipeline.rescore import rescore
 from vinted_hunter.pipeline.run import Pipeline, enrichment_priority
 from vinted_hunter.pipeline.text import matches
 from vinted_hunter.sources.vinted.client import VintedClient
@@ -90,3 +93,20 @@ def test_backlog_is_enriched_without_reappearing_in_catalog(
         pipeline.process(client, {}, False, None)
         assert calls == [item.id]
         assert pipeline.run["candidates"] == 1
+
+
+def test_legacy_jumper_without_material_is_queued_for_detail(tmp_path: Path) -> None:
+    copytree(ROOT / "config", tmp_path / "config")
+    item = listing_from_item(
+        gzip.decompress((ROOT / "tests/recall/10690539539/item.html.gz").read_bytes()).decode(),
+        "https://www.vinted.es/items/10690539539-stone-island-sweater", datetime.now(UTC),
+    ).model_copy(update={"material": None, "description": "Sweater"})
+    with SQLiteStore(tmp_path / "data/state.sqlite") as store:
+        store.save(item, "stone-island", "rejected", 0, {
+            "enriched": True, "gate_rejected": "not_sweatshirt",
+            "evidence": Evidence().model_dump(),
+        }, False)
+        rescore(tmp_path, store)
+        row = store.record(item.id)
+        assert row["tier"] is None and row["trace"]["pending"]
+        assert not row["trace"]["enriched"]

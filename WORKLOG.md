@@ -301,3 +301,10 @@
 - Comandos clave: limpieza → 226,47 s, 34 fichas enriquecidas y 36 peticiones de enriquecimiento. Ruff → 0. Pytest → 101 pasadas en 7,70 s.
 - Evidencia: scratch/correction2-actions.json y el checkpoint cifrado correspondiente. Descartes de la limpieza, 10 por talla, 16 por prenda, 5 por punto, 2 por ficha no disponible, 1 por capucha y 2 por color.
 - Problemas y cómo se resolvieron: los contadores históricos de pendientes no estaban en run_log. Se guardan ahora al cerrar la pasada para poder cotejar las tres iteraciones sin inferir estados intermedios.
+
+## 2026-11-07 19:58 — C2.2 · Recuperación de fichas antiguas sin material
+- Objetivo: evitar que el caché anterior mantenga descartadas sudaderas de algodón mal categorizadas.
+- Hecho: se localizaron 45 fichas de Jerséis sin material en la instantánea original de nube y una en la base local. Las que se descartaron por prenda vuelven a pendientes para obtener una ficha actual. El gate barato difiere esa decisión cuando falta material. La revisión de reglas pasa a correction-2.1.
+- Comandos clave: consulta SQLite sobre categoría 1811 y material NULL → 45 y 1 filas. Ruff → 0. Pytest → 102 pasadas en 8,34 s.
+- Evidencia: tests/test_recall_rules.py, rescore.py y gates.py.
+- Problemas y cómo se resolvieron: el modelo anterior no almacenaba material. Mantener su descarte impediría aplicar la regla nueva de algodón aunque el catálogo ampliado volviera a mostrar el anuncio.
