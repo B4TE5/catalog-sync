@@ -11,12 +11,18 @@ from vinted_hunter.pipeline.models import Evidence
 from vinted_hunter.pipeline.rescore import rescore
 from vinted_hunter.pipeline.run import Pipeline, enrichment_priority
 from vinted_hunter.pipeline.text import matches
+from vinted_hunter.replay import PUBLIC_JWT
 from vinted_hunter.sources.vinted.client import VintedClient
 from vinted_hunter.sources.vinted.item import listing_from_item
 from vinted_hunter.sources.vinted.search import plan_searches
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 ROOT = Path(__file__).parents[1]
+
+
+def test_captured_fixtures_exclude_telemetry_jwt() -> None:
+    for path in (ROOT / "tests").rglob("*.gz"):
+        assert PUBLIC_JWT.search(gzip.decompress(path.read_bytes())) is None, path
 
 
 def test_all_queries_use_verified_parent_category() -> None:

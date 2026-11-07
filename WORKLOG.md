@@ -315,3 +315,10 @@
 - Comandos clave: Ruff → 0. Pytest → 102 pasadas en 8,25 s.
 - Evidencia: run_log y los monitores de Actions.
 - Problemas y cómo se resolvieron: cero incompatibles textuales no acredita el tipo de una ficha nunca descargada. Se separa ese contador para verificar también los pendientes sin ficha.
+
+## 2026-11-07 20:25 — C2.5 · Redacción de telemetría en las capturas
+- Objetivo: aplicar a las capturas nuevas la misma anonimización que a los fixtures anteriores.
+- Hecho: se redactaron doce JWT públicos de telemetría en cuerpos HTML y se añadió la redacción a replay. Se conserva el contenido de catálogo, ficha, vendedor y fotos que usa el pipeline. Guardia de tests para todos los gzip.
+- Comandos clave: auditoría descomprimida → sin coincidencias de GH_TOKEN, BOARD_KEY ni topics configurados. Ruff → 0. Pytest → 103 pasadas en 8,22 s.
+- Evidencia: fixtures actuales y test_captured_fixtures_exclude_telemetry_jwt. Los JWT de las revisiones anteriores vencieron como máximo a las 19:40:23 del 7 de noviembre, hora de Madrid.
+- Problemas y cómo se resolvieron: guardé las primeras capturas sin aplicar la redacción de otelToken. Se corrigieron las capturas y el comando de captura. Las versiones previas permanecen en el historial auditable y contienen únicamente esos JWT públicos ya vencidos.

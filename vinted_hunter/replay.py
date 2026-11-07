@@ -2,6 +2,7 @@
 
 import gzip
 import json
+import re
 import shutil
 import sqlite3
 from contextlib import closing
@@ -25,6 +26,13 @@ from vinted_hunter.sources.vinted.item import listing_from_item
 from vinted_hunter.sources.vinted.search import plan_searches
 from vinted_hunter.sources.vinted.user import parse_user, parse_wardrobe
 from vinted_hunter.storage.sqlite_store import SQLiteStore
+
+PUBLIC_JWT = re.compile(rb"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+")
+
+
+def fixture_body(body: bytes) -> bytes:
+    """Elimina el JWT público de telemetría, ajeno al parser de anuncios."""
+    return PUBLIC_JWT.sub(b"REDACTED", body)
 
 
 class ReplayClient(VintedClient):
@@ -123,7 +131,7 @@ def replay(root: Path, url: str, save_fixture: str | None = None) -> dict[str, A
                     "seller.json.gz" if path.startswith("/api/v2/users/")
                     else "wardrobe.html.gz"
                 )
-                (destination / name).write_bytes(gzip.compress(body, mtime=0))
+                (destination / name).write_bytes(gzip.compress(fixture_body(body), mtime=0))
             for index, photo in enumerate(record["body"]["photos"]):
                 path = image_path(folder / "images", photo)
                 if path.is_file():
