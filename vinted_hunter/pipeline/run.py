@@ -65,7 +65,8 @@ def market_for(store: StateStore, profile: Profile, config: Config) -> Market:
         store.plausible_prices(
             profile.id,
             config.scoring.thresholds["plausible"],
-            sweatshirt_categories(config, profile),
+            sweatshirt_categories(config, profile)
+            | {config.ids.catalog_ids["jumpers"]},
             profile.price_floor,
         )
     )
@@ -320,12 +321,15 @@ class Pipeline:
         backfill: bool,
         evidence: Evidence,
         is_new: bool,
+        *,
+        detail_loaded: bool = False,
     ) -> None:
         settings = self.config.scoring.capture
         seller = None
         enriched = False
         try:
-            listing = get_item(client, listing, self.now)
+            if not detail_loaded:
+                listing = get_item(client, listing, self.now)
             enriched = True
             self.run["enriched"] += 1
             self.fetched_details.add(listing.id)

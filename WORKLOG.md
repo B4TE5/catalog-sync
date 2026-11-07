@@ -266,3 +266,10 @@
 - Comandos clave: ficha, vendedor y catálogo padre → HTTP 200. Base remota → 823 pendientes y anuncio objetivo pendiente sin enriquecer. Ruff → 0. Pytest → 82 pasadas.
 - Evidencia: tests/recall/10690539539, tests/fixtures/catalog-parent.html.gz y consultas de SQLite.
 - Problemas y cómo se resolvieron: la ficha confirma Jerséis 1811 y Algodón. El vendedor tiene siete valoraciones y nota 4,0. Se ajusta el mínimo de Stone Island a 4,0 para el recall solicitado y se mantiene la nota visible.
+
+## 2026-11-07 19:26 — C2.2/C2.4/C2.5 · Categoría, replay y batería real
+- Objetivo: recuperar la sudadera de Jerséis y comprobar la precisión con capturas reales.
+- Hecho: consultas por la categoría padre 79, material parseado, filtro de punto, palabras NL/PT y señal textual de autenticación de +10. `vh replay` conserva el estado principal y permite guardar casos. Dos casos de recall y seis fichas de precisión, con una comprobación adicional de la captura de tienda real.
+- Comandos clave: replay de 10690539539 → salida 0, good, 65 puntos. Ruff → 0. Pytest → 99 pasadas. Purga local → 602 a 446 pendientes y 48 a 0 prendas incompatibles. Purga sobre copia de nube → 823 a 357 y 61 a 0.
+- Evidencia: tests/recall, tests/precision y tests/fixtures/catalog-parent.html.gz. La captura de Palm Angels comprueba tanto el descarte de 28 EUR como la foto de tienda.
+- Problemas y cómo se resolvieron: el primer replay falló al cerrar su directorio temporal por un SQLite abierto en Windows. Se cerraron las conexiones de copia y la repetición aprobó. Rhude 10653233816 es una foto sobre manta, por lo que se movió de la muestra de precisión a recall.

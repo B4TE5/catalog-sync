@@ -22,18 +22,24 @@ def plan_searches(
     cursor: int = 0,
     selftest: bool = False,
 ) -> tuple[list[Search], int]:
+    category = config.ids.catalog_ids["sweatshirts_parent"]
+    parent = {"catalog[]": str(category)}
     if selftest:
-        return [Search([p], {"search_text": p.text_queries[0].q}) for p in config.profiles], cursor
+        return [
+            Search([p], {**parent, "search_text": p.text_queries[0].q})
+            for p in config.profiles
+        ], cursor
     grouped: dict[tuple[str, int], list[Profile]] = defaultdict(list)
     high = []
     normal = []
     ids = config.ids
     for profile in config.profiles:
-        category = ids.catalog_ids.get(profile.hood) or ids.catalog_ids.get("sweatshirts")
         if profile.brand in ids.brand_ids and category:
             grouped[profile.size, category].append(profile)
         for query in profile.text_queries:
-            search = Search([profile], {"search_text": query.q}, query.q == "stone island")
+            search = Search(
+                [profile], {**parent, "search_text": query.q}, query.q == "stone island"
+            )
             (high if query.priority == "high" else normal).append(search)
     combined = [
         Search(

@@ -19,10 +19,30 @@ def sweatshirt_categories(config: Config, profile: Profile) -> set[int]:
 
 
 def garment_mismatch(listing: Listing, profile: Profile, config: Config) -> bool:
+    return garment_reason(listing, profile, config) is not None
+
+
+def garment_reason(listing: Listing, profile: Profile, config: Config) -> str | None:
+    words = config.scoring.words
+    text = f"{listing.title} {listing.description or ''}"
+    if matches(listing.title, words["garment_negative"]):
+        return "not_sweatshirt"
+    if (
+        listing.category_id == config.ids.catalog_ids.get("knitted")
+        or matches(text, words.get("knitwear", []))
+        or matches(listing.material or "", words.get("knitwear", []))
+    ):
+        return "knitwear"
     categories = sweatshirt_categories(config, profile)
-    if categories and listing.category_id is not None and listing.category_id not in categories:
-        return True
-    return bool(matches(listing.title, config.scoring.words["garment_negative"]))
+    if listing.category_id is None or listing.category_id in categories:
+        return None
+    if listing.category_id == config.ids.catalog_ids.get("jumpers"):
+        explicit = matches(text, words.get("sweatshirt_explicit", []))
+        cotton = matches(listing.material or "", words.get("cotton", []))
+        generic = matches(text, words["garment_positive"])
+        if explicit or cotton and generic:
+            return None
+    return "not_sweatshirt"
 
 
 def gate(
@@ -35,6 +55,9 @@ def gate(
     detailed: bool = False,
 ) -> tuple[str | None, list[str]]:
     passed = []
+    garment = garment_reason(listing, profile, config)
+    if garment:
+        return garment, passed
     text = " ".join(filter(None, (listing.title, listing.description)))
     words = config.scoring.words
     category_hood = next(
@@ -50,7 +73,7 @@ def gate(
     explicit_sizes = stated_sizes(listing.title, words.get("size_labels", []))
     size = normalize((listing.size or "").split(" / ")[0])
     tests = {
-        "not_sweatshirt": not garment_mismatch(listing, profile, config),
+        "not_sweatshirt": True,
         "price": listing.currency == "EUR" and listing.price <= profile.price_max,
         "replica": not matches(text, words["replica"]),
     }

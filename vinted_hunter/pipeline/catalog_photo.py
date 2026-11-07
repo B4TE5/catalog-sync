@@ -14,8 +14,16 @@ def catalog_style_photo(rgb: np.ndarray, thresholds: dict[str, float]) -> bool:
     matches_edge = (np.max(np.abs(edge - background), axis=-1) <= delta).mean()
     if matches_edge >= thresholds["catalog_edge_fraction"]:
         foreground = np.max(np.abs(sample - background), axis=-1) > delta
+        interior = cv2.erode((~foreground).astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+        gray = cv2.cvtColor(sample.astype(np.uint8), cv2.COLOR_RGB2GRAY)
+        texture = np.abs(cv2.Laplacian(gray, cv2.CV_32F))
+        smooth = bool(interior.any()) and (
+            texture[interior].mean() <= thresholds["catalog_background_max_texture"]
+        )
         occupied = foreground.mean()
-        if thresholds["catalog_min_foreground"] <= occupied <= thresholds["catalog_max_foreground"]:
+        if smooth and (
+            thresholds["catalog_min_foreground"] <= occupied <= thresholds["catalog_max_foreground"]
+        ):
             y, x = np.nonzero(foreground)
             limit = thresholds["catalog_center_offset"] * len(sample)
             if abs(x.mean() - 63.5) <= limit and abs(y.mean() - 63.5) <= limit:

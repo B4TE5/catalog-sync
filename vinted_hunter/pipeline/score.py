@@ -69,6 +69,7 @@ def score(
     for key, label in (
         ("motivated", "Vendedor motivado"),
         ("proof", "Prueba de compra"),
+        ("authenticity_mentioned", "Autenticación mencionada"),
         ("wear", "Desgaste"),
     ):
         words = matches(text, scoring.words[key])

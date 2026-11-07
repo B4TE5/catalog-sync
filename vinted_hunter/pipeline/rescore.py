@@ -28,6 +28,17 @@ def rescore(root: Path, store: SQLiteStore) -> int:
     for row in store.records():
         profile = profiles.get(row["profile"])
         if profile is None:
+            if row["tier"] != "rejected":
+                trace = {**row["trace"], "pending": False, "gate_rejected": "profile_disabled"}
+                trace["score"] = {
+                    "tier": "rejected", "score": 0, "points": {},
+                    "reasons": ["Perfil desactivado"], "flags": [],
+                }
+                store.save(
+                    Listing.model_validate(row["body"]), row["profile"], "rejected", 0,
+                    trace, bool(row["backfill"]),
+                )
+                count += 1
             continue
         count += 1
         listing = Listing.model_validate(row["body"])
@@ -75,7 +86,7 @@ def rescore(root: Path, store: SQLiteStore) -> int:
             reason = "relisted"
         if row["id"] in fake_ids:
             reason = "labelled_fake"
-        pending = reason is None and not (enriched and seller and any(images) and evidence.hashes)
+        pending = reason is None and not (enriched and seller and evidence.hashes)
         pipeline.record(
             listing,
             profile,

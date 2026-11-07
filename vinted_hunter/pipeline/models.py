@@ -23,6 +23,7 @@ class Listing(BaseModel):
     status: str | None = None
     category_id: int | None = None
     color: str | None = None
+    material: str | None = None
     description: str | None = None
     uploaded_at: datetime | None = None
     first_seen: datetime | None = None

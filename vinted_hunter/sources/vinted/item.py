@@ -2,6 +2,7 @@
 
 import re
 from datetime import datetime, timedelta
+from urllib.parse import urlsplit
 
 from vinted_hunter.pipeline.models import Listing
 from vinted_hunter.sources.vinted.catalog import STATUS
@@ -11,6 +12,7 @@ ITEM = re.compile(r'"item":(\{"brand_dto":)')
 ATTRIBUTES = re.compile(r'"attributes":(\[)')
 DESCRIPTION = re.compile(r'"description":(")')
 PHOTOS = re.compile(r'"photos":(\[)')
+PRICE = re.compile(r'"price":(\{)')
 FAVOURITES = re.compile(r'"favourite_count":(\d)')
 RELATIVE_DATE = re.compile(r"hace (\d+|un|una) (minutos?|horas?|días?|semanas?)")
 
@@ -43,6 +45,7 @@ def parse_item(html: str, listing: Listing, observed: datetime) -> Listing:
         size=attributes.get("size"),
         status=STATUS.get(attributes.get("status")),
         color=attributes.get("color"),
+        material=attributes.get("material"),
         category_id=item.get("catalog_id"),
         seller_id=item.get("seller_id") or listing.seller_id,
         description=next(values(payload, DESCRIPTION), None),
@@ -51,3 +54,25 @@ def parse_item(html: str, listing: Listing, observed: datetime) -> Listing:
         uploaded_at=approximate_upload(attributes.get("upload_date") or "", observed),
     )
     return Listing.model_validate(data)
+
+
+def listing_from_item(html: str, url: str, observed: datetime) -> Listing:
+    """Arranca el análisis desde una ficha pública, incluida una prenda vendida."""
+    parts = urlsplit(url)
+    identifier = re.fullmatch(r"/items/([1-9][0-9]*)(?:-[^/]*)?/?", parts.path)
+    if parts.scheme != "https" or parts.hostname != "www.vinted.es" or not identifier:
+        raise ValueError("Se requiere una ficha HTTPS de www.vinted.es")
+    payload = flight_payload(html)
+    item = next(
+        (row for row in values(payload, ITEM) if str(row.get("id")) == identifier[1]), None
+    )
+    price = next(values(payload, PRICE), None)
+    photos = max(values(payload, PHOTOS), key=len, default=[])
+    if item is None or not price or not photos:
+        raise ParseError("Ficha sin precio, fotos o datos del anuncio")
+    listing = Listing(
+        id=int(identifier[1]), title=item["title"], price=price["amount"],
+        currency=price["currency_code"], url=url,
+        photos=[photo["url"] for photo in photos if photo.get("url")],
+    )
+    return parse_item(html, listing, observed)

@@ -24,7 +24,9 @@ detail_attribute_ids:
   status: 50
 catalog_ids:
   sweatshirts: 267  # https://www.vinted.es/catalog/267-hoodies-and-sweaters
-  sweatshirts_parent: 79  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
+  sweatshirts_parent: 79  # Hombre > Ropa > Jerséis y sudaderas; catalogTree, tests/fixtures/catalog-parent.html.gz
+  jumpers: 1811  # Jerséis; misma captura y ficha real 10690539539, Algodón, crewneck
+  knitted: 1815  # De punto; catalogTree de https://www.vinted.es/catalog?catalog%5B%5D=79
   zip_sweatshirts: 1812  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
 status_ids: {}
 color_ids: {}

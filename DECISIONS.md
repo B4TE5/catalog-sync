@@ -349,3 +349,11 @@ La ficha pública 10690539539 confirmó categoría 1811 (Jerséis), Algodón, ta
 El API real del vendedor devolvió feedback_count=7 y feedback_reputation=0,8, equivalente a 4,0/5, con cinco valoraciones positivas y dos negativas. El mínimo del perfil Stone Island se reduce de 4,5 a 4,0 para cumplir el recall prioritario. Se descarta una excepción por ID y se conserva el número y la nota reales en el rastro. Los demás perfiles conservan su mínimo.
 
 La foto de la etiqueta sobre tela causaba una penalización de catálogo. Se mide textura solo dentro del fondo, erosionando su borde. En esa foto la media absoluta del Laplaciano es 4,91 frente a 0,29 en la captura de tienda Palm Angels de 28 EUR. El límite configurable 2,0 separa estos casos. La prueba real de recall usa las cinco fotos descargadas.
+
+## 2026-11-07 19:26 · Casos reales y conservación del estado
+
+`vh replay https://www.vinted.es/items/10690539539-stone-island-sweater --save-fixture recall` terminó good con 65 puntos. Base 40, Muy bueno +10, autenticación mencionada +10 y cinco fotos +5. La visión no leyó QR y detectó cero fotos de catálogo. La foto de la etiqueta era un falso positivo por textura del tejido. El replay usa una copia temporal del estado y la ficha original permanece pendiente en la base principal hasta su enriquecimiento normal.
+
+La revisión visual de Rhude 10653233816 mostró una sudadera sobre una manta. El criterio de textura la acepta y se añadió como segundo caso de recall. La captura de tienda de Palm Angels 10685333948 sirve como caso real de precisión y como regresión independiente de detección visual. No se inventa un anuncio adicional para duplicar esa evidencia.
+
+La revisión automática rechazó deshabilitar el workflow y cancelar el coordinador por el cambio de disponibilidad. Esa operación no se ejecutó. La limpieza se hará en pasadas acotadas del workflow, con el bloqueo existente, guardado y Pages, mientras el coordinador sigue activo.

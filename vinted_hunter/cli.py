@@ -79,6 +79,42 @@ def explain(listing_id: int) -> None:
     show(json.dumps(json.loads(row["trace"]), indent=2, ensure_ascii=False))
 
 
+@app.command("replay")
+def replay_item(
+    url: str,
+    save_fixture: Annotated[
+        Literal["recall", "precision"] | None, typer.Option("--save-fixture")
+    ] = None,
+) -> None:
+    """Analiza una ficha pública sin marcar el anuncio como visto."""
+    from vinted_hunter.replay import replay
+
+    try:
+        record = replay(ROOT, url, save_fixture)
+    except (ValueError, HttpFailure, ParseError) as error:
+        raise typer.BadParameter(str(error)) from None
+    trace = record["trace"]
+    show(f"{record['body']['title']} · {record['body']['price']} EUR")
+    show(f"Resultado {record['tier']} · {record['score']} puntos")
+    for name in trace["gates_passed"]:
+        typer.echo(f"✓ {name}")
+    if trace["gate_rejected"]:
+        typer.echo(f"✗ Descartado · {trace['gate_rejected']}")
+    if trace["seller"]:
+        seller = trace["seller"]
+        typer.echo(f"Vendedor · {seller['feedback_count']} valoraciones · nota {seller['rating']}")
+    evidence = trace["evidence"]
+    typer.echo(f"Visión · {evidence['qr']} · fotos de catálogo {evidence['catalog_photo_count']}")
+    for reason in trace["score"]["reasons"]:
+        typer.echo(f"  {reason}")
+    for query in record["query_coverage"]:
+        label = "Compatible" if query["compatible"] else "Incompatible"
+        typer.echo(f"{label} · {query['query']} · {query['reason']}")
+    typer.echo(record["query_note"])
+    if save_fixture:
+        typer.echo(f"Captura guardada en tests/{save_fixture}/{record['id']}")
+
+
 @app.command()
 def label(listing_id: int, result: Literal["fake", "good", "meh"]) -> None:
     """Guarda una etiqueta manual. Fake activa la lista negra de fotos."""
