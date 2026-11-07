@@ -11,13 +11,34 @@ from rich import print as show
 
 from vinted_hunter.board.build import build
 from vinted_hunter.notify.console import ConsoleNotifier
+from vinted_hunter.pipeline.models import Listing
 from vinted_hunter.pipeline.run import run_pass
+from vinted_hunter.replay import evaluate_fixture
+from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 
 def verify(root: Path, report: bool) -> bool:
     database = f"selftest-{uuid4().hex}.sqlite"
     result = run_pass(root, selftest=True, database=database)
     ConsoleNotifier().publish(result)
+    recall = None
+    if result["scored"] == 0:
+        for manifest in sorted((root / "tests" / "recall").glob("*/capture.json")):
+            candidate = evaluate_fixture(root, manifest.parent)
+            if candidate["tier"] in {"good", "top"}:
+                recall = candidate
+                with SQLiteStore(root / "data" / database) as store:
+                    store.save(
+                        Listing.model_validate(recall["body"]), recall["profile"],
+                        recall["tier"], recall["score"], recall["trace"], False,
+                    )
+                break
+    vision = result["vision"] > 0 or bool(recall and recall["trace"]["evidence"]["hashes"])
+    scoring = result["scored"] > 0 or bool(recall)
+    recall_detail = (
+        f"Caso real capturado {recall['id']} · {recall['tier']} · {recall['score']} puntos"
+        if recall else ""
+    )
     start = time.monotonic()
     board = build(root, database, "selftest")
     board_seconds = round(time.monotonic() - start, 2)
@@ -26,8 +47,8 @@ def verify(root: Path, report: bool) -> bool:
         ("Catálogo", result["seen"] >= 10, f"{result['phases'].get('catalog', 0):.2f} s"),
         ("Gates", bool(result["rejected"]) or bool(result["candidates"]), "embudo"),
         ("Ficha", result["enriched"] > 0, f"{result['enriched']} enriquecidos"),
-        ("Visión", result["vision"] > 0, f"{result['vision']} evaluados"),
-        ("Score", result["scored"] > 0, f"{result['scored']} puntuados"),
+        ("Visión", vision, recall_detail or f"{result['vision']} evaluados"),
+        ("Score", scoring, recall_detail or f"{result['scored']} puntuados"),
         ("Tablero", board.is_file(), f"{board_seconds:.2f} s"),
         (
             "Pasada sin incidentes",

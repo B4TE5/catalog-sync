@@ -32,13 +32,13 @@ Mismas reglas de AGENTS.md §0 (autónomo, sin preguntas, WORKLOG al día, commi
 ## C2.5 — Batería de recall (que no se vuelva a escapar)
 - [x] `tests/recall/`: fixtures reales (ficha completa capturada) de anuncios que DEBEN salir ≥ good. Primer caso: 10690539539. Test que falla si alguno baja de good.
 - [x] `tests/precision/`: fixtures reales de cosas que NO deben pasar (zapatos, pantalón, joya, camiseta, jersey de punto Stone Island, foto de catálogo, Palm Angels fake de 28 €). Test que falla si alguno pasa.
-- [ ] README: cómo añadir un caso a recall/precision con `vh replay <url> --save-fixture recall|precision`.
+- [x] README: cómo añadir un caso a recall/precision con `vh replay <url> --save-fixture recall|precision`.
 
 ## C2.6 — Pendientes del mensaje anterior
-- [ ] Tablero: guardar la clave en localStorage al abrir con `#k=` (try/catch), limpiar el fragmento, descifrar sin fragmento si hay clave guardada, botón "Olvidar clave en este dispositivo", y si la clave guardada no descifra → borrarla y pantalla neutra.
-- [ ] selftest 8/8: que use candidatos que lleguen a score (o un fixture de recall).
+- [x] Tablero: guardar la clave en localStorage al abrir con `#k=` (try/catch), limpiar el fragmento, descifrar sin fragmento si hay clave guardada, botón "Olvidar clave en este dispositivo", y si la clave guardada no descifra → borrarla y pantalla neutra.
+- [x] selftest 8/8: que use candidatos que lleguen a score (o un fixture de recall).
 
 ## C2.7 — Verificación final (obligatoria, todo real)
-- [ ] `ruff`, `pytest` (incluye recall y precision), `pytest -m live`, `vh selftest` 8/8, `vh doctor` en verde.
+- [x] `ruff`, `pytest` (incluye recall y precision), `pytest -m live`, `vh selftest` 8/8, `vh doctor` en verde.
 - [ ] Push y comprobación en Actions de **3 iteraciones del bucle** con el código nuevo: tiempos por pasada, nuevos, descartados por motivo, pendientes. Tablero publicado y abre con la clave.
 - [ ] Informe en SESSION_REPORT.md con el embudo de stone-island antes/después y el resultado de `vh replay` del anuncio perdido.

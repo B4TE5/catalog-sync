@@ -17,8 +17,9 @@ def configured_ids(root: Path) -> list[str]:
     ids = config.ids
     missing = [f"marca {p.brand}" for p in config.profiles if p.brand not in ids.brand_ids]
     missing += [f"talla {size}" for size in ("L", "XL") if size not in ids.size_ids]
-    if "sweatshirts" not in ids.catalog_ids:
-        missing.append("categoría de sudaderas")
+    for key in ("sweatshirts", "sweatshirts_parent", "jumpers", "knitted"):
+        if key not in ids.catalog_ids:
+            missing.append(f"categoría {key}")
     return missing
 
 
@@ -41,7 +42,10 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
         client.home()
         results.append(("Portada y cookies", bool(client.session.cookies), "HTTP 200"))
         response = client.get(
-            "/catalog", "catalog", {"search_text": KNOWN_QUERY, "order": "newest_first"}
+            "/catalog", "catalog", {
+                "search_text": KNOWN_QUERY, "order": "newest_first",
+                "catalog[]": config.ids.catalog_ids["sweatshirts_parent"],
+            }
         )
         try:
             catalog = parse_catalog(response.text, client.base)
@@ -54,7 +58,7 @@ def check(root: Path) -> list[tuple[str, bool, str]]:
             ("Parser", count >= 10, f"HTTP {response.status_code} · {count} anuncios reales")
         )
         stone = config.ids.brand_ids.get("Stone Island")
-        category = config.ids.catalog_ids.get("sweatshirts")
+        category = config.ids.catalog_ids.get("sweatshirts_parent")
         supreme = config.ids.brand_ids.get("Supreme")
         if stone and supreme and category:
             response = client.get(

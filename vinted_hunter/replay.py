@@ -123,7 +123,7 @@ def replay(root: Path, url: str, save_fixture: str | None = None) -> dict[str, A
                 if path.is_file():
                     shutil.copyfile(path, destination / f"photo-{index}.jpg")
             (destination / "capture.json").write_text(json.dumps({
-                "url": url, "captured": now.isoformat(), "profile": profile.id,
+                "url": str(listing.url), "captured": now.isoformat(), "profile": profile.id,
                 "expected": save_fixture, "result": record["tier"],
             }, ensure_ascii=False, indent=2), encoding="utf-8")
         return record

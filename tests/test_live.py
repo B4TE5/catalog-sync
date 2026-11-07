@@ -27,7 +27,10 @@ def client() -> Iterator[VintedClient]:
 @pytest.fixture(scope="module")
 def catalog(client: VintedClient) -> CatalogResult:
     response = client.get(
-        "/catalog", "catalog", {"search_text": "stone island", "order": "newest_first"}
+        "/catalog", "catalog", {
+            "search_text": "stone island", "order": "newest_first",
+            "catalog[]": load_config(ROOT).ids.catalog_ids["sweatshirts_parent"],
+        }
     )
     return parse_catalog(response.text, client.base)
 
@@ -59,7 +62,7 @@ def test_live_filtered_catalog(client: VintedClient, label: str) -> None:
         "/catalog",
         "catalog",
         {
-            "catalog[]": ids.catalog_ids["sweatshirts"],
+            "catalog[]": ids.catalog_ids["sweatshirts_parent"],
             "brand_ids[]": ids.brand_ids["Stone Island"][0],
             "size_ids[]": size,
             "order": "newest_first",

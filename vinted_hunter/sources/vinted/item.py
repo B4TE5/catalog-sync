@@ -13,6 +13,7 @@ ATTRIBUTES = re.compile(r'"attributes":(\[)')
 DESCRIPTION = re.compile(r'"description":(")')
 PHOTOS = re.compile(r'"photos":(\[)')
 PRICE = re.compile(r'"price":(\{)')
+CANONICAL = re.compile(r'<link[^>]*rel="canonical"[^>]*href="([^"]+)"')
 FAVOURITES = re.compile(r'"favourite_count":(\d)')
 RELATIVE_DATE = re.compile(r"hace (\d+|un|una) (minutos?|horas?|días?|semanas?)")
 
@@ -70,6 +71,15 @@ def listing_from_item(html: str, url: str, observed: datetime) -> Listing:
     photos = max(values(payload, PHOTOS), key=len, default=[])
     if item is None or not price or not photos:
         raise ParseError("Ficha sin precio, fotos o datos del anuncio")
+    canonical = CANONICAL.search(html)
+    if canonical:
+        actual = urlsplit(canonical[1])
+        actual_id = re.match(r"/items/([0-9]+)(?:-|/|$)", actual.path)
+        if (
+            actual.scheme == "https" and actual.hostname == parts.hostname
+            and actual_id and actual_id[1] == identifier[1]
+        ):
+            url = canonical[1]
     listing = Listing(
         id=int(identifier[1]), title=item["title"], price=price["amount"],
         currency=price["currency_code"], url=url,

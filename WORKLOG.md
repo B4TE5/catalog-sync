@@ -280,3 +280,10 @@
 - Comandos clave: Ruff → 0. Pytest → 101 pasadas, incluidas prioridad por perfil y entrada del backlog ausente del catálogo. Chromium → Todos excluye pendientes y su pestaña los muestra.
 - Evidencia: tests/test_recall_rules.py, pipeline/run.py y el input pending_only del workflow.
 - Problemas y cómo se resolvieron: el estado antiguo necesitaba confirmar cientos de tallas en ficha. Las pasadas de limpieza usan el mismo bloqueo, guardado y Pages que las normales. Las fichas con HTTP 404 quedan como no disponibles.
+
+## 2026-11-07 19:32 — C2.6 · Clave persistente y autoprueba
+- Objetivo: abrir el tablero sin reenviar el fragmento y completar las ocho etapas de verificación.
+- Hecho: clave en localStorage con try/catch, fragmento borrado, reapertura, botón para olvidar y limpieza de clave inválida. Selftest dispone de fallback con un caso real de recall que también se guarda en su tablero temporal. URLs de captura normalizadas con el canonical real de la ficha. README y diagnóstico actualizados.
+- Comandos clave: Chromium → todos los casos aprobados, incluido almacenamiento bloqueado. Doctor → salida 0 y catálogo HTTP 200 con 96 anuncios. Live → 4 pasadas en 37,45 s. Selftest → salida 0, 8/8, 17 peticiones y 76,0 s, con un score de la muestra en vivo.
+- Evidencia: encrypted.html, selftest.py y capturas reales de recall. El fallback no fue necesario en esta ejecución en vivo.
+- Problemas y cómo se resolvieron: la primera QA comprobó el borrado antes de finalizar el descifrado de la clave inválida. Se añadió espera explícita a localStorage vacío y pasó. La primera ejecución sin elevación quedó esperando al navegador y se repitió con el entorno autorizado.

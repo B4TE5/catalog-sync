@@ -9,12 +9,25 @@
 body{margin:0;background:#101416;color:#e7e9ea;font:1rem system-ui,sans-serif}
 main{max-width:34rem;margin:18vh auto;padding:1.5rem}
 iframe{display:block;border:0;width:100vw;height:100vh}
+button{position:fixed;top:1rem;right:1rem;padding:.7rem;border:1px solid #657477;border-radius:.6rem;background:#101416;color:#e7e9ea;cursor:pointer}
 </style>
 <main><h1>Panel privado</h1><p id="status">Abre el enlace con su clave.</p></main>
+<button id="forget" hidden>Olvidar clave en este dispositivo</button>
 <script type="application/json" id="payload">__ENVELOPE__</script>
 <script>
 (async () => {
-  const key = new URLSearchParams(location.hash.slice(1)).get("k");
+  const storage = "catalog-sync.board-key";
+  const supplied = new URLSearchParams(location.hash.slice(1)).get("k");
+  let key = supplied;
+  try {
+    if (supplied) localStorage.setItem(storage, supplied);
+    else key = localStorage.getItem(storage);
+  } catch {}
+  if (supplied) {
+    const clean = new URL(location.href);
+    clean.hash = "";
+    history.replaceState(null, "", clean.href);
+  }
   if (!key) return;
   try {
     const envelope = JSON.parse(document.querySelector("#payload").textContent);
@@ -33,9 +46,17 @@ iframe{display:block;border:0;width:100vw;height:100vh}
     frame.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
     frame.referrerPolicy = "no-referrer";
     frame.srcdoc = new TextDecoder().decode(result);
-    document.body.replaceChildren(frame);
+    const forget = document.querySelector("#forget");
+    forget.hidden = false;
+    forget.onclick = () => {
+      try { localStorage.removeItem(storage); } catch {}
+      location.reload();
+    };
+    document.body.replaceChildren(frame, forget);
   } catch {
-    document.querySelector("#status").textContent = "La clave no abre este panel.";
+    try { localStorage.removeItem(storage); } catch {}
+    document.querySelector("#status").textContent = supplied
+      ? "La clave no abre este panel." : "Abre el enlace con su clave.";
   }
 })();
 </script>

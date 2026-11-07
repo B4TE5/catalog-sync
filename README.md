@@ -113,3 +113,24 @@ cifrados, usa el enlace privado que genera `vh board-url`.
 Los botones Fake, Buena y No me interesa abren una solicitud prellenada en
 GitHub. El flujo de feedback acepta solicitudes válidas del dueño del repositorio
 y comparte la exclusión mutua con la captura. En local se puede usar `vh label`.
+
+## Diagnóstico y casos de regresión
+
+`uv run vh replay <url>` descarga una ficha pública, incluido un anuncio vendido,
+y explica sus gates, vendedor, visión, puntuación y compatibilidad con las búsquedas.
+La compatibilidad describe los filtros y el texto. La posición histórica en el
+buscador queda fuera de esa comprobación. El comando trabaja sobre una copia
+temporal del estado y conserva el estado principal.
+
+Para añadir una prenda que debe alcanzar Buena, usa
+`uv run vh replay <url> --save-fixture recall`. Para una prenda que debe quedar
+descartada, usa `--save-fixture precision`. Los casos guardan la ficha real,
+el vendedor y las fotos que se hayan consultado. Ejecuta `uv run pytest` después.
+Las pruebas descubren los directorios de casos y los evalúan con las reglas vigentes.
+La captura de tienda de Palm Angels también comprueba la detección de fotos de catálogo.
+
+La autoprueba usa el catálogo en vivo y hasta tres fichas. Si todas terminan
+descartadas, completa visión, score y tablero con un caso real de recall e indica
+su identificador y resultado en la salida. `vh run --pending-only` dedica una
+pasada a la cola guardada. En Actions, las pasadas de limpieza comparten el bloqueo
+de estado y publican el tablero al terminar.
