@@ -85,6 +85,17 @@ la validación y los límites observados en esta sesión.
 
 ## Captura programada y avisos
 
+`hunt.yml` mantiene un coordinador durante un máximo de 340 minutos. Inicia
+una pasada cada 8–12 minutos, medidos entre comienzos, y solicita su relevo
+con el token automático de Actions. El cron horario comprueba por API si ya
+hay un coordinador y sale cuando lo encuentra.
+
+Cada pasada es una ejecución `Snapshot` del mismo workflow que restaura,
+captura, guarda y publica el tablero cifrado. Comparte el bloqueo de estado
+con feedback y lo libera al acabar. El coordinador continúa tras una pasada
+fallida. Los errores de captura siguen alimentando las alertas de salud.
+Una cancelación manual detiene el coordinador sin solicitar relevo.
+
 El flujo programado y el manual restauran la instantánea cifrada de SQLite de
 la rama de estado. Después de capturar, sustituyen su única revisión. El
 artefacto del panel usa AES-GCM y WebCrypto. Una vez habilitado Pages, el comando

@@ -238,3 +238,10 @@
 - Comandos clave: `hunt` 42296435101 → verde, 25 peticiones, 889 vistos, 112 nuevos. `deploy-pages` → verde. Pages → HTTP 200. `vh notify-test` → dos HTTP 200. API de runs programados → HTTP 200, total 0.
 - Evidencia: jobs y logs del run 42296435101, coincidencia SHA-256 del HTML servido con el artefacto y lectura de las acciones recibidas mediante la API de ntfy.
 - Problemas y cómo se resolvieron: el primer intento de QA usó `scratch/.venv` y falló con `ModuleNotFoundError` para Playwright. La repetición con `.venv` aprobó los tres casos.
+
+## 2026-11-07 17:30 — Bucle · Implementación y regresiones
+- Objetivo: sustituir la cadencia por cron por un coordinador continuo con relevo automático.
+- Hecho: `hunt.yml` incluye coordinador, comprobación por API, concurrencia y pasadas con guardado y Pages. `cloud_loop.py` programa intervalos, continúa tras fallos y solicita relevo con `gh workflow run hunt.yml`. README actualizado.
+- Comandos clave: Ruff → salida 0 tras corregir dos líneas demasiado largas en los tests. Pruebas de carreras de inicio, relevo, fallo de pasada y respuesta de dispatch incierta añadidas.
+- Evidencia: `.github/workflows/hunt.yml`, `vinted_hunter/cloud_loop.py` y `tests/test_cloud_loop.py`.
+- Problemas y cómo se resolvieron: un bloqueo global durante cinco horas impediría feedback. Se conserva el bloqueo del estado para cada pasada y se usa otro para el coordinador.

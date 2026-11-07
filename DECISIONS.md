@@ -321,3 +321,11 @@ Se mantuvo shadow_mode activo. El enlace de ntfy usa la URL del panel sin query 
 ## 2026-11-06 22:26 · Destino público del botón Tablero
 
 La API de Pages ya devolvía HTTP 200 y la consulta de la variable `BOARD_URL` devolvió HTTP 403. Se usa la misma dirección pública de Pages que deriva `vh board-url`, con `BOARD_URL` como alternativa explícita para otro destino. Se descartó requerir permisos de Variables de Actions. El botón apunta al panel neutro y la clave sigue en el enlace privado generado en local.
+
+## 2026-11-07 17:30 · Bucle de Actions y exclusión del estado
+
+El mismo `hunt.yml` admite un coordinador y pasadas `Snapshot` correlacionadas. El coordinador usa únicamente la CLI de GitHub y el token automático con `actions: write`. Cada pasada conserva los pasos existentes de restauración, `vh run`, guardado cifrado y Pages. El bloqueo `hunt` se comparte con feedback durante la pasada. El coordinador usa `hunt-loop`, de modo que feedback dispone del estado entre pasadas. Se descartó mantener el bloqueo de feedback durante 340 minutos.
+
+El intervalo de 480–720 segundos se mide entre comienzos. Se reserva tiempo para acabar la última pasada y solicitar el relevo antes de los 340 minutos. El sucesor recibe el próximo instante de inicio para conservar la cadencia. Un despertar horario consulta los coordinadores activos y las carreras se resuelven por ID y concurrencia. Una cancelación manual impide el relevo. La prueba real arrancará con un máximo de 35 minutos para observar tres pasadas y el relevo. El sucesor recuperará el máximo normal de 340 minutos.
+
+El nombre `GH_TOKEN` dentro del runner es la variable estándar de `gh`, asignada a `github.token`. Los secretos del repositorio siguen siendo los de cifrado y ntfy. [Autenticación y dispatch de GitHub](https://docs.github.com/en/actions/concepts/security/github_token), [CLI de workflow](https://cli.github.com/manual/gh_workflow_run)
