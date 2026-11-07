@@ -350,3 +350,17 @@
 - Comandos clave: replay → salida 0; Chromium sobre Pages → salida 0, Todos/Pendientes, clave persistente, fragmento limpio, olvidar, clave inválida y almacenamiento bloqueado aprobados. Limpieza 42407702784 → 232,43 s, 52 pendientes, 0 incompatibles conocidos y sin errores.
 - Evidencia: data/correction2-replay-final.log, scratch/correction2-actions.json, run 42407702784 y QA del sitio público.
 - Problemas y cómo se resolvieron: la primera QA nueva comparaba el total de pendientes con solo las 48 tarjetas de la primera página. Se recorrió el botón de paginación antes de comparar. El producto funcionaba correctamente.
+
+## 2026-11-07 21:03 — C2.3/C2.7 · Migración final en la nube
+- Objetivo: reevaluar los falsos negativos y medir la cola con las reglas definitivas.
+- Hecho: Snapshot normal 42408130027 aplicó correction-2.2, guardó estado cifrado y publicó Pages. Quedaron 131 pendientes tras reabrir decisiones antiguas. La limpieza 11 redujo a 92, con 0 incompatibles conocidos; continúa la confirmación de fichas.
+- Comandos clave: normal → success, 826 vistos, 9 nuevos, 226,69 s; limpieza 42408403346 → success, 225,85 s, 20 not_sweatshirt, 18 listing_unavailable y 1 size. Sin incidentes en ambas.
+- Evidencia: scratch/correction2-actions.json, scratch/correction2-validation.json y los runs de Actions.
+- Problemas y cómo se resolvieron: una reducción de pendientes anterior a corregir falsos negativos no basta. La acreditación final exige tres índices consecutivos, correction-2.2, cero fichas pendientes sin confirmar y comienzos separados 8–12 minutos.
+
+## 2026-11-07 21:22 — C2.2/C2.3 · Cola confirmada y limpieza terminada
+- Objetivo: terminar el enriquecimiento de la cola sin ocultar prendas desconocidas.
+- Hecho: catorce limpiezas reales completadas en verde, cada una con restauración, guardado, cifrado y Pages. La última 42410212943 deja 0 pendientes, 0 incompatibles pendientes/aceptados y 0 fichas pendientes sin confirmar. El coordinador continúa activo y la observación de tres pasadas normales sigue abierta.
+- Comandos clave: última limpieza → success, 45,04 s, 7 descartes por talla y 2 por prenda. Auditoría del conjunto → 14 success y todos los pasos persistidos/publicados, sin coincidencias de secretos; máximo observado de limpieza 232,43 s.
+- Evidencia: scratch/correction2-actions.json y SQLite real data/loop-proof.sqlite. La cohorte original de 1.368 Stone Island conserva todos sus IDs, 321 enriquecidos, 1 good (10690539539, 65 puntos) y 1.367 rechazados con razón.
+- Problemas y cómo se resolvieron: la migración final reabrió falsos negativos y fichas antiguas sin material; se confirmaron con Vinted real. No se cambió el ritmo humano ni se detuvo el coordinador. Se aclara en la documentación que los casos rechazados antes de consultar vendedor/fotos solo guardan la ficha realmente consultada.

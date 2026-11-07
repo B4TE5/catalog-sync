@@ -18,4 +18,4 @@ Cuerpos HTTP comprimidos, sin cabeceras ni cookies de la sesión. Se reemplazó 
 
 - `catalog-parent.html.gz` — [padre de jerséis y sudaderas de hombre](https://www.vinted.es/catalog?catalog%5B%5D=79&order=newest_first), 2026-11-07, HTTP 200. Conserva la taxonomía real: padre 79, jerséis 1811, sudaderas 267, sudaderas con cremallera 1812 y punto grueso 1815. JWT de telemetría redactado.
 
-Los casos de `tests/recall/` y `tests/precision/` guardan ficha, vendedor, armario y fotos reales. Cada `capture.json` identifica su procedencia; los HTML se anonimizan igual que estas capturas. Se añaden mediante `vh replay <url> --save-fixture recall|precision`.
+Los casos de `tests/recall/` y `tests/precision/` guardan la ficha real y, cuando superan los gates previos, el vendedor, armario y fotos consultados. Cada `capture.json` identifica su procedencia; los HTML se anonimizan igual que estas capturas. Se añaden mediante `vh replay <url> --save-fixture recall|precision`.
