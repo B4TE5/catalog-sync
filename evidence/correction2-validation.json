@@ -1,0 +1,862 @@
+{
+  "captured": "2026-11-08T01:25:27.673903+01:00",
+  "rules_revision": "correction-2.2",
+  "state": {
+    "state": "7d39031ce6225737cccb75943cc52acce7815c13",
+    "parents": 0,
+    "state_run": "2026-11-08T00:15:35.520810+00:00",
+    "board_run": "2026-11-08T00:15:35.520810+00:00",
+    "seen": 820,
+    "new": 9,
+    "inventory": 3210,
+    "first_observed": 8,
+    "actual_drops": 1,
+    "board_current": true,
+    "pending": 0,
+    "pending_unconfirmed": 0,
+    "rules_revision": "correction-2.2",
+    "wrong_pending": 0,
+    "pending_by_profile": {
+      "stone-island": 0,
+      "twojeys": 0,
+      "yzy-gap": 0,
+      "heron-preston": 0,
+      "supreme": 0,
+      "rhude": 0,
+      "palm-angels": 0,
+      "palace": 0
+    },
+    "retry_at": ""
+  },
+  "before": {
+    "total": 2465,
+    "pending": 823,
+    "wrong_pending": 80,
+    "wrong_accepted": 0,
+    "pending_unconfirmed": 823,
+    "pending_categories": {
+      "None": 823
+    },
+    "pending_by_profile": {
+      "palm-angels": 136,
+      "stone-island": 366,
+      "supreme": 168,
+      "twojeys": 30,
+      "heron-preston": 55,
+      "rhude": 35,
+      "yzy-gap": 33
+    },
+    "stone": {
+      "seen": 1368,
+      "enriched": 102,
+      "tiers": {
+        "rejected": 1002,
+        "pending": 366
+      },
+      "rejected": {
+        "price": 629,
+        "not_sweatshirt": 364,
+        "size": 8,
+        "color": 1
+      }
+    }
+  },
+  "after": {
+    "total": 3210,
+    "pending": 0,
+    "wrong_pending": 0,
+    "wrong_accepted": 0,
+    "pending_unconfirmed": 0,
+    "pending_categories": {},
+    "pending_by_profile": {},
+    "stone": {
+      "seen": 1766,
+      "enriched": 471,
+      "tiers": {
+        "rejected": 1764,
+        "low": 1,
+        "good": 1
+      },
+      "rejected": {
+        "price": 708,
+        "not_sweatshirt": 570,
+        "knitwear": 126,
+        "size": 196,
+        "status": 6,
+        "color": 26,
+        "too_cheap_for_brand": 88,
+        "listing_unavailable": 34,
+        "hood": 7,
+        "replica": 2,
+        "seller_rating": 1
+      }
+    },
+    "stone_original_cohort": {
+      "seen": 1368,
+      "enriched": 321,
+      "tiers": {
+        "rejected": 1367,
+        "good": 1
+      },
+      "rejected": {
+        "price": 553,
+        "not_sweatshirt": 469,
+        "size": 120,
+        "knitwear": 77,
+        "too_cheap_for_brand": 81,
+        "color": 19,
+        "listing_unavailable": 34,
+        "status": 4,
+        "hood": 7,
+        "replica": 2,
+        "seller_rating": 1
+      }
+    },
+    "missing_original_stone": []
+  },
+  "target": {
+    "id": 10690539539,
+    "tier": "good",
+    "score": 65
+  },
+  "iterations": [
+    {
+      "id": 42427270371,
+      "title": "Snapshot 42420026075-1-10",
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "created": "2026-11-07T23:53:30Z",
+      "capture_start": "2026-11-07T23:53:43Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        14,
+        781,
+        1
+      ],
+      "body": {
+        "start": "2026-11-07T23:53:43.886360+00:00",
+        "end": "2026-11-07T23:55:01.260031+00:00",
+        "duration": 77.36,
+        "new": 1,
+        "seen": 781,
+        "rejected": {
+          "size": 1
+        },
+        "enriched": 1,
+        "scored": 0,
+        "vision": 0,
+        "errors": [],
+        "pending": 0,
+        "pending_unconfirmed": 0,
+        "pending_by_profile": {
+          "stone-island": 0,
+          "twojeys": 0,
+          "yzy-gap": 0,
+          "heron-preston": 0,
+          "rhude": 0
+        },
+        "rules_revision": "correction-2.2",
+        "pending_only": false,
+        "budget": {
+          "catalog": 12,
+          "enrich": 1
+        }
+      },
+      "price_audit": {
+        "first_observed": 1,
+        "actual_drops": 0
+      }
+    },
+    {
+      "id": 42428059280,
+      "title": "Snapshot 42420026075-1-11",
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "created": "2026-11-08T00:04:08Z",
+      "capture_start": "2026-11-08T00:04:24Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        16,
+        766,
+        9
+      ],
+      "body": {
+        "start": "2026-11-08T00:04:24.689233+00:00",
+        "end": "2026-11-08T00:05:52.919697+00:00",
+        "duration": 88.22,
+        "new": 9,
+        "seen": 766,
+        "rejected": {
+          "price": 5,
+          "knitwear": 1,
+          "size": 3
+        },
+        "enriched": 3,
+        "scored": 0,
+        "vision": 0,
+        "errors": [],
+        "pending": 0,
+        "pending_unconfirmed": 0,
+        "pending_by_profile": {
+          "stone-island": 0,
+          "twojeys": 0,
+          "yzy-gap": 0,
+          "heron-preston": 0,
+          "rhude": 0
+        },
+        "rules_revision": "correction-2.2",
+        "pending_only": false,
+        "budget": {
+          "catalog": 12,
+          "enrich": 3
+        }
+      },
+      "price_audit": {
+        "first_observed": 9,
+        "actual_drops": 0
+      }
+    },
+    {
+      "id": 42428917006,
+      "title": "Snapshot 42420026075-1-12",
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "created": "2026-11-08T00:15:22Z",
+      "capture_start": "2026-11-08T00:15:35Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        15,
+        820,
+        9
+      ],
+      "body": {
+        "start": "2026-11-08T00:15:35.520810+00:00",
+        "end": "2026-11-08T00:17:05.191179+00:00",
+        "duration": 89.66,
+        "new": 9,
+        "seen": 820,
+        "rejected": {
+          "price": 6,
+          "not_sweatshirt": 3
+        },
+        "enriched": 2,
+        "scored": 0,
+        "vision": 0,
+        "errors": [],
+        "pending": 0,
+        "pending_unconfirmed": 0,
+        "pending_by_profile": {
+          "stone-island": 0,
+          "twojeys": 0,
+          "yzy-gap": 0,
+          "heron-preston": 0,
+          "rhude": 0
+        },
+        "rules_revision": "correction-2.2",
+        "pending_only": false,
+        "budget": {
+          "catalog": 12,
+          "enrich": 2
+        }
+      },
+      "price_audit": {
+        "first_observed": 8,
+        "actual_drops": 1
+      }
+    }
+  ],
+  "maintenance": [
+    {
+      "id": 42401964117,
+      "sha": "24c3b3ea1521c76b621be4f4675b685edfb548ee",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 319,
+        "pending_unconfirmed": null,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T18:34:44.343709+00:00",
+        "end": "2026-11-07T18:38:30.820535+00:00",
+        "duration": 226.47,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "size": 10,
+          "not_sweatshirt": 16,
+          "knitwear": 5,
+          "listing_unavailable": 2,
+          "hood": 1,
+          "color": 2
+        },
+        "enriched": 34,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 36
+        },
+        "rescored": 2243
+      }
+    },
+    {
+      "id": 42402334936,
+      "sha": "24c3b3ea1521c76b621be4f4675b685edfb548ee",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 366,
+        "pending_unconfirmed": null,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T18:43:26.606661+00:00",
+        "end": "2026-11-07T18:47:15.605448+00:00",
+        "duration": 228.99,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "too_cheap_for_brand": 24,
+          "size": 13,
+          "not_sweatshirt": 3,
+          "knitwear": 4,
+          "listing_unavailable": 12,
+          "color": 4,
+          "hood": 2,
+          "status": 1
+        },
+        "enriched": 27,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 39
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42403042531,
+      "sha": "f9b40db8c4ae24772a8b7d9b77be1446b8fd5dda",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 311,
+        "pending_unconfirmed": null,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T18:52:16.977046+00:00",
+        "end": "2026-11-07T18:56:02.445697+00:00",
+        "duration": 225.46,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "size": 8,
+          "not_sweatshirt": 11,
+          "knitwear": 9,
+          "listing_unavailable": 5,
+          "status": 1,
+          "color": 1,
+          "hood": 1
+        },
+        "enriched": 31,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 36
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42403764845,
+      "sha": "f9b40db8c4ae24772a8b7d9b77be1446b8fd5dda",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 261,
+        "pending_unconfirmed": null,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T19:00:59.183386+00:00",
+        "end": "2026-11-07T19:04:47.440169+00:00",
+        "duration": 228.24,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "not_sweatshirt": 8,
+          "size": 11,
+          "listing_unavailable": 2,
+          "knitwear": 6,
+          "color": 1,
+          "hood": 1
+        },
+        "enriched": 27,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 29
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42404480517,
+      "sha": "554dd873238c05dd27a1c115cf9b65232a734485",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 278,
+        "pending_unconfirmed": 278,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T19:09:45.975061+00:00",
+        "end": "2026-11-07T19:13:32.905463+00:00",
+        "duration": 226.92,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "not_sweatshirt": 17,
+          "size": 5,
+          "listing_unavailable": 18
+        },
+        "enriched": 22,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 40
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42405202806,
+      "sha": "3d63a16ddc50da3fe6301ec6574902656bc4afe1",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 219,
+        "pending_unconfirmed": 219,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T19:18:29.674457+00:00",
+        "end": "2026-11-07T19:22:20.204935+00:00",
+        "duration": 230.52,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "size": 12,
+          "knitwear": 6,
+          "not_sweatshirt": 14,
+          "listing_unavailable": 6
+        },
+        "enriched": 32,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 38
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42405927153,
+      "sha": "3d63a16ddc50da3fe6301ec6574902656bc4afe1",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 172,
+        "pending_unconfirmed": 172,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T19:27:15.316355+00:00",
+        "end": "2026-11-07T19:31:03.332164+00:00",
+        "duration": 228.01,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "not_sweatshirt": 5,
+          "knitwear": 4,
+          "size": 9,
+          "color": 2,
+          "catalog_photos_only": 1
+        },
+        "enriched": 25,
+        "scored": 4,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 57
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42406640767,
+      "sha": "bf5af70dd309681340f58ba6e0df3df570c78109",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 139,
+        "pending_unconfirmed": 139,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T19:31:55.195732+00:00",
+        "end": "2026-11-07T19:35:43.683722+00:00",
+        "duration": 228.48,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "knitwear": 2,
+          "size": 15,
+          "not_sweatshirt": 11,
+          "status": 2,
+          "seller_rating": 1
+        },
+        "enriched": 33,
+        "scored": 2,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 53
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42407025915,
+      "sha": "bf5af70dd309681340f58ba6e0df3df570c78109",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 94,
+        "pending_unconfirmed": 94,
+        "wrong_pending": 0,
+        "rules_revision": null
+      },
+      "run": {
+        "start": "2026-11-07T19:40:39.617434+00:00",
+        "end": "2026-11-07T19:44:26.401367+00:00",
+        "duration": 226.77,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "size": 11,
+          "not_sweatshirt": 13,
+          "knitwear": 1,
+          "hood": 1
+        },
+        "enriched": 29,
+        "scored": 3,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 57
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42407702784,
+      "sha": "4e80625910c01ffb94e1afc74193fca10298728b",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 52,
+        "pending_unconfirmed": 52,
+        "wrong_pending": 0,
+        "rules_revision": "correction-2.1"
+      },
+      "run": {
+        "start": "2026-11-07T19:49:24.037115+00:00",
+        "end": "2026-11-07T19:53:16.481419+00:00",
+        "duration": 232.43,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "not_sweatshirt": 7,
+          "photos": 1,
+          "size": 11,
+          "knitwear": 1,
+          "catalog_photos_only": 1,
+          "status": 1
+        },
+        "enriched": 26,
+        "scored": 4,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 56
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42408403346,
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 92,
+        "pending_unconfirmed": 92,
+        "wrong_pending": 0,
+        "rules_revision": "correction-2.2"
+      },
+      "run": {
+        "start": "2026-11-07T19:58:11.178022+00:00",
+        "end": "2026-11-07T20:01:57.033199+00:00",
+        "duration": 225.85,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "not_sweatshirt": 20,
+          "listing_unavailable": 18,
+          "size": 1
+        },
+        "enriched": 21,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 39
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42409085670,
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 43,
+        "pending_unconfirmed": 43,
+        "wrong_pending": 0,
+        "rules_revision": "correction-2.2"
+      },
+      "run": {
+        "start": "2026-11-07T20:06:56.989257+00:00",
+        "end": "2026-11-07T20:10:48.598025+00:00",
+        "duration": 231.59,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "not_sweatshirt": 18,
+          "listing_unavailable": 7,
+          "size": 4
+        },
+        "enriched": 25,
+        "scored": 3,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 62
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42409835085,
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 17,
+        "pending_unconfirmed": 17,
+        "wrong_pending": 0,
+        "rules_revision": "correction-2.2"
+      },
+      "run": {
+        "start": "2026-11-07T20:11:36.906652+00:00",
+        "end": "2026-11-07T20:15:22.016570+00:00",
+        "duration": 225.1,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "size": 15,
+          "not_sweatshirt": 4,
+          "knitwear": 2,
+          "status": 1,
+          "seller_feedback": 2
+        },
+        "enriched": 26,
+        "scored": 2,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 42
+        },
+        "rescored": null
+      }
+    },
+    {
+      "id": 42410212943,
+      "sha": "4b87b55fe176991af14505644ffbd4cffdfa6209",
+      "conclusion": "success",
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "pages": 200,
+      "checkpoint": {
+        "pending": 0,
+        "pending_unconfirmed": 0,
+        "wrong_pending": 0,
+        "rules_revision": "correction-2.2"
+      },
+      "run": {
+        "start": "2026-11-07T20:20:28.055948+00:00",
+        "end": "2026-11-07T20:21:13.105367+00:00",
+        "duration": 45.04,
+        "new": 0,
+        "seen": 0,
+        "rejected": {
+          "size": 7,
+          "not_sweatshirt": 2
+        },
+        "enriched": 9,
+        "scored": 0,
+        "errors": [],
+        "pending_only": true,
+        "budget": {
+          "catalog": 0,
+          "enrich": 9
+        },
+        "rescored": null
+      }
+    }
+  ],
+  "local_mirror": {
+    "archived_listings": 2445,
+    "archived_labels": 0,
+    "local_only_ids": 1586,
+    "listings": 3210,
+    "labels": 1,
+    "pending": 0,
+    "wrong_pending": 0,
+    "wrong_accepted": 0,
+    "pending_unconfirmed": 0
+  }
+}

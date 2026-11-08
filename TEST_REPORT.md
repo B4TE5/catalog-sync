@@ -1,80 +1,56 @@
-# Informe de pruebas
+# Informe de pruebas · CORRECCION_2
 
-2026-11-06T20:20:23.261573+01:00
+2026-11-08T01:25:27.673903+01:00 · Revisión correction-2.2. Verificación local nativa en Windows y pasadas reales en Ubuntu de Actions. Todas las comprobaciones terminaron en verde.
 
-- `vh selftest --report` · 8/8 etapas · 115.67 s · 20 peticiones.
-  - ✅ Home y cookies · sesión pública
-  - ✅ Catálogo · 45.58 s
-  - ✅ Gates · embudo
-  - ✅ Ficha · 2 enriquecidos
-  - ✅ Visión · 2 evaluados
-  - ✅ Score · 2 puntuados
-  - ✅ Tablero · 0.05 s
-  - ✅ Pasada sin incidentes · 69.55 s de procesamiento
+| Comando | Resultado | Duración |
+| --- | --- | --- |
+| `uv run --offline ruff check` | salida 0 | — |
+| `uv run --offline pytest -q` | 106 aprobadas, 4 excluidas | 8,26 s |
+| `uv run --offline pytest -q -m live` | 4 aprobadas, 106 excluidas | 35,46 s |
+| `uv run --offline vh selftest` | salida 0, 8/8 etapas | 67,3 s |
+| `uv run --offline vh doctor` | salida 0, todos los checks verdes | — |
+| `uv run --offline vh replay https://www.vinted.es/items/10690539539-stone-island-sweater` | salida 0, good 65 | — |
 
-## pytest offline
+## Alcance de las pruebas
 
-Salida 0.
+- Offline: parser con capturas reales, gates y datos desconocidos, NL/PT, algodón/punto y colisión lã/la, prioridad y backlog, dedupe, precios, scoring, QR/pHash/ORB, recall/precisión, estado cifrado, notifier y coordinación de Actions.
+- Live: catálogo, ficha, vendedor/armario y filtros L/XL contra Vinted real.
+- Selftest en base aislada: home/cookies, 480 vistos, gates, tres fichas enriquecidas, visión, score, tablero y pasada sin incidentes. Usó 13 peticiones. Las tres fichas se descartaron antes de score; visión/score se verificaron con el caso real de recall 10653233816, good 70, indicado expresamente en la salida. Se generó su tablero temporal.
+- Doctor: home/cookies HTTP 200, parser con 96 anuncios, marcas activas combinadas y filtros reales L/XL con 96 Stone Island de la talla solicitada; salud healthy.
+- Replay prioritario: todos los gates aprobados, vendedor con siete valoraciones y nota 4,0, cinco pHash, QR none, cero fotos de catálogo y ninguna coincidencia ORB. Compatibilidad de filtros/texto explicada por query; no se inventa una posición histórica del anuncio vendido.
+- Chromium sobre Pages real: Todos excluye pendientes, pestaña Pendientes y paginación; clave guardada, fragmento limpio, reapertura, olvidar, borrado de clave inválida y descifrado con localStorage bloqueado. La clave se mantuvo en memoria.
+- Integridad de SQLite comprobada al archivar el ensayo local y copiar el estado operativo validado. La etiqueta de feedback de nube se conserva.
 
-```text
-........................................................                 [100%]
-56 passed, 4 deselected in 3.30s
+Salida de las verificaciones tras la reanudación en `data/correction2-resume-checks.log`. Fixtures reales en `tests/fixtures`, `tests/recall` y `tests/precision`. Las pruebas de límites y fallos de red usan dobles de HTTP; las capturas del parser y de recall/precisión proceden de Vinted real.
 
-```
+## Tres iteraciones normales recientes de Actions
 
-## pytest -m live
+| Run Snapshot | Inicio Madrid | Segundos | Vistos | Nuevos | Pendientes | Sin ficha |
+| --- | --- | --- | --- | --- | --- | --- |
+| 42427270371 | 00:53:43 | 77.36 | 781 | 1 | 0 | 0 |
+| 42428059280 | 01:04:24 | 88.22 | 766 | 9 | 0 | 0 |
+| 42428917006 | 01:15:35 | 89.66 | 820 | 9 | 0 | 0 |
 
-Salida 0.
+Tres índices consecutivos, actor automático de Actions, intervalos **641 y 671 s**, revisión correction-2.2, sin errores. Restauración, guardado cifrado, artefacto cifrado y deploy-pages verificados en cada una. Estado con cero padres y un único state.enc; Pages HTTP 200 y payload descifrado con el mismo latido. Nuevos respaldados por primeras observaciones/bajadas en price_history. Logs sin coincidencias de valores de .env.
 
-```text
-....                                                                     [100%]
-4 passed, 56 deselected in 34.23s
+Descartes por pasada:
 
-```
+- 42427270371: size=1.
+- 42428059280: knitwear=1, price=5, size=3.
+- 42428917006: not_sweatshirt=3, price=6.
 
-- Corrección sobre SQLite real · 2.164 anuncios reevaluados offline. Consulta de prendas fuera de perfil fuera de Descartados · 121 antes, 0 después. Chromium local · panel, JSON plegado, pendientes y aviso de mercado verificados. Ruff limpio y 57 pruebas offline en el cierre de corrección.
+La primera terna acreditada antes del corte fue 42410718931, 42411565308 y 42412300711: también dejó cero pendientes en las tres. Se revalidó la terna reciente al retomar.
 
-## Fase 2 · Evidencia inicial
+## SQL sobre la base real
 
-- Pasada normal con CDN concurrente · 25 peticiones, 884 vistos y 117,31 s. Los candidatos tardaron 16,38 y 17,39 s.
-- Sondas Actions · runs 42279884459, 42280627200 y 42281374832. Tres HTTP 200 con 96 anuncios. Intervalos de despacho de 302 s. Logs por API revisados sin coincidencias de secretos.
-- ntfy · los dos POST reales de prueba devolvieron HTTP 200. El modo sombra, los cambios de salud y la deduplicación pasaron las pruebas con HTTP simulado.
-- Chromium local · pantalla neutra sin clave, clave errónea rechazada, descifrado con clave válida y enlaces de feedback correctos. El primer intento de QA consultó el iframe antes de completar el descifrado y se repitió con espera explícita.
-- Pages · HTTP 403 al activar y HTTP 404 al consultar el sitio. [Bloqueo](BLOCKERS.md)
+| Métrica | Nube antes | Nube final |
+| --- | --- | --- |
+| Anuncios guardados | 2465 | 3210 |
+| Pendientes | 823 | 0 |
+| Pendientes sin ficha confirmada | 823 | 0 |
+| No-sudaderas identificables en pendientes | 80 | 0 |
+| No-sudaderas aceptadas | 0 | 0 |
 
-## Fase 2 · Cierre remoto
+Consulta con la función de clasificación del proyecto y reglas finales sobre ambos estados. La instantánea final validada corresponde a 2026-11-08T00:15:35.520810+00:00. Las 823 fichas pendientes originales estaban sin enriquecer. Se completaron 14 limpiezas, todas success con guardado y Pages; máximo observado 232,43 s. El objetivo queda acreditado con cero pendientes, cero no-sudaderas pendientes/aceptadas y cero pendientes sin ficha.
 
-- `uv run --offline ruff check` · salida 0. `uv run --offline pytest -q` · salida 0, 69 aprobadas y 4 excluidas, 4,63 s.
-- `uv run --offline vh doctor` · salida 0, HTTP 200 y 95 anuncios en la búsqueda base. Marcas combinadas y tallas L/XL · 96 en cada comprobación.
-- `uv run --offline vh selftest` · salida 0, 8/8 etapas, 15 peticiones, 669 vistos y 76,3 s.
-- `uv run --offline pytest -q -m live` · salida 0, 4 aprobadas y 69 excluidas, 37,89 s.
-- Manual 42282635097 · verde. Estado de un commit cifrado y artefacto cifrado comprobado.
-- Feedback · issues 1 y 2 cerrados automáticamente. La etiqueta válida quedó guardada. El rechazo no cambió el estado.
-- Cron · 0 ejecuciones completadas en la ventana. Bloqueada la validación de tres pasadas programadas. La API devolvió HTTP 200 y total 0 al cierre de la ventana.
-
-## Validación de Pages y ntfy · 2026-11-06 22:29
-
-- Ruff · salida 0. Pytest offline · 71 pasadas, 4 excluidas, 5,23 s.
-- Pytest live · 4 pasadas, 71 excluidas, 40,88 s. `vh selftest` · 8/8 etapas, 15 peticiones y 82,3 s.
-- Actions · run 42296435101 en verde, incluido `deploy-pages`. Artefacto 13542332390 y HTML servido con el mismo SHA-256. Logs auditados sin coincidencias de secretos.
-- Chromium · HTTP 200 en los tres casos. Pantalla neutra sin clave, clave incorrecta rechazada y 48 tarjetas con `vh board-url`.
-- `vh notify-test` · dos HTTP 200. La API de suscripción devolvió ambos avisos con la acción `view` Tablero y la URL pública sin fragmento. [API de ntfy](https://docs.ntfy.sh/subscribe/api/#poll-for-messages)
-
-## Bucle y relevo · 2026-11-07 17:55
-
-- `uv run --offline ruff check` · salida 0. `uv run --offline pytest -q` · 82 aprobadas, 4 excluidas, 4,78 s.
-- `uv run --offline pytest -q -m live` · 4 aprobadas, 80 excluidas en esa revisión, 40,75 s.
-- Regresiones · carreras de inicio y relevo, continuación tras un fallo, duración de 340 minutos, despacho de respuesta incierta, reintento de lectura y cancelación de una pasada agotada. Las pruebas de ntfy mantienen las transiciones de incidencia y recuperación.
-- Actions · coordinador 42391701686 y 3 Snapshots en verde, con estado y Pages actualizados en cada uno. Intervalos de 498.57 s, 646.96 s. Sucesor 42393577665 creado por Actions y despertar duplicado 42391821189 omitido. Logs auditados sin coincidencias de los secretos locales.
-- `vh selftest` · salidas 1 con 6/8 en 75,0 s y 15 peticiones, 7/8 en 91,9 s y 17 peticiones, y 7/8 en 99,8 s y 17 peticiones. Tres fichas por muestra, descartadas antes de score. Se conserva la verificación pendiente en BLOCKERS.md.
-
-## CORRECCION_2 · Revisión correction-2.2 · 2026-11-07
-
-- `uv run --offline ruff check` · salida 0.
-- `uv run --offline pytest -q` · salida 0, **106 aprobadas**, 4 excluidas, **8,40 s**. Incluye recall, precisión, prioridad, recuperación de backlog, filtros padre 79, NL/PT, material y conservación de la tilde portuguesa.
-- `uv run --offline pytest -q -m live` · salida 0, **4 aprobadas**, 106 excluidas, **39,86 s**. Catálogo, fichas, vendedor/armario y tallas reales.
-- `uv run --offline vh selftest` · salida 0, **8/8**, **75,0 s**, 13 peticiones, 480 vistos y tres fichas enriquecidas. Las tres se descartaron antes de score; visión y score se verificaron con el caso real capturado 10653233816, **good 70**, identificado expresamente en la salida. Tablero temporal generado. Las primeras verificaciones de la corrección alcanzaron también 8/8 con score en vivo.
-- `uv run --offline vh doctor` · salida 0. Home/cookies HTTP 200, 96 anuncios parseados, marcas activas combinadas válidas, L y XL con 96 Stone Island de la talla solicitada, salud healthy.
-- Salida local de estos comandos conservada en `data/correction2-release-checks.log`, sin credenciales. La observación final de Actions y la consulta SQL se incorporan a continuación al completarse.
-- `uv run --offline vh replay https://www.vinted.es/items/10690539539-stone-island-sweater` · salida 0, **good 65**, todos los gates aprobados, vendedor 7 valoraciones/4,0, cinco pHash, QR none, cero fotos de catálogo y sin partes ORB. El catálogo padre 79 con marca/XL y las búsquedas de texto compatibles cubren sus atributos. Salida guardada en `data/correction2-replay-final.log`.
-- Chromium sobre **Pages real** · Todos sin pendientes; pestaña Pendientes completa incluida su paginación; clave guardada, fragmento limpio y reapertura; olvidar clave; clave guardada inválida borrada; descifrado con localStorage bloqueado. La primera comprobación de cantidad esperaba todas las tarjetas a la vez y se corrigió para recorrer la paginación de 48. La clave se mantuvo en memoria.
+Comandos SQL, cohorte fija de Stone Island y decisiones en [DECISIONS.md](DECISIONS.md). Evidencia compacta sin secretos en [evidence/correction2-validation.json](evidence/correction2-validation.json); resultados y límites en [SESSION_REPORT.md](SESSION_REPORT.md).

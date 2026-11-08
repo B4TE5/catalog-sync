@@ -29,3 +29,8 @@ La petición del 7 de noviembre sustituye la cadencia del cron por un bucle y re
 ## Resuelto · Autoprueba con tres candidatos
 
 Las tres autopruebas anteriores terminaron en 6/8, 7/8 y 7/8 porque las fichas se descartaban antes de score. CORRECCION_2 añade el fallback permitido a un caso real de recall, identificado en la salida y guardado en el tablero temporal. La verificación final de correction-2.2 completó 8/8 en 75,0 s: catálogo en vivo, tres fichas reales y visión/score del caso capturado 10653233816, good con 70 puntos. Las ejecuciones previas de esta corrección también alcanzaron 8/8 con un score de la muestra en vivo. La suite live final aprobó cuatro casos y doctor terminó en verde.
+
+
+## Resuelto · CORRECCION_2
+
+Replay real 10690539539 good 65, cola final 0 pendientes, cero no-sudaderas pendientes y cero fichas pendientes sin confirmar. Tres iteraciones consecutivas con correction-2.2, estado cifrado y Pages en verde: 42427270371, 42428059280, 42428917006. Ruff, 106 offline, cuatro live, selftest 8/8 y doctor aprobados. La consulta histórica concreta de entrada del anuncio no se conservó; se acredita su captura y su estado pendiente original sin inventar una atribución. Los límites opcionales anteriores permanecen.

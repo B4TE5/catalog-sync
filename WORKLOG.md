@@ -371,3 +371,18 @@
 - Comandos clave: Ruff → 0; pytest → 106 pasadas, 4 excluidas, 8,26 s. Monitor → salida 0; runs 42410718931, 42411565308 y 42412300711, intervalos de captura 632 y 563 s, todos success con restauración/guardado/cifrado/Pages.
 - Evidencia: scratch/correction2-validation.json y log final de la sesión nativa del monitor. .env sigue ignorado y git ls-files no lo muestra.
 - Problemas y cómo se resolvieron: el informe parcial conservaba cifras anteriores a la limpieza completa; se sustituirá por el informe final. Se verificará además el estado operativo actual tras varias horas de funcionamiento autónomo.
+
+
+## 2026-11-08 01:25 — C2.3/C2.7 · Cierre real y estado confirmado
+- Objetivo: cerrar la cola, acreditar tres iteraciones y conservar informes reproducibles.
+- Hecho: 0 pendientes, 0 incompatibles pendientes/aceptados y 0 fichas pendientes sin confirmar. Base local sincronizada con la nube validada y ensayo local anterior archivado íntegro. Todos los checks de CORRECCION_2 completados; informes actualizados.
+- Comandos clave: tres Snapshots success 42427270371, 42428059280, 42428917006; duraciones 77.36, 88.22, 89.66 s; intervalos 641 y 671 s. SQL antes/después y descifrado real de Pages aprobados.
+- Evidencia: evidence/correction2-validation.json, SESSION_REPORT, TEST_REPORT, DECISIONS y commit de estado 7d39031ce6225737cccb75943cc52acce7815c13.
+- Problemas y cómo se resolvieron: las nuevas fichas y la recuperación de falsos negativos hicieron crecer temporalmente la cola; las limpiezas acotadas la confirmaron sin detener el coordinador. La instantánea local anterior se conserva en data/vh-local-correction2-archive.sqlite para evitar perder su histórico exclusivo.
+
+## 2026-11-08 01:27 — C2.7 · Pruebas finales, auditoría y entrega
+- Objetivo: cerrar con verificación actual tras la reanudación y preparar commit/push de todos los informes.
+- Hecho: nuevas pruebas en vivo y replay sobre la base local sincronizada en verde. Informe de sesión regenerado, TEST_REPORT actualizado, BLOCKERS resuelto y CORRECCION_2 completamente marcado. Evidencia compacta real de las tres iteraciones recientes y catorce limpiezas incorporada al repositorio.
+- Comandos clave: Ruff → 0; offline → 106 pasadas, 4 excluidas, 8,26 s; live → 4 pasadas, 106 excluidas, 35,46 s; selftest → salida 0, 8/8, 67,3 s y 13 peticiones; doctor → salida 0; replay real → salida 0, good 65. Chromium público → salida 0 en todos los casos de clave/filtros. Auditoría de credenciales y git diff --check → salida 0.
+- Evidencia: data/correction2-resume-checks.log, evidence/correction2-validation.json e informes finales. La base sincronizada conserva una etiqueta de nube y pasa integrity_check; el ensayo local anterior queda íntegro archivado.
+- Problemas y cómo se resolvieron: las tres fichas live de selftest se descartaron; completó visión/score con el caso real de recall 10653233816, good 70, identificado en la salida. Las capturas actuales están redactadas y libres de JWT; los JWT públicos caducados del historial anterior siguen documentados. .env permanece ignorado y fuera del índice; sus valores no aparecen en informes, evidencia, fixtures, remote ni configuración Git.

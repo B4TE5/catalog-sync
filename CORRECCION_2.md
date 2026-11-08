@@ -23,7 +23,7 @@ Mismas reglas de AGENTS.md §0 (autónomo, sin preguntas, WORKLOG al día, commi
 ## C2.3 — Pendientes bajo control
 - [x] Prioridad de enriquecimiento: (1) nuevos de esta pasada, ordenados por perfil prioritario (stone-island primero) y precio relativo al tope; (2) backlog. Sube el presupuesto de enriquecimiento por pasada en la nube si el tiempo de pasada lo permite (objetivo < 5 min por pasada).
 - [x] En el tablero, "Todos" no muestra pendientes por defecto; tienen su pestaña.
-- [ ] Objetivo medible: tras 3 iteraciones del bucle con las reglas nuevas, pendientes < 100 y 0 no-sudaderas en pendientes (consulta SQL).
+- [x] Objetivo medible: tras 3 iteraciones del bucle con las reglas nuevas, pendientes < 100 y 0 no-sudaderas en pendientes (consulta SQL).
 
 ## C2.4 — `vh replay <url>` (diagnóstico de anuncios encontrados a mano)
 - [x] Comando que, dado un enlace de Vinted, descarga el anuncio (aunque esté vendido), lo pasa por TODO el pipeline como si fuera nuevo (sin guardarlo como visto) y dice: ¿lo habrían encontrado las búsquedas actuales (qué query y por qué sí o no)?, qué gates pasa o falla, señales de visión/texto/vendedor, score y tier final. Salida legible en español.
@@ -40,5 +40,5 @@ Mismas reglas de AGENTS.md §0 (autónomo, sin preguntas, WORKLOG al día, commi
 
 ## C2.7 — Verificación final (obligatoria, todo real)
 - [x] `ruff`, `pytest` (incluye recall y precision), `pytest -m live`, `vh selftest` 8/8, `vh doctor` en verde.
-- [ ] Push y comprobación en Actions de **3 iteraciones del bucle** con el código nuevo: tiempos por pasada, nuevos, descartados por motivo, pendientes. Tablero publicado y abre con la clave.
-- [ ] Informe en SESSION_REPORT.md con el embudo de stone-island antes/después y el resultado de `vh replay` del anuncio perdido.
+- [x] Push y comprobación en Actions de **3 iteraciones del bucle** con el código nuevo: tiempos por pasada, nuevos, descartados por motivo, pendientes. Tablero publicado y abre con la clave.
+- [x] Informe en SESSION_REPORT.md con el embudo de stone-island antes/después y el resultado de `vh replay` del anuncio perdido.

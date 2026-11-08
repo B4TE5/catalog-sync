@@ -361,3 +361,59 @@ La revisión automática rechazó deshabilitar el workflow y cancelar el coordin
 ## 2026-11-07 20:46 · C2, portugués y recuperación de falsos negativos
 
 La auditoría del estado real detectó 65 descartes knitwear cuya única palabra coincidente era «lã». La normalización sin tildes la convertía en «la», presente en descripciones españolas, francesas e italianas. Se mueve a knitwear_exact y se compara en Unicode NFC conservando la tilde. Se descartó eliminar el término portugués: el material Lã sigue siendo evidencia válida de lana. La revisión correction-2.2 reevaluará también los descartes antiguos antes de medir las tres iteraciones finales.
+
+
+## 2026-11-08 01:25 · C2, SQL final, cohorte y estado local
+
+Se toma como referencia la base de nube que tenía 823 pendientes, conservada en `data/correction2-cloud-before.sqlite`. La base final se descargó/descifró en `data/correction2-final.sqlite` desde el commit de estado `7d39031ce6225737cccb75943cc52acce7815c13`. Se registró la función SQLite `wrong_garment(body,profile)` con `garment_mismatch(Listing.model_validate_json(body), perfiles[profile], config)` y las reglas correction-2.2.
+
+```sql
+SELECT count(*) FROM listings WHERE tier IS NULL;
+SELECT count(*) FROM listings
+ WHERE tier IS NULL AND wrong_garment(body,profile)=1;
+SELECT count(*) FROM listings
+ WHERE tier IN ('top','good','maybe','low') AND wrong_garment(body,profile)=1;
+SELECT count(*) FROM listings
+ WHERE tier IS NULL AND coalesce(json_extract(trace,'$.enriched'),0)=0;
+```
+
+| Métrica | Nube antes | Nube final |
+| --- | --- | --- |
+| Anuncios guardados | 2465 | 3210 |
+| Pendientes | 823 | 0 |
+| Pendientes sin ficha confirmada | 823 | 0 |
+| No-sudaderas identificables en pendientes | 80 | 0 |
+| No-sudaderas aceptadas | 0 | 0 |
+
+Los recuentos anteriores de la bitácora se calcularon con las reglas disponibles en cada checkpoint. Esta comparación vuelve a medir ambos estados con las reglas finales y corrige la colisión «lã»/«la».
+
+La causa observada del anuncio prioritario fue quedar sin enriquecer en la cola. El cambio 69c5a4f incorpora los pendientes guardados aunque no vuelvan a salir en el catálogo; antes solo se construía trabajo con los resultados de la pasada. Además, una ficha procesada con el mínimo anterior habría fallado por nota 4,0 frente a 4,5. Se distingue ese fallo hipotético del rastro real, que no tenía un gate fallido.
+
+| Stone Island · misma cohorte | Antes | Después |
+| --- | --- | --- |
+| Vistos | 1368 | 1368 |
+| Con ficha enriquecida | 102 | 321 |
+| pending | 366 | 0 |
+| rejected | 1002 | 1367 |
+| low | 0 | 0 |
+| maybe | 0 | 0 |
+| good | 0 | 1 |
+| top | 0 | 0 |
+
+| Motivo · cohorte original | Antes | Después |
+| --- | --- | --- |
+| color | 1 | 19 |
+| hood | 0 | 7 |
+| knitwear | 0 | 77 |
+| listing_unavailable | 0 | 34 |
+| not_sweatshirt | 364 | 469 |
+| price | 629 | 553 |
+| replica | 0 | 2 |
+| seller_rating | 0 | 1 |
+| size | 8 | 120 |
+| status | 0 | 4 |
+| too_cheap_for_brand | 0 | 81 |
+
+Se elige la nube validada como base operativa local para que CLI y Pages compartan la cola confirmada. Alternativa descartada: mezclar automáticamente los 1586 IDs exclusivos del antiguo ensayo local, que reabriría cientos de fichas ajenas al inventario operativo. Se conserva una copia SQLite completa en `data/vh-local-correction2-archive.sqlite`, sin pérdida del histórico ni de etiquetas locales (eran cero). La copia usa sqlite3.backup y cierre explícito de conexiones para respetar WAL y Windows. La nube conserva su etiqueta de feedback.
+
+Tres índices consecutivos del coordinador y sus tiempos: 42427270371, 42428059280, 42428917006; intervalos 641 y 671 s. Evidencia compacta sin secretos en `evidence/correction2-validation.json`; detalle local en scratch/correction2-final.json. El tablero real abre con la clave local, que no se incorpora al informe.

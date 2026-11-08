@@ -1,118 +1,101 @@
-# Informe de sesión · Vinted Hunter
+# Informe de sesión · CORRECCION_2
 
-## Sesión de corrección
+2026-11-08T01:25:27.673903+01:00
 
-2026-11-06T10:41:37.257582+01:00
+CORRECCION_2 queda completa. El replay real de [10690539539](https://www.vinted.es/items/10690539539-stone-island-sweater) alcanza **good · 65 puntos**. La base operativa tiene **0 pendientes**, **0 no-sudaderas pendientes** y **0 pendientes sin ficha confirmada**. Se acreditaron tres iteraciones normales consecutivas de Actions con correction-2.2, estado guardado y Pages publicado en cada una.
 
-- **Tallas.** L = 209 y XL = 210, grupo MEN-DE. Vinted devolvió 96 Stone Island de cada talla. Las dos capturas se guardaron como fixtures.
-- **Gates.** Talla, capucha, color y estado se deciden con la ficha. Una ausencia queda como no confirmada. Las tarjetas antiguas afectadas se reabren al reaparecer.
-- **Embudo.** El backfill general de diez páginas registró 1.022 Stone Island, 725 descartados y 297 pendientes. Los motivos e IDs están en [DECISIONS.md](DECISIONS.md).
-- **Contraste focalizado.** 558 Stone Island, 423 descartados, 12 con ficha y 10 fichas nuevas. Tiers {'rejected': 423, 'pending': 135}.
-- **Visión.** 30/30 anuncios, 192 fotos, 10 legibles, 7 detectados sin leer y 13 sin QR. Mediana de 43.97 s por anuncio, rango 11.42–82.53 s. Visión local con mediana de 0.26 s. El JSON local conserva el resultado y los tiempos por anuncio.
-- **Heat.** Favoritos divididos por la edad con un mínimo configurable de cinco minutos. Se comprobó la invariancia ante visitas y el tratamiento de favoritos ausentes.
-- **Cierre.** Doctor salió 0. Selftest con informe completó 8/8 etapas y su suite en vivo pasó 4/4. La comprobación offline final pasó 47 pruebas. [TEST_REPORT.md](TEST_REPORT.md)
+## Anuncio prioritario y causa
 
-## Primera sesión (histórico)
+La ficha real confirma Jerséis 1811, algodón, XL, gris, 60 EUR y Muy bueno. El neerlandés menciona crewneck y QR-code. Ya estaba capturado tanto en local como en nube; seguía pendiente sin enriquecimiento y sin un gate fallido. El pipeline anterior solo retomaba pendientes que reaparecían en una captura: ahora incorpora también el backlog guardado. La categoría antigua 267 lo excluía de búsquedas filtradas por marca. La entrada por texto es una inferencia: el estado histórico no conserva la query concreta de cada ID.
 
-2026-11-06 09:20 +0100
+El resultado final suma base 40, estado +10, autenticación mencionada +10 y cinco fotos +5. La visión devuelve QR none y cero fotos de catálogo; no se afirma que haya leído Certilogo. El vendedor tiene siete valoraciones y nota 4,0. Se bajó el mínimo de Stone Island de 4,5 a 4,0, con efecto general sobre ese perfil y sin excepción por ID. La misma ficha queda puntuada en la base de Actions.
 
-## Resultado
+## Cambios aplicados
 
-Implementación local en Python 3.12, probada en Windows. El catálogo usa RSC, la ficha se enriquece con el perfil y el armario públicos, y SQLite conserva observaciones, puntuaciones y rastros. El tablero funciona por archivo y en localhost.
+- Palm Angels y Supreme desactivados; Palace sigue desactivado.
+- Todas las búsquedas usan el padre real 79, incluidos los textos. Sudaderas 267 y 1812 pasan por categoría; Jerséis 1811 requiere evidencia de sudadera/algodón y excluye punto/lana. Se parsea el material de la ficha.
+- NL/PT en las listas y +10 por mención de QR/Certilogo/código de autenticidad. «Lã» conserva la tilde: la auditoría detectó 65 falsos descartes por confundirla con «la» y las reglas finales los reevaluaron.
+- Nuevos antes de backlog, Stone Island prioritario y precio relativo. El backlog se procesa aunque no reaparezca. Cuota cloud de hasta 72 peticiones de enriquecimiento, incluidas fotos, con límite temporal para terminar bajo cinco minutos.
+- Pendientes fuera de Todos y en su pestaña. Clave persistente con try/catch, fragmento limpio, reapertura, botón para olvidar y eliminación de claves inválidas.
+- Replay sobre copia temporal, explicaciones en español y capturas reales de recall/precisión. Selftest conserva la muestra live y admite un caso real de recall cuando las tres fichas se descartan.
 
-Las consultas públicas de marcas funcionan. Los IDs públicos de talla, condición, gris y separación por capucha siguen pendientes. Se aplican gates sobre las etiquetas de catálogo y ficha. La ficha pública examinada carece de contador de visitas.
+## Limpieza y embudo
 
-## Pasadas contra Vinted
+La comparación de inventarios usa la instantánea de nube original de 823 pendientes. La actividad del catálogo añadió anuncios durante la sesión, por eso crece el total. «Identificables» cuenta la evidencia disponible en el estado; antes las 823 fichas pendientes carecían de enriquecimiento. La instantánea final validada corresponde a la pasada 2026-11-08T00:15:35.520810+00:00; su cola está confirmada.
 
-| Pasada | Peticiones | Vistos | Nuevos | Candidatos | Puntuados | Duración |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Run inicial | 25 | 1152 | 650 | 44 | 0 | 152.62 s |
-| Segundo run inicial | 25 | 1152 | 339 | 68 | 0 | 138.17 s |
-| Backfill (10 páginas) | 25 | 1152 | 0 | 11 | 1 | 142.31 s |
-| Watch 1 | 25 | 827 | 0 | 34 | 1 | 151.66 s |
-| Watch 2 | 25 | 879 | 1 | 58 | 2 | 131.78 s |
-| Watch 3 | 25 | 837 | 1 | 42 | 2 | 146.38 s |
-| Run final 1 | 25 | 844 | 67 | 43 | 1 | 151.30 s |
-| Run final 2 | 25 | 835 | 9 | 44 | 2 | 142.25 s |
-| Selftest, base separada | 20 | 672 | 611 | 73 | 2 | 116,17 s |
+| Métrica | Nube antes | Nube final |
+| --- | --- | --- |
+| Anuncios guardados | 2465 | 3210 |
+| Pendientes | 823 | 0 |
+| Pendientes sin ficha confirmada | 823 | 0 |
+| No-sudaderas identificables en pendientes | 80 | 0 |
+| No-sudaderas aceptadas | 0 | 0 |
 
-Las primeras tres filas cuentan tarjetas por consulta. Las posteriores cuentan IDs únicos por pasada. El contador inicial mezclaba el primer barrido de consultas rotadas con novedades. Se separaron ambos conceptos antes de los ciclos de watch.
+Para comparar Stone Island sin mezclar nuevos avistamientos se usa la **misma cohorte original de 1368 IDs**, todos conservados:
 
-El límite observado por pasada normal fue de 25 peticiones, incluida la portada. El backfill completó diez páginas de la consulta principal y dos consultas adicionales. Registró 700 descartes inicialmente. La posterior revisión excluyó además un polo de manga corta que se había puntuado y otro anuncio que contenía «geïnspireerde».
+| Stone Island · misma cohorte | Antes | Después |
+| --- | --- | --- |
+| Vistos | 1368 | 1368 |
+| Con ficha enriquecida | 102 | 321 |
+| pending | 366 | 0 |
+| rejected | 1002 | 1367 |
+| low | 0 | 0 |
+| maybe | 0 | 0 |
+| good | 0 | 1 |
+| top | 0 | 0 |
 
-En el segundo run final hubo ocho primeras observaciones y una bajada confirmada de 119,99 € a 90 € para el anuncio 10685108670. La distinción se contrastó con price_history.
+| Motivo · cohorte original | Antes | Después |
+| --- | --- | --- |
+| color | 1 | 19 |
+| hood | 0 | 7 |
+| knitwear | 0 | 77 |
+| listing_unavailable | 0 | 34 |
+| not_sweatshirt | 364 | 469 |
+| price | 629 | 553 |
+| replica | 0 | 2 |
+| seller_rating | 0 | 1 |
+| size | 8 | 120 |
+| status | 0 | 4 |
+| too_cheap_for_brand | 0 | 81 |
 
-## Inventario final de la base principal
+El motivo corresponde al primer gate fallido; al cambiar la evidencia y las reglas, una fila puede pasar del motivo precio a prenda/punto sin que cambie su precio.
 
-1914 anuncios, 6275 observaciones de precio y 0 etiquetas manuales.
+El inventario Stone Island completo al cierre contiene 1766 vistos, 471 enriquecidos y tiers {"rejected": 1764, "low": 1, "good": 1}. La consulta SQL y el desglose reproducible están en [DECISIONS.md](DECISIONS.md).
 
-| Perfil | Top | Good | Maybe | Low | Descartados | Pendientes | Precios |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| heron-preston | 0 | 0 | 0 | 0 | 84 | 11 | 380 |
-| palm-angels | 1 | 0 | 0 | 0 | 96 | 10 | 306 |
-| rhude | 0 | 1 | 0 | 0 | 77 | 20 | 290 |
-| stone-island | 0 | 0 | 0 | 0 | 1216 | 6 | 3618 |
-| supreme | 3 | 0 | 0 | 0 | 140 | 12 | 731 |
-| twojeys | 0 | 0 | 0 | 0 | 86 | 12 | 478 |
-| yzy-gap | 1 | 0 | 0 | 0 | 127 | 11 | 472 |
+## Tres iteraciones reales de Actions
 
-## Mejores anuncios observados
+| Run Snapshot | Inicio Madrid | Segundos | Vistos | Nuevos | Pendientes | Sin ficha |
+| --- | --- | --- | --- | --- | --- | --- |
+| 42427270371 | 00:53:43 | 77.36 | 781 | 1 | 0 | 0 |
+| 42428059280 | 01:04:24 | 88.22 | 766 | 9 | 0 | 0 |
+| 42428917006 | 01:15:35 | 89.66 | 820 | 9 | 0 | 0 |
 
-- 100/100 · 25.00 EUR · Certilogo ✓, 222 valoraciones · 5.00, Armario variado, Muy buen estado, Descripción breve, 5 fotos. [Felpa Oversize con Cappuccio Palm Angels Nero Washed – Taglia L](https://www.vinted.es/items/10675297635-felpa-oversize-con-cappuccio-palm-angels-nero-washed-taglia-l)
-- 80/100 · 85.00 EUR · 63 valoraciones · 5.00, Armario variado, Muy buen estado, 8 fotos. [Supreme Navy Back logo Hoodie  – Large (L)](https://www.vinted.es/items/10677514167-supreme-navy-back-logo-hoodie-large-l)
-- 80/100 · 68.50 EUR · 327 valoraciones · 4.80, Armario variado, Muy buen estado, 8 fotos. [Suprème hoodie size l](https://www.vinted.es/items/10674890952-supreme-hoodie-size-l)
-- 75/100 · 50.00 EUR · 73 valoraciones · 4.90, Armario variado, Muy buen estado. [Pull à capuche Suprême](https://www.vinted.es/items/10680953134-pull-a-capuche-supreme)
-- 75/100 · 60.00 EUR · 118 valoraciones · 5.00, Armario variado, Nuevo sin etiquetas. [Yeezy X GAP Hoodie](https://www.vinted.es/items/9766029639-yeezy-x-gap-hoodie)
+Separación entre comienzos de captura: **641 s y 671 s**. Cada pasada terminó success, restauró y guardó state.enc, conservó una revisión de estado sin padres y publicó Pages HTTP 200. El payload descifrado del tablero coincide con el latido guardado. Los logs auditados no contienen valores de .env. Los nuevos quedan respaldados por primeras observaciones/bajadas reales en price_history.
 
-## Verificación y decisiones
+Descartes por pasada:
 
-- Ruff limpio y 31 pruebas offline en verde. La suite live pasó catálogo, ficha, vendedor y armario. El filtro devolvió cero Stone Island XL y dejó en rojo el test live y doctor.
-- La autoprueba completó 8/8 etapas. El comando con informe devolvió salida 1 por su suite live. El servicio en localhost devolvió HTTP 200. Las capturas de 1440 px y 390 px están en `out/board/`.
-- Se comprobó que Vinted España incluye vendedores de Italia. Los parámetros repetidos de marca devolvieron 96 tarjetas de Stone Island y Supreme. Los IDs de interfaz 515 y 50 no se usan para filtrar.
-- El candidato Stone Island de talla XL, gris y categoría 267 de la prueba dirigida fue descartado por una nota de 4,20 frente al mínimo de 4,50. Se mantuvo el corte antes de descargar fotos.
-- Verificación nativa en Windows. Linux queda pendiente de ejecución en ese entorno.
+- 42427270371: size=1.
+- 42428059280: knitwear=1, price=5, size=3.
+- 42428917006: not_sweatshirt=3, price=6.
 
-Los incidentes, evidencias y decisiones están en [BLOCKERS.md](BLOCKERS.md), [DECISIONS.md](DECISIONS.md), [WORKLOG.md](WORKLOG.md) y [TEST_REPORT.md](TEST_REPORT.md).
+El coordinador 42393577665 siguió activo durante la limpieza y solicitó su relevo. Al revalidar las tres pasadas más recientes está activo su sucesor 42420026075. Las pasadas de mantenimiento compartieron el bloqueo de estado con las normales. Todos los workflows usan el token automático de Actions y los secretos de cifrado/ntfy; el PAT solo se usa desde el equipo para administración/push. Shadow mode sigue activo.
 
-## Siguientes cinco pasos
+Se verificaron 14 pasadas de mantenimiento; sus checkpoints y resultados están en `evidence/correction2-validation.json`, junto con las tres iteraciones normales finales.
 
-1. Capturar y comprobar el contrato público de filtros para talla, condición y color. Completar los IDs con evidencia y repetir doctor.
-2. Reunir referencias fotográficas permitidas y medir Certilogo y ORB sobre sudaderas Stone Island que superen los gates.
-3. Acumular 30 muestras plausibles por marca, añadir etiquetas manuales y calibrar los pesos y el estimador de envío.
-4. Repetir el arranque, las pruebas y varios ciclos en Linux para comprobar la portabilidad.
-5. En la fase futura, evaluar ntfy y GitHub Actions a través de las interfaces de fuente, estado y notificación.
+## Pruebas y tablero
 
-## Corrección de precisión · 2026-11-06
+- Ruff limpio; 106 pruebas offline aprobadas en 8,26 s, incluidos recall y precisión.
+- Live: 4 aprobadas en 35,46 s contra Vinted real.
+- Selftest final en base aislada: **8/8**, 67,3 s y 13 peticiones. Catálogo y tres fichas en vivo; al descartarse las tres, visión/score se verificaron con el caso real capturado 10653233816, good 70, indicado en la salida. En verificaciones previas de la corrección hubo score en vivo.
+- Doctor verde: home/cookies/parser, marcas activas, L y XL reales, salud healthy.
+- Replay real prioritario: salida 0, good 65. Chromium sobre Pages: Todos/Pendientes, paginación, clave guardada, reapertura, olvidar, clave inválida y almacenamiento bloqueado aprobados. Clave mantenida en memoria.
 
-Se reevaluaron 2.164 anuncios de SQLite con las fichas y las fotos guardadas. La consulta de prendas fuera de perfil pasó de 121 a 0 fuera de Descartados. El Palm Angels de 28 € quedó descartado y la primera foto se marcó como catálogo. El de 25 € con QR queda en Revisar. El tablero muestra los motivos en español y mantiene plegados los datos técnicos. [Evidencia y recuentos](DECISIONS.md)
+[TEST_REPORT.md](TEST_REPORT.md) conserva comandos, tiempos y verificaciones. [WORKLOG.md](WORKLOG.md) conserva cada paso, incluidos intentos fallidos.
 
-## Fase 2 · 2026-11-06T21:31:14.655523+01:00
+## Estado local y límites
 
-- **Rendimiento.** 117,31 s en una pasada normal y dos candidatos de 16,38 y 17,39 s. La cola favorece a los anuncios de la pasada.
-- **Actions.** Tres sondas en verde con 96 anuncios cada una. Se configuró la captura cada diez minutos y se publicó el estado cifrado de una sola revisión. Dos pasadas manuales en verde confirmaron el guardado y la restauración. Las pruebas finales en Windows aprobaron 69 casos offline, 4 live y las 8 etapas de selftest. La comprobación de tres pasadas por cron queda bloqueada en la ventana observada.
-- **Panel.** Artefacto cifrado verificado en Chromium y por la API. La activación de Pages devolvió HTTP 403 y el sitio sigue en HTTP 404.
-- **Avisos y feedback.** Dos pruebas ntfy HTTP 200, shadow_mode activo y dos issues cerrados automáticamente. El inválido dejó intacto el estado.
-- **Seguridad.** Valores de .env fuera de Git y sin coincidencias en los logs revisados. Los flujos usan permisos acotados y acciones fijadas por SHA.
+Se sincronizó la base local de trabajo con el estado operativo validado de Actions. La base local anterior de 2445 anuncios y sin etiquetas manuales se conserva íntegra en `data/vh-local-correction2-archive.sqlite`; sus 1586 IDs exclusivos permanecen en ese archivo. No se mezclan pendientes antiguos en la cola ya confirmada. El tablero local se regeneró desde la instantánea validada.
 
-## Pages y credenciales de Actions · 2026-11-06 22:29
+No quedan bloqueos de CORRECCION_2. Siguen los límites opcionales documentados en [BLOCKERS.md](BLOCKERS.md): referencias ORB aún vacías, visitas no expuestas e IDs opcionales sin evidencia. No se fabricaron esos datos.
 
-- El dueño habilitó Pages con fuente GitHub Actions. El `hunt` manual 42296435101 restauró y guardó el estado cifrado y publicó el artefacto 13542332390. Registró 889 vistos y 112 nuevos en 25 peticiones.
-- Chromium recibió HTTP 200 y el mismo HTML cifrado que Actions. El enlace de `vh board-url` mostró 48 tarjetas. La URL pública mostró la pantalla neutra y una clave incorrecta fue rechazada. La verificación mantuvo la clave en memoria.
-- `vh notify-test` entregó los dos avisos con HTTP 200. La API de ntfy confirmó que ambos llevaban el botón Tablero con la URL pública sin clave. `BOARD_URL` sigue disponible para elegir un destino alternativo. El modo sombra continúa activo.
-- Se cotejaron `hunt`, `feedback`, `keepalive` y `probe` con la rama remota. `hunt`, `feedback` y `keepalive` usan el token automático de Actions a través de `github.token`. `probe` usa el token automático de checkout y una consulta pública. El PAT se utilizó localmente para iniciar el run y auditar GitHub. [Token automático de GitHub Actions](https://docs.github.com/en/actions/concepts/security/github_token)
-- Pages y el botón Tablero quedan desbloqueados. La comprobación de tres pasadas programadas sigue bloqueada. [Bloqueos](BLOCKERS.md)
-
-## Bucle autónomo de Actions · 2026-11-07 17:55
-
-El coordinador mantiene pasadas cada 10 minutos con jitter de 2 minutos y solicita relevo antes de agotar 340 minutos. Cada pasada del mismo workflow guarda el estado cifrado y publica Pages. Las pasadas comparten el bloqueo de estado con feedback. El cron horario comprueba por API si hay coordinador. El despertar duplicado 42391821189 terminó con los trabajos de captura, publicación y bucle omitidos.
-
-La validación usó un máximo de 35 minutos para observar también el relevo. El coordinador 42391701686 completó 3 iteraciones en verde con intervalos de 498.57 s, 646.96 s. El sucesor 42393577665 fue lanzado con la identidad automática de Actions y recupera el máximo de 340 minutos. Los logs de cada pasada, el commit cifrado sin padres y el payload publicado en Pages se verificaron por API.
-
-| Iteración | Run Snapshot | Inicio del coordinador (Madrid) | Vistos | Nuevos | Primeros | Bajadas |
-| --- | --- | --- | ---: | ---: | ---: | ---: |
-| 1 | 42391726084 | 2026-11-07 17:31:33 | 964 | 290 | 287 | 3 |
-| 2 | 42392420807 | 2026-11-07 17:39:52 | 898 | 42 | 41 | 1 |
-| 3 | 42393322260 | 2026-11-07 17:50:39 | 949 | 47 | 43 | 4 |
-
-Ruff y 82 pruebas offline en verde, además de cuatro pruebas live. Las tres autopruebas acotadas quedaron en 6/8, 7/8 y 7/8 etapas por descartes previos a score. El detalle está en TEST_REPORT y BLOCKERS.
-
+Las primeras capturas nuevas incluyeron por error doce JWT públicos de telemetría otelToken. Los fixtures actuales están redactados y una prueba impide repetirlo. Las versiones anteriores permanecen en Git con esos JWT, vencidos como máximo el 7 de noviembre a las 19:40:23 Madrid. No eran credenciales de .env; la auditoría no encontró sus valores en historial, logs, remote ni configuración Git.
