@@ -11,34 +11,34 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 - [x] Verifica que los estados permitidos son exactamente los de arriba en todos los perfiles activos. Test.
 
 ## C3.1 — Avisos activados
-- [ ] `shadow_mode: false`.
-- [ ] `notify_min_tier` por perfil en profiles.yaml: stone-island → `good` (≥60); resto → `top` (≥75).
-- [ ] `vh replay https://www.vinted.es/items/10690539539-stone-island-sweater` debe indicar "generaría aviso" (aunque esté vendido, simulando que estuviera activo).
-- [ ] Envía un aviso de prueba con el formato final al topic de anuncios.
-- [ ] Nunca avisar de un anuncio vendido, reservado u oculto (comprobar estado justo antes de enviar).
+- [x] `shadow_mode: false`.
+- [x] `notify_min_tier` por perfil en profiles.yaml: stone-island → `good` (≥60); resto → `top` (≥75).
+- [x] `vh replay https://www.vinted.es/items/10690539539-stone-island-sweater` debe indicar "generaría aviso" (aunque esté vendido, simulando que estuviera activo).
+- [x] Envía un aviso de prueba con el formato final al topic de anuncios.
+- [x] Nunca avisar de un anuncio vendido, reservado u oculto (comprobar estado justo antes de enviar).
 
 ## C3.2 — Tallas en todos los anuncios
-- [ ] Hoy la talla se lee bien en top/good (que están enriquecidos), pero en descartados y en los no enriquecidos sale como desconocida, aunque el anuncio la muestre. Extrae la talla del `productItem` del catálogo (RSC: localiza el campo real con fixtures) para TODOS los anuncios, y de la ficha cuando se enriquece.
+- [x] Hoy la talla se lee bien en top/good (que están enriquecidos), pero en descartados y en los no enriquecidos sale como desconocida, aunque el anuncio la muestre. Extrae la talla del `productItem` del catálogo (RSC: localiza el campo real con fixtures) para TODOS los anuncios, y de la ficha cuando se enriquece.
 - [ ] Re-evalúa la base: ningún anuncio con talla visible en Vinted debe quedar como desconocida (consulta SQL antes/después en DECISIONS.md). Revisa también si algún descarte fue por talla mal leída y corrígelo.
 
 ## C3.3 — Vendidos
-- [ ] En cada pasada, re-comprueba el estado de los anuncios top/good/revisar (máx. 15 por pasada, priorizando los mejores y los más recientes). Si están vendidos, reservados o borrados → estado `sold`/`reserved`/`gone`, fuera de las pestañas principales y dentro de una pestaña **Vendidos** con su precio final y cuánto duraron (subida → vendida).
-- [ ] Usa esos datos de vendidos como señal de mercado: duración media hasta la venta por marca y precio. Mostrarla en `vh stats` y en el tablero.
+- [!] En cada pasada, re-comprueba el estado de los anuncios top/good/revisar (máx. 15 por pasada, priorizando los mejores y los más recientes). Si están vendidos, reservados o borrados → estado `sold`/`reserved`/`gone`, fuera de las pestañas principales y dentro de una pestaña **Vendidos** con su precio final y cuánto duraron (subida → vendida).
+- [x] Usa esos datos de vendidos como señal de mercado: duración media hasta la venta por marca y precio. Mostrarla en `vh stats` y en el tablero.
 
 ## C3.4 — Histórico y stock que ya estaba subido
 - [ ] El tablero solo tiene lo visto desde el último reinicio de la base. Añade un **backfill profundo diario** en el bucle de la nube (de madrugada, una vez cada 24 h): páginas 1–10 de cada búsqueda activa, con el mismo presupuesto y las mismas pausas, para captar sudaderas que llevan semanas o meses subidas y siguen a la venta.
-- [ ] Los anuncios con ≥ 7 días subidos que pasen los filtros salen en una pestaña **Negociables**, con la oferta sugerida. No generan aviso salvo que tengan `price_drop`.
-- [ ] Las pestañas Top y Buenas siguen siendo solo lo mejor y activo; el resto de datos se conserva (no borrar nada; histórico completo en SQLite).
+- [x] Los anuncios con ≥ 7 días subidos que pasen los filtros salen en una pestaña **Negociables**, con la oferta sugerida. No generan aviso salvo que tengan `price_drop`.
+- [x] Las pestañas Top y Buenas siguen siendo solo lo mejor y activo; el resto de datos se conserva (no borrar nada; histórico completo en SQLite).
 
 ## C3.5 — Feedback que aprende
-- [ ] Al marcar `fake`: fotos a la lista negra (ya existe) + **vendedor a la lista negra** (sus anuncios futuros se descartan con razón `seller_blacklisted`). Se puede revertir con `vh label <id> meh`.
-- [ ] Al marcar `good`: el vendedor entra en una lista de confianza (+10 en futuros anuncios).
-- [ ] Contadores de etiquetas por tipo y por marca en el tablero.
-- [ ] Prepara (sin activar) un módulo de ajuste de pesos: cuando haya ≥ 50 etiquetas, `vh tune` propone nuevos pesos del scoring (regresión logística sobre las señales ya calculadas, sin modelos de IA externos) y muestra precisión y recall antes/después. Nunca se aplica automáticamente: genera una propuesta en `config/scoring.proposed.yaml`.
+- [x] Al marcar `fake`: fotos a la lista negra (ya existe) + **vendedor a la lista negra** (sus anuncios futuros se descartan con razón `seller_blacklisted`). Se puede revertir con `vh label <id> meh`.
+- [x] Al marcar `good`: el vendedor entra en una lista de confianza (+10 en futuros anuncios).
+- [x] Contadores de etiquetas por tipo y por marca en el tablero.
+- [x] Prepara (sin activar) un módulo de ajuste de pesos: cuando haya ≥ 50 etiquetas, `vh tune` propone nuevos pesos del scoring (regresión logística sobre las señales ya calculadas, sin modelos de IA externos) y muestra precisión y recall antes/después. Nunca se aplica automáticamente: genera una propuesta en `config/scoring.proposed.yaml`.
 
 ## C3.6 — Acceso desde el iPhone
-- [ ] `vh board-url --qr`: imprime en la terminal la URL completa con la clave **y un código QR** de esa URL (ASCII o PNG en `out/board-url.png`, que va en .gitignore). Así se escanea con la cámara del iPhone sin que se pierda el `#k=`.
-- [ ] Comprueba que tras abrir una vez con la clave, el tablero se abre sin ella (clave guardada en localStorage) y que el botón "Tablero" de ntfy funciona.
+- [x] `vh board-url --qr`: imprime en la terminal la URL completa con la clave **y un código QR** de esa URL (ASCII o PNG en `out/board-url.png`, que va en .gitignore). Así se escanea con la cámara del iPhone sin que se pierda el `#k=`.
+- [x] Comprueba que tras abrir una vez con la clave, el tablero se abre sin ella (clave guardada en localStorage) y que el botón "Tablero" de ntfy funciona.
 
 ## C3.7 — Seguridad y limpieza
 - [x] gitleaks en CI en cada push (falla si detecta secretos).
@@ -50,6 +50,6 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 - [x] Todos los tests de recall/precision siguen en verde tras el cambio.
 
 ## C3.8 — Verificación
-- [ ] ruff, pytest (incluye recall/precision), `pytest -m live`, `vh selftest` 8/8 y `vh doctor` en verde.
+- [x] ruff, pytest (incluye recall/precision), `pytest -m live`, `vh selftest` 8/8 y `vh doctor` en verde.
 - [ ] Push y 2 iteraciones del bucle verificadas en Actions (incluye la comprobación de vendidos).
 - [ ] SESSION_REPORT.md con resultados (tallas antes/después, vendidos detectados, avisos enviados) y BLOCKERS.md actualizado.

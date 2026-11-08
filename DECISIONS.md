@@ -445,3 +445,28 @@ La fusión aditiva de SQLite conserva IDs, precio observado, fotografías, event
 La revisión automática rechazó subir una instantánea cifrada a una rama nueva: consideró que la exportación y el destino concretos carecían de autorización explícita. Ninguna operación de ese intento se ejecutó. Se eligió la alternativa sin exportación: mantener la fusión y los archivos en el proyecto, conservar toda la SQLite de nube existente y captar stock antiguo mediante backfill real. La nube y la base local no se presentan como idénticas ni se borra información para igualarlas.
 
 El backfill diario se inicia a partir de las 03:00 Europe/Madrid, máximo un inicio por 24 h, y persiste sus consultas/páginas para continuar entre iteraciones. Reserva seis peticiones de catálogo y mantiene las búsquedas prioritarias; el cursor normal avanza solo por consultas efectivamente elegidas. Explora hasta diez páginas por consulta y corta páginas posteriores tras una respuesta vacía real. La comprobación de estados mantiene hasta 15 IDs únicos y prioriza Stone Island, datos sin comprobar/caducados, score y fecha. Negociables usa siete días; se suprimen avisos de esos anuncios salvo bajada real. La simulación de replay no envía avisos.
+
+## 2026-11-08 · C3.2 — SQL de la base real y ausencia comprobada
+
+Consulta de auditoría (SQLite JSON1):
+
+~~~sql
+SELECT count(*) AS total,
+       sum(json_extract(body,'$.size') IS NULL) AS sin_talla,
+       sum(json_extract(body,'$.size') IS NULL
+           AND coalesce(json_extract(body,'$.size_source'),'unknown')='unknown') AS sin_comprobar
+FROM listings;
+SELECT count(*) FROM listings
+WHERE json_extract(trace,'$.gate_rejected')='size'
+  AND json_extract(body,'$.size') IS NULL;
+~~~
+
+Base operativa inicial: 3.210 anuncios, 75 sin talla, 75 sin comprobar, cero descartados por talla ausente. Tras las 75 fichas reales: 35 sin talla (32 ausentes + 3 no disponibles), cero sin comprobar y 40 valores recuperados. La unión local con el archivo y la descarga posterior da 5.196 anuncios; tras revisar las 70 ausencias nuevas del histórico, quedan 104 sin talla, todas justificadas: 89 fichas sin atributo y 15 no disponibles, cero sin comprobar, cero descartes por talla ausente. No se reemplaza esa ausencia real por una talla inventada. El catálogo completo de referencia tiene 96/96 tallas; size_familiar en ficha recupera M y S de las capturas reales.
+
+Se conserva size_source=catalog para mostrar la talla cuando falta el atributo de ficha, sin usar ese respaldo como confirmación de una talla distinta en el gate. Dos tests antiguos se adaptaron para declarar explícitamente detail al comprobar el descarte confirmado. No se elimina un valor visible para expresar incertidumbre.
+
+## 2026-11-08 · C3.5 — Ajuste preparado y feedback de prueba aislado
+
+La base real conserva cero etiquetas fake/good utilizables con señales para el ajuste. vh tune informa 0/50 y no escribe propuesta. No se inventan 50 etiquetas para simular validación de mercado. El módulo usa regresión logística NumPy local, holdout temporal estratificado y muestra precisión/recall antes/después cuando se cumpla el mínimo. Excluye trusted_seller para evitar que la etiqueta filtre la respuesta al entrenamiento. Nunca aplica los pesos.
+
+Se probó fake → meh → good sobre una copia SQLite de los 5.196 anuncios, con el anuncio real 10690539539: vendedor bloqueado con seller_blacklisted, reversión y +10 de confianza. Las etiquetas de la copia no se exportan ni se hacen pasar por feedback del dueño. El tablero cuenta etiquetas globales y del perfil seleccionado.

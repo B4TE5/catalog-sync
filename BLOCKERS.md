@@ -34,3 +34,13 @@ Las tres autopruebas anteriores terminaron en 6/8, 7/8 y 7/8 porque las fichas s
 ## Resuelto · CORRECCION_2
 
 Replay real 10690539539 good 65, cola final 0 pendientes, cero no-sudaderas pendientes y cero fichas pendientes sin confirmar. Tres iteraciones consecutivas con correction-2.2, estado cifrado y Pages en verde: 42427270371, 42428059280, 42428917006. Ruff, 106 offline, cuatro live, selftest 8/8 y doctor aprobados. La consulta histórica concreta de entrada del anuncio no se conservó; se acredita su captura y su estado pendiente original sin inventar una atribución. Los límites opcionales anteriores permanecen.
+
+## C3.3 · [!] Precio pagado y hora exacta de venta no públicos
+
+La ficha pública real de 10690539539 devuelve HTTP 200 y banner visible Vendido; el RSC contiene precio anunciado, can_buy, is_reserved e is_hidden. Ni las capturas de ficha ni los atributos de ese anuncio aportan importe pagado o timestamp de venta. No se deducen de can_buy=false ni de traducciones incrustadas. Haría falta una fuente pública real que expusiera esos campos para satisfacer literalmente «precio final y duración exacta».
+
+Implementado y probado: comprobaciones periódicas acotadas, estados persistidos, pestaña Vendidos, último precio anunciado observado, eventos y duración estimada entre la última lectura activa y la primera vendida. Los anuncios encontrados ya vendidos no crean una media ficticia; stats y tablero muestran que no existe intervalo observado. La parte exacta de la primera casilla C3.3 queda [!]; el seguimiento y las estadísticas se verifican normalmente.
+
+## C3 · Conservación local sin exportación nueva
+
+La revisión automática rechazó exportar una copia cifrada a una rama nueva porque la exportación y su destino no estaban autorizados expresamente. Ese intento no ejecutó escrituras remotas. Se eliminó la ruta y se usó una alternativa: unión aditiva solo local, conservación de la SQLite ya existente en nube y backfill real para recuperar stock público antiguo. No se requiere intervención para continuar con esta alternativa. La base local y la nube se informan por separado.

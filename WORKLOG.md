@@ -464,3 +464,17 @@
 - Comandos clave: primera suite → 2 fallos: dos tests antiguos trataban el catálogo como detalle. Se explicitó detail en esos dos casos; suite final → 129 aprobadas, 4 excluidas, 14,42 s; Ruff limpio. Doctor real en verde y replay real good 65, sold, generaría aviso como alta activa.
 - Evidencia: tests/test_c3_policy.py y test_pipeline.py. Feedback sobre copia aislada de 5.196 registros reales: fake → seller_blacklisted, meh revierte, good → +10. El feedback de producción no se altera con esta prueba.
 - Problemas y cómo se resolvieron: el catálogo rellena las tarjetas; solo un dato confirmado descarta. Se descartó borrar la talla visible para implementar la cautela del gate.
+
+## 2026-11-08 14:24 — C3.1/C3.6 · Primer Snapshot y acceso móvil real
+- Objetivo: verificar avisos, estados, persistencia y acceso desde el QR en Pages.
+- Hecho: Snapshot 42484283656 del coordinador automático 42466277556 terminó success; restauró/guardó SQLite cifrada y publicó Pages HTTP 200. Comprobó 15 estados, detectó un vendido periódico y envió cinco avisos HTTP 200, sin errores. La base creció de 3.644 a 4.117 y el backfill diario avanzó a 7/150 con seis peticiones nuevas y una reutilizada.
+- Comandos clave: API de run/jobs/logs → success, 36 peticiones, 972 vistos, 13 nuevos. Snapshot cifrado descargado y descifrado solo en local → mismo run_start que el tablero público. Chromium móvil 390×844 abrió la URL decodificada del PNG privado, guardó la clave, limpió el fragmento y abrió sin clave la acción Tablero del recibo ntfy; sin overflow ni errores JS.
+- Evidencia: scratch/c3-actions-proof.json, c3-mobile-access.json, c3-ntfy-proof.json. Gitleaks real 42484486462 → success para 25ab6f9.
+- Problemas y cómo se resolvieron: el histórico antiguo se recupera sin subir la SQLite local. Las pasadas de backfill usan la misma exclusión mutua y guardan/publican cada incremento. Quedan por verificar la segunda iteración normal y la reparación de talla en nube.
+
+## 2026-11-08 14:25 — C3.8 · Verificación local final
+- Objetivo: ejecutar los tres niveles sobre correction-3.1 y las reglas finales de talla.
+- Hecho: selftest --report completó 8/8, catálogo y tres fichas reales; sus tres candidatos se descartaron antes de score y se ejercitó visión/score con el caso real capturado 10653233816, good 70, identificado en salida. El primer selftest anterior sí puntuó un candidato live; ambos finalizaron sin incidentes.
+- Comandos clave: ruff → 0; pytest final → 129 aprobadas, 4 excluidas, 13,74 s; pytest -m live → 4 aprobadas, 129 excluidas, 39,14 s; selftest → 8/8, 80,22 s, 13 peticiones. Doctor → todos verdes, parser 95, L 95 y XL 96. Replay prioritario → good 65 y simulación de aviso afirmativa.
+- Evidencia: TEST_REPORT.md regenerado por selftest --report. La QA pública completa aprobó también olvidar clave, purga de clave inválida y descifrado con localStorage bloqueado.
+- Problemas y cómo se resolvieron: ninguna incidencia de red. El fallback real de selftest se registra expresamente para no atribuir a la muestra live señales que proceden del caso capturado.
