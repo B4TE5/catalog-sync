@@ -23,7 +23,8 @@ from vinted_hunter.sources.vinted.client import HttpFailure
 from vinted_hunter.sources.vinted.parse import ParseError
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
-app = typer.Typer(help="Cazador local de sudaderas en Vinted.", no_args_is_help=True)
+app = typer.Typer(help="Cazador local de sudaderas en Vinted.", no_args_is_help=True,
+                  pretty_exceptions_show_locals=False)
 ROOT = Path.cwd()
 
 
@@ -310,7 +311,7 @@ def notify_test() -> None:
 
 
 @app.command("board-url")
-def board_url() -> None:
+def board_url(qr: Annotated[bool, typer.Option("--qr")] = False) -> None:
     """Muestra en local el enlace privado del panel publicado."""
     from urllib.parse import quote
 
@@ -324,4 +325,12 @@ def board_url() -> None:
         key = require_key(ROOT)
     except ValueError as error:
         raise typer.BadParameter(str(error)) from None
-    typer.echo(address + "#k=" + quote(key, safe=""))
+    private = address + "#k=" + quote(key, safe="")
+    typer.echo(private)
+    if qr:
+        import qrcode
+
+        target = ROOT / "out/board-url.png"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        qrcode.make(private).save(target)
+        typer.echo(str(target))

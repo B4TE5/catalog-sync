@@ -436,3 +436,10 @@
 - Evidencia: tests/fixtures/c3, tests/test_availability_feedback.py y tests/test_daily_tune.py. Los avisos tienen preflight compartiendo sesión y cuota, tope de 15 anuncios únicos comprobados y estado HTTP exitoso antes de deduplicar.
 - Problemas y cómo se resolvieron: un test de la regla antigua de cinco días falló al aplicar los siete días pedidos; se actualizó el límite y el test de frontera. Se reservará tiempo para estados tras atender candidatos nuevos. Las horas de venta y el precio negociado exactos no aparecen en el contrato público observado; se mantendrán explícitos sus límites.
 - Intento de commit: el primer stage parcial del peso de confianza falló por convertir los bytes CRLF/UTF-8 del diff en texto de Windows. El índice no cambió. Se repitió preservando los bytes exactos antes de hacer el commit.
+
+## 2026-11-08 03:35 — C3.6 · QR del enlace móvil
+- Objetivo: transportar el fragmento completo de la clave a la cámara del móvil sin publicarlo.
+- Hecho: vh board-url --qr mantiene la URL completa como salida local solicitada y genera out/board-url.png. Se captura esa salida en memoria durante la verificación; no se imprime la clave en la bitácora ni en las herramientas. Typer deja de mostrar variables locales en errores.
+- Comandos clave: QR real generado y decodificado con zxing-cpp → texto idéntico al enlace completo con #k=. PNG ignorado y fuera del índice. Suite de trabajo → 126 aprobadas, 4 excluidas; Ruff sin errores.
+- Evidencia: scratch/c3-qr-proof.json y out/board-url.png (privado, no se publica). qrcode pasa a dependencia de ejecución; tzdata permite el horario de Madrid en Windows y numpy se declara para el ajuste local. Playwright queda declarado como herramienta dev con el navegador ya instalado.
+- Problemas y cómo se resolvieron: uv limpió los paquetes auxiliares que no estaban declarados; se añadió Playwright a dev para conservar la QA visual. El PNG queda fuera de out/pages, por lo que el despliegue de Pages no lo incluye.

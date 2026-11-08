@@ -7,12 +7,15 @@ dependencies = [
     "cryptography>=50.0.2",
     "curl-cffi",
     "imagehash",
+    "numpy>=2.5.4",
     "opencv-python-headless",
     "pillow",
     "pydantic",
     "pyyaml",
+    "qrcode>=8.2",
     "rich",
     "typer",
+    "tzdata>=2026.6",
     "unidecode",
     "zxing-cpp",
 ]
@@ -21,7 +24,11 @@ dependencies = [
 vh = "vinted_hunter.cli:app"
 
 [dependency-groups]
-dev = ["pytest", "qrcode", "ruff"]
+dev = [
+    "playwright==1.64.1",
+    "pytest",
+    "ruff",
+]
 
 [build-system]
 requires = ["hatchling"]
