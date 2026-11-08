@@ -364,3 +364,10 @@
 - Comandos clave: última limpieza → success, 45,04 s, 7 descartes por talla y 2 por prenda. Auditoría del conjunto → 14 success y todos los pasos persistidos/publicados, sin coincidencias de secretos; máximo observado de limpieza 232,43 s.
 - Evidencia: scratch/correction2-actions.json y SQLite real data/loop-proof.sqlite. La cohorte original de 1.368 Stone Island conserva todos sus IDs, 321 enriquecidos, 1 good (10690539539, 65 puntos) y 1.367 rechazados con razón.
 - Problemas y cómo se resolvieron: la migración final reabrió falsos negativos y fichas antiguas sin material; se confirmaron con Vinted real. No se cambió el ritmo humano ni se detuvo el coordinador. Se aclara en la documentación que los casos rechazados antes de consultar vendedor/fotos solo guardan la ficha realmente consultada.
+
+## 2026-11-08 01:19 — C2.3/C2.7 · Reanudación tras el corte
+- Objetivo: revisar el punto exacto del corte, resolver cambios parciales y continuar por la primera casilla pendiente.
+- Hecho: git status solo mostró un borrador provisional de SESSION_REPORT. Se descartó ese borrador desactualizado para regenerarlo con el cierre real. El código ya estaba comprometido; no había implementaciones parciales. El monitor terminó durante el corte y guardó tres iteraciones normales consecutivas con 0 pendientes y 0 fichas sin confirmar.
+- Comandos clave: Ruff → 0; pytest → 106 pasadas, 4 excluidas, 8,26 s. Monitor → salida 0; runs 42410718931, 42411565308 y 42412300711, intervalos de captura 632 y 563 s, todos success con restauración/guardado/cifrado/Pages.
+- Evidencia: scratch/correction2-validation.json y log final de la sesión nativa del monitor. .env sigue ignorado y git ls-files no lo muestra.
+- Problemas y cómo se resolvieron: el informe parcial conservaba cifras anteriores a la limpieza completa; se sustituirá por el informe final. Se verificará además el estado operativo actual tras varias horas de funcionamiento autónomo.

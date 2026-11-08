@@ -115,3 +115,4 @@ La validación usó un máximo de 35 minutos para observar también el relevo. E
 | 3 | 42393322260 | 2026-11-07 17:50:39 | 949 | 47 | 43 | 4 |
 
 Ruff y 82 pruebas offline en verde, además de cuatro pruebas live. Las tres autopruebas acotadas quedaron en 6/8, 7/8 y 7/8 etapas por descartes previos a score. El detalle está en TEST_REPORT y BLOCKERS.
+
