@@ -492,3 +492,10 @@
 - Comandos clave: Ruff limpio; 131 pruebas offline aprobadas, cuatro excluidas. Regresión basada en la ficha real prioritaria, envejecida para comprobar el límite temporal.
 - Evidencia: tests/test_board.py y board/build.py. La prueba confirma oferta negociable nueva y decisión histórica intacta.
 - Problemas y cómo se resolvieron: el primer test esperaba 50 EUR ignorando que la única observación de marca deja p10=60. Se corrigió esa expectativa a la regla vigente de máximo entre oferta y p10; no se cambió el algoritmo de precio para hacer pasar el test.
+
+## 2026-11-08 14:49 — C3.8 · Cierre local sobre el último código
+- Objetivo: validar el tablero con ofertas actualizadas y la seguridad de credenciales antes del cierre de nube.
+- Hecho: selftest real puntuó 10131292014 de la muestra live; no necesitó fallback. Reporte regenerado. Doctor y replay real repetidos en verde. La auditoría confirma .env ignorado/fuera del índice y ausencia de sus valores sensibles en .git/config.
+- Comandos clave: selftest --report → 8/8, 76,73 s, 13 peticiones, 480 vistos, tres fichas, una visión y un score; pytest → 131 aprobadas en 13,95 s; live → cuatro en 39,78 s. Doctor → parser 96, filtros L/XL 96/96, salud healthy. Replay → good 65, sold, generaría aviso como nuevo activo.
+- Evidencia: TEST_REPORT.md, data/c3-final-selftest.log, c3-final-doctor.log y c3-final-replay.log; Secrets run 42486169696 success para 47819da.
+- Problemas y cómo se resolvieron: una utilidad de lectura intentó cerrar SQLiteStore con close(), método inexistente; el proceso terminó sin mutaciones y se repitió cerrando db.close(). Se mantiene el cierre contextual de la aplicación. El bucle y el backfill siguen serializados: durante mantenimiento pueden encolarse pasadas normales; se distinguen los tiempos de dispatch y de captura.
