@@ -83,7 +83,7 @@ const tiers = {all:"Todos", top:"🔥 Top", good:"✅ Buenas", maybe:"👀 Revis
                rejected:"⛔ Descartados", pending:"Pendientes"};
 const reasons = {category:"Categoría incompatible",price:"Precio fuera de rango",size:"Talla distinta",hood:"Capucha incompatible",
   status:"Estado excluido",replica:"Texto de réplica",color:"Color distinto",photos:"Pocas fotos",
-  seller_feedback:"Pocas valoraciones",seller_rating:"Nota de vendedor baja",
+  seller_feedback:"Pocas valoraciones",seller_rating:"Nota de vendedor baja",seller_blacklisted:"Vendedor en lista negra",
   fake_certilogo_domain:"Dominio QR ajeno a Certilogo",blacklisted_photo:"Foto en lista negra",
   shared_photo:"Foto de otro vendedor",relisted:"Resubida sin bajada de precio"};
 const health = document.querySelector("#health");
@@ -121,7 +121,7 @@ Object.assign(reasons, {
 const gates = {
   garment:"Tipo de prenda", price:"Precio y moneda", size:"Talla", hood:"Capucha",
   color:"Color", status:"Condición", replica:"Texto de réplica", photos:"Mínimo de fotos",
-  brand_rules:"Reglas de marca", seller_feedback:"Valoraciones del vendedor",
+  brand_rules:"Reglas de marca", seller_feedback:"Valoraciones del vendedor",seller_blacklisted:"Vendedor en lista negra",
   seller_rating:"Nota del vendedor", fake_certilogo_domain:"Dominio del QR",
   catalog_photos_only:"Fotos propias", too_cheap_for_brand:"Suelo de precio y Certilogo",
   blacklisted_photo:"Lista negra de fotos", shared_photo:"Foto compartida",

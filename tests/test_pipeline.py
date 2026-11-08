@@ -38,7 +38,7 @@ def candidate() -> Listing:
     ("updates", "seller", "evidence", "reason"),
     [
         ({"price": Decimal(100)}, None, None, "price"),
-        ({"size": "XXL"}, None, None, "size"),
+        ({"size": "XXL", "size_source": "detail"}, None, None, "size"),
         ({"category_id": 5492}, None, None, "not_sweatshirt"),
         ({"description": "geïnspireerde groene"}, None, None, "replica"),
         ({"title": "Felpa con cappuccio"}, None, None, "hood"),
@@ -360,7 +360,8 @@ def test_revalidate_requires_ficha_evidence_for_attribute_rejects(
         store.save(listing, profile.id, "good", 70, {}, False)
         assert pipe.revalidate() == 0
         assert store.record(listing.id)["tier"] == "good"
-        store.save(listing, profile.id, "good", 70, {"enriched": True}, False)
+        store.save(listing.model_copy(update={"size_source": "detail"}), profile.id,
+                   "good", 70, {"enriched": True}, False)
         assert pipe.revalidate() == 1
         assert store.record(listing.id)["trace"]["gate_rejected"] == "size"
 

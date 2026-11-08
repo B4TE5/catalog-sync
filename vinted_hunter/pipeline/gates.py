@@ -78,7 +78,11 @@ def gate(
     hood = category_hood or hood_signal(text, words)
     expected_size = normalize(profile.size or "")
     explicit_sizes = stated_sizes(listing.title, words.get("size_labels", []))
-    size = normalize((listing.size or "").split(" / ")[0])
+    # El catálogo sirve para mostrar la talla; un descarte requiere la ficha
+    # o una talla explícita en el título. La ficha puede conservar el respaldo
+    # del catálogo cuando no publica este atributo.
+    confirmed_size = listing.size if listing.size_source != "catalog" else None
+    size = normalize((confirmed_size or "").split(" / ")[0])
     tests = {
         "not_sweatshirt": True,
         "price": listing.currency == "EUR" and listing.price <= profile.price_max,

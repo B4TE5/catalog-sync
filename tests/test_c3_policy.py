@@ -31,6 +31,28 @@ def test_active_profiles_only_accept_the_three_allowed_conditions() -> None:
     assert all(set(profile.allowed_status) == allowed for profile in config.profiles)
 
 
+def test_notifications_are_enabled_with_the_requested_profile_thresholds() -> None:
+    config = load_config(ROOT)
+    assert config.scoring.shadow_mode is False
+    assert {p.id: p.notify_min_tier for p in config.profiles} == {
+        "stone-island": "good", "twojeys": "top", "yzy-gap": "top",
+        "heron-preston": "top", "rhude": "top",
+    }
+
+
+def test_catalog_size_fallback_cannot_confirm_a_detail_mismatch() -> None:
+    config = load_config(ROOT)
+    item = listing_from_item(
+        gzip.decompress((ROOT / "tests/recall/10690539539/item.html.gz").read_bytes()).decode(),
+        "https://www.vinted.es/items/10690539539-stone-island-sweater", datetime.now(UTC),
+    )
+    fallback = item.model_copy(update={"size": "M", "size_source": "catalog"})
+    reason, passed = gate(fallback, config.profiles[0], config, detailed=True)
+    assert reason is None and "size_unconfirmed" in passed
+    assert gate(fallback.model_copy(update={"size_source": "detail"}), config.profiles[0],
+                config, detailed=True)[0] == "size"
+
+
 def test_existing_real_case_can_use_profile_specific_type_rules() -> None:
     config = load_config(ROOT)
     item = listing_from_item(

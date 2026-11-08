@@ -457,3 +457,10 @@
 - Comandos clave: ruff check → 0; pytest -q → 127 aprobadas, 4 excluidas, 14,53 s. Recibo ntfy HTTP 200 confirma foto, enlace a Vinted y Tablero público sin fragmento de clave.
 - Evidencia: scratch/c3-ntfy-proof.json, tests/test_ntfy.py, test_daily_tune.py y fixtures c3. La verificación de Actions se hará sobre el commit desplegado.
 - Problemas y cómo se resolvieron: el contrato público no expone importe pagado ni instante exacto de venta. La interfaz identifica precio anunciado e intervalo estimado; no produce medias con anuncios encontrados ya vendidos sin transición observada.
+
+## 2026-11-08 14:20 — C3.2 · Talla de respaldo y descarte confirmado
+- Objetivo: mostrar la talla del catálogo sin convertir una ficha sin atributo en un descarte por talla.
+- Hecho: el gate distingue size_source=catalog de una talla confirmada en ficha; conserva el valor para mostrarlo y añade size_unconfirmed. Se fijan por test los umbrales de aviso y se traduce seller_blacklisted. La revisión correction-3.1 fuerza la reevaluación guardada.
+- Comandos clave: primera suite → 2 fallos: dos tests antiguos trataban el catálogo como detalle. Se explicitó detail en esos dos casos; suite final → 129 aprobadas, 4 excluidas, 14,42 s; Ruff limpio. Doctor real en verde y replay real good 65, sold, generaría aviso como alta activa.
+- Evidencia: tests/test_c3_policy.py y test_pipeline.py. Feedback sobre copia aislada de 5.196 registros reales: fake → seller_blacklisted, meh revierte, good → +10. El feedback de producción no se altera con esta prueba.
+- Problemas y cómo se resolvieron: el catálogo rellena las tarjetas; solo un dato confirmado descarta. Se descartó borrar la talla visible para implementar la cautela del gate.
