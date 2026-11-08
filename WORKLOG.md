@@ -414,3 +414,10 @@
 - Comandos clave: primer escaneo real → salida 1, exactamente los doce JWT públicos de telemetría ya caducados del commit fbac8cb. Tras registrar exclusivamente sus doce fingerprints históricos → salida 0, 52 commits y 69,88 MB. Guardia stdin con un JWT real fuera de esa huella → salida 1 esperada. Valores siempre redactados.
 - Evidencia: .github/workflows/secrets.yml, .gitleaksignore y reportes redactados en data/c3-gitleaks-*.json. Ruff y 111 pruebas aprobadas en la revisión base. La ejecución de CI se verificará tras el push.
 - Problemas y cómo se resolvieron: el historial conservaba el incidente ya documentado. No se excluyeron rutas ni reglas completas: la excepción fija commit, ruta, regla y línea; una reintroducción en otro commit sigue fallando. Se descartó reescribir el historial auditable.
+
+## 2026-11-08 02:48 — C3.7 · CI de secretos verificado
+- Objetivo: comprobar el escáner real de Actions, no solo su YAML o ejecución local.
+- Hecho: Secrets run 42434802591 completó success sobre a77a051, con análisis completo y de gzip. El workflow se ejecuta en cada push y pull request sin token personal.
+- Comandos clave: API Actions → HTTP 200, completed/success. Guardia de reintroducción real → salida 1 esperada. Suite local de la base funcional → 116 aprobadas y 4 excluidas en 10,09 s.
+- Evidencia: .github/workflows/secrets.yml y run 42434802591.
+- Problemas y cómo se resolvieron: se conservan únicamente las doce excepciones históricas auditadas; no se permite omitir fixtures comprimidos del escaneo.

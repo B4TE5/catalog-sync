@@ -41,7 +41,7 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 - [ ] Comprueba que tras abrir una vez con la clave, el tablero se abre sin ella (clave guardada en localStorage) y que el botón "Tablero" de ntfy funciona.
 
 ## C3.7 — Seguridad y limpieza
-- [ ] gitleaks en CI en cada push (falla si detecta secretos).
+- [x] gitleaks en CI en cada push (falla si detecta secretos).
 - [x] Sanitizador obligatorio al guardar fixtures (JWT, cookies, tokens, cabeceras de sesión), con test.
 - [x] Saca de Git los scripts de `scratch/` que no hagan falta (y añade scratch/ a .gitignore salvo lo imprescindible).
 
