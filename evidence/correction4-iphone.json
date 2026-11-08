@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-11-08T17:31:10.210442+01:00",
+  "application_commit": "f95491d",
+  "engine": "WebKit",
+  "device": "iPhone 13",
+  "target": "Pages HTTPS real",
+  "test": "tests/browser/test_iphone.py",
+  "passes": 1,
+  "fragment_visible_after_decryption_and_reload": true,
+  "new_public_tab_restores_fragment_from_backup": true,
+  "reload_without_localStorage": true,
+  "manifest_links": 0,
+  "forget_clears_current_url_and_storage": true
+}

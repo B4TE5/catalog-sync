@@ -1,25 +1,25 @@
 # Informe de pruebas
 
-2026-11-08T15:19:46.296807+01:00
+2026-11-08T16:57:56.460942+01:00
 
-- `vh selftest --report` · 8/8 etapas · 73.33 s · 13 peticiones.
+- `vh selftest --report` · 8/8 etapas · 83.69 s · 13 peticiones.
   - ✅ Home y cookies · sesión pública
-  - ✅ Catálogo · 32.86 s
+  - ✅ Catálogo · 37.20 s
   - ✅ Gates · embudo
   - ✅ Ficha · 3 enriquecidos
   - ✅ Visión · 1 evaluados
   - ✅ Score · 1 puntuados
-  - ✅ Tablero · 0.05 s
-  - ✅ Pasada sin incidentes · 39.89 s de procesamiento
+  - ✅ Tablero · 0.06 s
+  - ✅ Pasada sin incidentes · 45.86 s de procesamiento
 
 ## pytest offline
 
 Salida 0.
 
 ```text
-........................................................................ [ 54%]
-............................................................             [100%]
-132 passed, 4 deselected in 13.96s
+........................................................................ [ 50%]
+........................................................................ [100%]
+144 passed, 5 deselected in 18.71s
 
 ```
 
@@ -29,39 +29,23 @@ Salida 0.
 
 ```text
 ....                                                                     [100%]
-4 passed, 132 deselected in 41.20s
+4 passed, 145 deselected in 32.09s
 
 ```
 
-## Cierre CORRECCION_3 · 2026-11-08T15:40:43.550211+01:00
+## Cierre C4 · 2026-11-08T17:36:44.350673+01:00
 
-- Ruff sin errores. Suite de configuración, disponibilidad, feedback, backfill diario, ofertas envejecidas, historial, QR y sanitizador incluida en los 132 tests.
-- Doctor final: HTTP 200, cookies, 96 anuncios parseados; marcas activas combinadas; L/XL 96/95 y salud healthy. Salida 0.
-- Replay real 10690539539: good 65; sold; generaría aviso como nuevo activo. Salida 0.
-- Selftest final: visión y score de la ficha live 10131292014; no necesitó fallback.
-- QR privado decodificado idéntico al enlace completo; Pages real, localStorage, botón ntfy público, fragmento limpio, olvidar/clave inválida/storage bloqueado; viewport 390×844, sin errores JS ni overflow.
-- Un aviso de prueba HTTP 200 y 5 avisos automáticos. Guardias de vendido/reservado/oculto/desconocido y reintento tras fallo cubiertas por tests.
-- Base local: 5196 registros; 0 tallas sin comprobar. Nube: 7938 registros; 0 tallas sin comprobar; ningún descarte por talla ausente ni no-sudadera identificable pendiente.
-- Backfill real 150/150, quince búsquedas: 107 peticiones nuevas y 41 páginas omitidas tras vacíos reales. La primera ejecución fue de instalación por la tarde; la ventana nocturna 03:00–05:00 se valida por tests y la continuación real.
-- Revisión literal de AGENTS §10: parsers catálogo/ficha/usuario con capturas; cada gate y desconocidos; capucha; texto multilingüe; precios/ofertas; scoring top/rejected; dedupe/resubida/bajada; QR legítimo y dominio falso; pHash reescalado. Las regresiones de recall/precisión forman parte de la suite completa.
-- Gitleaks en CI escanea todo el historial y gzip con redacción. Solo doce fingerprints históricos exactos de JWT públicos caducados están exceptuados; la guardia de reintroducción detecta el mismo JWT fuera de esa procedencia.
+- Ruff limpio. Offline: 144 aprobadas, cinco excluidas. Live: cuatro aprobadas. Selftest: 8/8, 83,69 s y 13 peticiones, una ficha live puntuada; sin fallback.
+- Doctor real: healthy, HTTP 200/cookies, parser 96 y filtros L/XL 96/96. Replay real prioritario top 75, sold, simulación de aviso como nuevo activo afirmativa.
+- Recall/precision: 10690539539 top 75; 10653233816 good 70; seis casos negativos siguen rejected 0. Tests de bloqueo de envío para otros perfiles y good.
+- WebKit/iPhone 13 en Pages real: una aprobada en 10,41 s; #k visible al abrir/recargar y restaurado en pestaña nueva pública desde respaldo; sin manifest, recarga sin localStorage y Olvidar.
+- Workflow_dispatch 42497346203: ambos secrets de ntfy presentes, shadow_mode=false, HTTP 200 y recibo verificado. Mensaje técnico sin anuncio simulado.
+- Tallas: treinta históricos sin talla (25 fichas sin atributo y cinco 404), más treinta controles actuales con talla publicada: concordancia y cobertura 30/30, 100 %. Tres fichas y tres catálogos reales sanitizados; regresiones de respaldo a11y y conservación de talla en pendientes.
+- SQL final: 1224 pendientes, 0 sin talla; integridad ok. Gitleaks de fixtures: 15,17 MB analizados, cero hallazgos; CI de aplicación final en verde.
 
-## Iteraciones normales con aplicación final
-
-| Run | Inicio de captura UTC | Peticiones | Vistos | Resultado |
+| Run | Inicio UTC | Peticiones | Vistos | Resultado |
 | --- | --- | ---: | ---: | --- |
-| 42489721321 | 2026-11-08T14:29:08Z | 38 | 820 | success · estado + Pages |
-| 42490550896 | 2026-11-08T14:35:36Z | 39 | 853 | success · estado + Pages |
+| 42499449270 | 2026-11-08T16:21:23Z | 37 | 786 | success |
+| 42500316506 | 2026-11-08T16:31:39Z | 38 | 779 | success |
 
-Las dos restauraron/guardaron estado, sellaron artefacto y desplegaron Pages HTTP 200. Detalle de límites y estados por pasada en evidence/correction3-validation.json. Las capturas del parser son reales; los casos de frontera usan variantes controladas de modelos reales y los tests matemáticos de ajuste no inventan respuestas de Vinted.
-
-## Incidencia de nube
-
-Snapshot 42488165596 terminó con `catalog: Timeout` y `availability: Timeout`.
-Conservó el estado cifrado y publicó Pages. El siguiente Snapshot 42488842985
-terminó en verde. La evidencia conserva ese fallo y lo distingue de las dos
-iteraciones finales exitosas.
-
-## Límites
-
-El importe pagado y el instante exacto de venta no se publican. Se muestran precio anunciado e intervalos estimados, sin inventar duración para un anuncio encontrado ya vendido. vh tune permanece sin activar hasta reunir 50 etiquetas reales utilizables. Referencias ORB siguen sin aportarse. La QA móvil usa Chromium, no un iPhone físico.
+Las dos iteraciones finales guardaron el estado y publicaron Pages; ninguna se sustituye por el dispatch manual. La emulación de iPhone verifica el navegador, no la acción física de guardar un acceso. El error inicial de WebKit se documenta sin repetir la clave; el reporte de errores suprime su cadena original.

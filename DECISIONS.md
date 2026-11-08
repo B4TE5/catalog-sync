@@ -500,3 +500,7 @@ La muestra histórica de treinta contiene 25 fichas disponibles sin size/size_fa
 
 ## 2026-11-08T17:09:15+01:00 · C4.1 — Recuperación del fragmento desde respaldo
 Cuando el botón público de ntfy abre el tablero sin fragmento, un respaldo válido restaura #k tras descifrar. Así Añadir a pantalla de inicio dispone también de la URL completa en esa ruta. Solo Olvidar elimina la clave explícitamente. No se cambia la clave ni se expone en el enlace de ntfy.
+
+
+## 2026-11-08T17:36:44.350673+01:00 · C4 — Resultado final observado
+Estado final {'total': 8154, 'pending': 1224, 'pending_without_size': 0, 'pending_size_presence': 1.0, 'target_tier': 'top', 'target_score': 75, 'target_availability': 'sold', 'integrity': 'ok'}; dos pasadas normales de f95491d confirmadas. La configuración de notificación coincide con la comprobada por el workflow_dispatch 42497346203. Se mantiene la clave existente y se informa de la recreación de accesos antiguos sin fragmento. No se atribuye a la emulación una operación física de Añadir a inicio.

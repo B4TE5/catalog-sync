@@ -1,0 +1,170 @@
+{
+  "verified_at": "2026-11-08T17:36:44.350673+01:00",
+  "application_commit": "f95491d",
+  "normal_iterations": [
+    {
+      "id": 42499449270,
+      "head_sha": "f95491d7da981d21e0a5bcbdcfd436c24d157554",
+      "display_title": "Snapshot 42490920092-1-11",
+      "created_at": "2026-11-08T16:21:09Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        37,
+        786,
+        18
+      ],
+      "capture_start": "2026-11-08T16:21:23Z",
+      "test_step": "skipped",
+      "deploy_success": true,
+      "pipeline": {
+        "start": "2026-11-08T16:21:24.319585+00:00",
+        "requests": 37,
+        "budget": {
+          "catalog": 12,
+          "enrich": 24
+        },
+        "seen": 786,
+        "new": 18,
+        "availability_checks": 14,
+        "notifications": null,
+        "errors": [],
+        "duration": 227.02,
+        "rules_revision": "correction-4"
+      }
+    },
+    {
+      "id": 42500316506,
+      "head_sha": "f95491d7da981d21e0a5bcbdcfd436c24d157554",
+      "display_title": "Snapshot 42490920092-1-12",
+      "created_at": "2026-11-08T16:31:26Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        38,
+        779,
+        17
+      ],
+      "capture_start": "2026-11-08T16:31:39Z",
+      "test_step": "skipped",
+      "deploy_success": true,
+      "pipeline": {
+        "start": "2026-11-08T16:31:39.824751+00:00",
+        "requests": 38,
+        "budget": {
+          "catalog": 12,
+          "enrich": 25
+        },
+        "seen": 779,
+        "new": 17,
+        "availability_checks": 13,
+        "notifications": null,
+        "errors": [],
+        "duration": 227.28,
+        "rules_revision": "correction-4"
+      }
+    }
+  ],
+  "notification_dispatch": {
+    "id": 42497346203,
+    "head_sha": "02701ef69f5e64acdded68f0d3a5a18b7a46f5f0",
+    "display_title": "Snapshot c4-notify-155646",
+    "created_at": "2026-11-08T15:56:48Z",
+    "conclusion": "success",
+    "actor_bot": false,
+    "logs_http": 200,
+    "sensitive_match": false,
+    "restored": true,
+    "saved": true,
+    "sealed": true,
+    "accepted": false,
+    "rejected": false,
+    "pages": 200,
+    "metrics": [
+      35,
+      0,
+      0
+    ],
+    "capture_start": "2026-11-08T15:57:01Z",
+    "test_step": "success",
+    "deploy_success": true,
+    "notification_check": {
+      "topic_present": true,
+      "health_topic_present": true,
+      "shadow_false": true,
+      "http_200": true
+    }
+  },
+  "notification_receipt": {
+    "receipt_id": "dqFXVsafVMlr",
+    "received_at": "2026-11-08T16:00:49+00:00",
+    "technical_test_not_listing": true,
+    "no_listing_click": true,
+    "board_action_public": true
+  },
+  "iphone": {
+    "verified_at": "2026-11-08T17:31:10.210442+01:00",
+    "application_commit": "f95491d",
+    "engine": "WebKit",
+    "device": "iPhone 13",
+    "target": "Pages HTTPS real",
+    "test": "tests/browser/test_iphone.py",
+    "passes": 1,
+    "fragment_visible_after_decryption_and_reload": true,
+    "new_public_tab_restores_fragment_from_backup": true,
+    "reload_without_localStorage": true,
+    "manifest_links": 0,
+    "forget_clears_current_url_and_storage": true
+  },
+  "cloud": {
+    "total": 8154,
+    "pending": 1224,
+    "pending_without_size": 0,
+    "pending_size_presence": 1.0,
+    "target_tier": "top",
+    "target_score": 75,
+    "target_availability": "sold",
+    "integrity": "ok"
+  },
+  "snapshot": {
+    "state": "ac4c9f99197b79c654cb46d3346db83583beaa28",
+    "state_run": "2026-11-08T16:31:39.824751+00:00",
+    "board_run": "2026-11-08T16:31:39.824751+00:00",
+    "board_current": true
+  },
+  "selftest": {
+    "start": "2026-11-08T15:56:32.688891+00:00",
+    "duration": 83.69,
+    "requests": 13,
+    "seen": 480,
+    "enriched": 3,
+    "vision": 1,
+    "scored": 1,
+    "scored_ids": [
+      10131292014
+    ],
+    "errors": []
+  },
+  "rules": {
+    "only_profile": "stone-island",
+    "min_tier": "top",
+    "shadow_mode": false
+  },
+  "notification_config_unchanged_since_dispatch": true
+}

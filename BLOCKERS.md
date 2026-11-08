@@ -48,3 +48,12 @@ La revisión automática rechazó exportar una copia cifrada a una rama nueva po
 
 ## Resuelto · C3 tallas, bucle, backfill y acceso
 2026-11-08T15:40:43.550211+01:00. Nube 7938 registros, cero tallas sin comprobar y ningún descarte por talla ausente. Backfill 150/150 real; dos iteraciones finales normales en verde, SQLite guardada y Pages vigente. QR y reapertura desde la acción pública de ntfy verificados. La única casilla C3 parcialmente [!] es la precisión de precio pagado/hora de venta; el seguimiento está implementado. El timeout de la pasada 42488165596 se recuperó en 42488842985, con guardado y Pages también durante el fallo. El ajuste de pesos está preparado y espera etiquetas reales, sin activarse.
+
+
+## Resuelto · Corrección 4 · 2026-11-08T17:36:44.350673+01:00
+
+URL privada persistente y restaurada desde respaldo, sin manifest; emulación WebKit/iPhone y Pages real aprobadas. Solo Stone Island top envía anuncios; recall top 75 y seis precision rejected. Prueba de Actions con secrets presentes, shadow_mode=false, HTTP 200 y recibo real.
+
+No había treinta pendientes actuales sin talla: la instantánea tenía 1.192 pendientes y cero ausencias. Se auditaron treinta históricos reales y treinta controles actuales con talla publicada (30/30, 100 %). Los 25 históricos disponibles no publican talla y cinco son 404; no se inventa el dato para accesorios.
+
+La primera excepción de WebKit mostró el enlace privado en la salida local de herramienta. Se corrigió la supresión del contexto antes de continuar; no se publica el valor en Git, informes ni Actions. La clave permanece para conservar acceso. No quedan bloqueos de C4. Los accesos antiguos de inicio guardados sin clave deben recrearse desde el enlace privado; no se ha operado un iPhone físico.

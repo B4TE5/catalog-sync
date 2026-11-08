@@ -581,3 +581,11 @@
 - Comandos clave: WebKit/iPhone sobre artefacto real → una aprobada en 5,59 s; Ruff 0; suite offline 144 aprobadas. La prueba de Pages anterior pasó el flujo de recarga; se repetirá el flujo ampliado tras publicar.
 - Evidencia: tests/browser/test_iphone.py y board/encrypted.html. Workflow 42497346203 ya confirmó ambos secrets presentes, shadow_mode=false y HTTP 200; recibo ntfy dqFXVsafVMlr.
 - Problemas y cómo se resolvieron: conservar el fragmento entrante no lo restauraba al entrar sin él desde ntfy; se cubre también esa ruta para que localStorage sea realmente respaldo del enlace completo.
+
+
+## 2026-11-08T17:36:44.350673+01:00 — C4 · Cierre con dos pasadas reales finales
+- Objetivo: cerrar los tres cambios, los tests y las verificaciones de Actions.
+- Hecho: dos iteraciones normales finales [42499449270, 42500316506], con estado cifrado y Pages vigente. Dispatch 42497346203 con secrets presentes, shadow_mode=false y ntfy HTTP 200, recibo confirmado. SQL final {'total': 8154, 'pending': 1224, 'pending_without_size': 0, 'pending_size_presence': 1.0, 'target_tier': 'top', 'target_score': 75, 'target_availability': 'sold', 'integrity': 'ok'}. WebKit/iPhone con enlace persistente y respaldo en pestaña nueva aprobado.
+- Comandos clave: Ruff 0; 144 offline; cuatro live; selftest 8/8 (83,69 s); doctor verde; replay top 75. Tallas: treinta históricos y treinta controles reales, 30/30 de cobertura en prendas con talla publicada. Todos los casos de precision siguen descartados.
+- Evidencia: evidence/correction4-*.json, tests/fixtures/c4, SESSION_REPORT.md y TEST_REPORT.md. Se detuvo el servidor temporal; se mantiene el bucle de GitHub.
+- Problemas y cómo se resolvieron: no se fabricó una muestra actual inexistente; se conservaron y contrastaron históricos reales. El error local inicial de WebKit se corrigió para no volver a exponer su URL en errores. Los accesos antiguos sin clave requieren recreación con el enlace completo; la prueba realizada fue de navegador emulado.

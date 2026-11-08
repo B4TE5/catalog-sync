@@ -1,7 +1,8 @@
 {
   "current_cloud": {
     "pending": 1192,
-    "missing_size": 0
+    "missing_size": 0,
+    "snapshot_run": "2026-11-08T15:23:55.043181+00:00"
   },
   "historical_missing_sample": 30,
   "historical_available": 25,

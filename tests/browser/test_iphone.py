@@ -25,7 +25,7 @@ def test_iphone_preserves_private_fragment_across_reload() -> None:
             device.pop("default_browser_type", None)
             context = browser.new_context(**device)
             page = context.new_page()
-            page.route("https://**/*", lambda route: route.continue_()
+            context.route("https://**/*", lambda route: route.continue_()
                        if route.request.is_navigation_request()
                        and urldefrag(route.request.url).url == public else route.abort())
             page.goto(private, wait_until="domcontentloaded")
@@ -38,6 +38,7 @@ def test_iphone_preserves_private_fragment_across_reload() -> None:
             preserved = page.url == private
             assert preserved, "La recarga debe conservar el fragmento"
             # Entrada desde el botón público: el respaldo restaura la URL completa.
+            page = context.new_page()
             page.goto(public, wait_until="domcontentloaded")
             page.frame_locator("iframe").locator("#cards").wait_for(timeout=30000)
             preserved = page.url == private
