@@ -425,3 +425,7 @@ La prioridad es conservar el recall de Stone Island de 60 EUR. Primero se fijan 
 ## C3.9 · Configuración de producto y compatibilidad
 
 categories define search, accept, conditional y exclude con IDs reales procedentes de la evidencia existente. Las palabras type_keywords_include/exclude/explicit y material_keywords_include/exclude/exclude_exact viven en los defaults de profiles.yaml y se pueden sustituir por perfil. Se descarta mantener una condición hardcodeada de sudadera en los gates o búsquedas: la ampliación futura debe poder hacerse con YAML. Hood y size null desactivan sus restricciones cuando un producto futuro carezca de ellas; no se añade ningún perfil nuevo en esta sesión.
+
+## C3.7 · Escáner completo y baseline histórica estrecha
+
+Se usa Gitleaks CLI del repositorio oficial https://github.com/gitleaks/gitleaks, sin la licencia adicional de su Action y sin secretos personales. El release 8.30.1 y los hashes de ambos binarios se verificaron con los assets oficiales. Linux se fija al SHA-256 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb. El escaneo incluye gzip del historial. Sus doce hallazgos corresponden solo a los JWT públicos otelToken ya caducados y ya documentados de fbac8cb. .gitleaksignore contiene únicamente esas huellas exactas; no hay allowlists por directorio o regla. La guardia real por stdin demuestra que el mismo JWT en otra procedencia se detecta. Se descarta reescribir commits y romper la evidencia anterior. Los cuerpos nuevos pasan por el sanitizador y los tests prohíben JWT actuales.

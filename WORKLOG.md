@@ -407,3 +407,10 @@
 - Comandos clave: Ruff → 0; pytest → 111 aprobadas, 4 excluidas, 10,74 s, incluidos todos los casos reales de recall/precision. Un caso real de precisión comprueba que la misma ficha puede evaluarse con reglas de tipo distintas por configuración, sin cambiar el código ni guardar un perfil nuevo.
 - Evidencia: config.py, profiles.yaml, scoring.yaml, search.py, gates.py y tests/test_c3_policy.py.
 - Problemas y cómo se resolvieron: Ruff detectó dos líneas largas al refactorizar; se ajustaron. Las listas se trasladaron conservando todos sus valores, incluidas las exclusiones de material y la tilde de lã.
+
+## 2026-11-08 02:33 — C3.7 · Gitleaks con archivos comprimidos
+- Objetivo: escanear el historial en cada push sin licencias ni tokens personales de Actions.
+- Hecho: workflow de Gitleaks CLI 8.30.1, binario Linux fijado por SHA-256 oficial, checkout completo y análisis de archivos comprimidos con profundidad 2. La descarga local Windows también se verificó por SHA-256.
+- Comandos clave: primer escaneo real → salida 1, exactamente los doce JWT públicos de telemetría ya caducados del commit fbac8cb. Tras registrar exclusivamente sus doce fingerprints históricos → salida 0, 52 commits y 69,88 MB. Guardia stdin con un JWT real fuera de esa huella → salida 1 esperada. Valores siempre redactados.
+- Evidencia: .github/workflows/secrets.yml, .gitleaksignore y reportes redactados en data/c3-gitleaks-*.json. Ruff y 111 pruebas aprobadas en la revisión base. La ejecución de CI se verificará tras el push.
+- Problemas y cómo se resolvieron: el historial conservaba el incidente ya documentado. No se excluyeron rutas ni reglas completas: la excepción fija commit, ruta, regla y línea; una reintroducción en otro commit sigue fallando. Se descartó reescribir el historial auditable.

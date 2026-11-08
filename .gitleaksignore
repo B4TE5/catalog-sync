@@ -1,0 +1,13 @@
+# Public Vinted otelToken JWTs expired 2026-11-07; exact historic findings only.
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/fixtures/catalog-parent.html.gz:jwt:8
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10683026176/item.html.gz:jwt:71
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10685333948/item.html.gz:jwt:20
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10685333948/wardrobe.html.gz:jwt:8
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10705854921/item.html.gz:jwt:2
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10706300170/item.html.gz:jwt:14
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10706307595/item.html.gz:jwt:41
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/precision/10706427918/item.html.gz:jwt:2
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/recall/10653233816/item.html.gz:jwt:20
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/recall/10653233816/wardrobe.html.gz:jwt:8
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/recall/10690539539/item.html.gz:jwt:38
+fbac8cbcc03bd24e947a75e89046f99ea3860ab1:tests/recall/10690539539/wardrobe.html.gz:jwt:8
