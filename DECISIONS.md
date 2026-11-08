@@ -473,3 +473,6 @@ Se probó fake → meh → good sobre una copia SQLite de los 5.196 anuncios, co
 
 ## 2026-11-08 · C3.4 — Inicio nocturno y comprobación manual
 La primera instalación inició el recorrido real a las 14:18 por usar hora >= 3. Se corrigió a una ventana configurable 03:00–05:00 Madrid. Un plan incompleto continúa fuera de esa ventana; la opción daily_backfill_only permite la verificación manual. El mínimo entre inicios es 24 h, incluso manualmente. El recorrido de instalación se conserva como ocurrió: no se antedata ni se reinicia para aparentar una ejecución nocturna. Tras ese inicio tardío excepcional, el siguiente inicio automático será la primera ventana nocturna que cumpla el intervalo.
+
+## 2026-11-08 · C3.4 — Presentación de ofertas y decisión histórica
+Se recalcula la oferta y la edad al construir el tablero. No se reescribe el trace original para refrescar una tarjeta que cruza los siete días; las señales que justificaron el score siguen auditables. La oferta conserva el suelo p10 y el tope del precio anunciado, incluso cuando un mercado escaso deje la oferta al mismo precio. No se inventa un descuento ni se altera la regla de pricing durante esta corrección.

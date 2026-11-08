@@ -250,7 +250,9 @@ function gallery(listing, photos) {
 }
 function card(row) {
   const item = row.body;
-  const {score, pricing, timing, seller, gate_rejected} = row.trace;
+  const {score, seller, gate_rejected} = row.trace;
+  const pricing = row.display_pricing || row.trace.pricing;
+  const timing = row.display_timing || row.trace.timing;
   const article = node("article", undefined, `card ${tierOf(row)}`);
   if (row.tier !== "rejected") article.append(gallery(item, row.display_photos || item.photos));
   const content = node("div", undefined, "content");

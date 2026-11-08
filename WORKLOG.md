@@ -485,3 +485,10 @@
 - Comandos clave: test de tarde sin arranque automático, arranque manual y reanudación tras la ventana; suite completa → 130 aprobadas, 4 excluidas; Ruff limpio.
 - Evidencia: pipeline/daily.py, test_daily_tune.py y configuración start_window_minutes. El cursor real avanza sobre las quince búsquedas activas.
 - Problemas y cómo se resolvieron: comprobar únicamente hora >= 3 permitía arrancar por la tarde. Se limita la ventana de inicio sin bloquear la continuación ni alterar timestamps observados.
+
+## 2026-11-08 14:41 — C3.4 · Ofertas al pasar a Negociables
+- Objetivo: que una tarjeta que envejece hasta siete días muestre la oferta vigente aunque su decisión de score se guardara antes.
+- Hecho: el tablero recalcula únicamente la presentación de edad, heat y oferta al generarse. El rastro de decisión original de SQLite se conserva. Evita mantener COMPRAR YA por una puntuación antigua.
+- Comandos clave: Ruff limpio; 131 pruebas offline aprobadas, cuatro excluidas. Regresión basada en la ficha real prioritaria, envejecida para comprobar el límite temporal.
+- Evidencia: tests/test_board.py y board/build.py. La prueba confirma oferta negociable nueva y decisión histórica intacta.
+- Problemas y cómo se resolvieron: el primer test esperaba 50 EUR ignorando que la única observación de marca deja p10=60. Se corrigió esa expectativa a la regla vigente de máximo entre oferta y p10; no se cambió el algoritmo de precio para hacer pasar el test.

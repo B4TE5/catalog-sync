@@ -2,6 +2,7 @@
 
 import json
 from base64 import b64encode
+from datetime import UTC, datetime
 from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
@@ -10,6 +11,8 @@ from typing import Any
 
 from vinted_hunter.config import load_config
 from vinted_hunter.pipeline.availability import sale_statistics
+from vinted_hunter.pipeline.models import Listing
+from vinted_hunter.pipeline.pricing import price_signals, timing
 from vinted_hunter.pipeline.run import health, market_for
 from vinted_hunter.secrets import repository_name
 from vinted_hunter.storage.sqlite_store import SQLiteStore
@@ -30,10 +33,25 @@ def build(root: Path, database: str = "vh.sqlite", folder: str = "board") -> Pat
         payload["sales"] = sale_statistics(payload["listings"])
         markets = {profile.id: market_for(store, profile, config) for profile in config.profiles}
     cache = root / "data" / "images"
+    now = datetime.now(UTC)
+    profiles = {profile.id: profile for profile in config.profiles}
     for row in payload["listings"]:
         if row["tier"] is None or row["tier"] == "rejected":
             continue
         market = markets.get(row["profile"])
+        if market and row["profile"] in profiles and row["trace"].get("pricing"):
+            item = Listing.model_validate(row["body"])
+            row["display_timing"] = timing(item, now, config.scoring)
+            seller = row["trace"].get("seller") or {}
+            row["display_pricing"] = price_signals(
+                item, profiles[row["profile"]], market,
+                row["display_timing"]["age_minutes"],
+                row["trace"].get("evidence", {}).get("price_drop", False), config.scoring,
+                seller_verified=seller.get("feedback_count") is not None
+                and seller.get("rating") is not None
+                and {"seller_feedback", "seller_rating"}
+                <= set(row["trace"].get("gates_passed", [])),
+            )
         row["market_samples"] = market.count if market else 0
         minimum = max(30, config.scoring.pricing["minimum_samples"])
         median = market.median if market and market.count >= minimum else None
