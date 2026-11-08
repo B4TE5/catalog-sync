@@ -476,3 +476,6 @@ La primera instalación inició el recorrido real a las 14:18 por usar hora >= 3
 
 ## 2026-11-08 · C3.4 — Presentación de ofertas y decisión histórica
 Se recalcula la oferta y la edad al construir el tablero. No se reescribe el trace original para refrescar una tarjeta que cruza los siete días; las señales que justificaron el score siguen auditables. La oferta conserva el suelo p10 y el tope del precio anunciado, incluso cuando un mercado escaso deje la oferta al mismo precio. No se inventa un descuento ni se altera la regla de pricing durante esta corrección.
+
+## 2026-11-08 · C3.0 — Prioridad de talla observada
+La cola real tenía 690 Stone Island, 106 XL y otras tallas en sus doce primeros puestos por precio. Se elige novedad → prioridad de perfil → talla coincidente/desconocida/distinta → suelo de precio → precio relativo → fecha. No se convierte una talla del catálogo en descarte confirmado: las fichas de todas las tallas siguen pendientes de enriquecimiento según cuota. Se descarta mantener el precio por delante de la talla buscada, que retrasaría innecesariamente los XL válidos en un backfill grande.

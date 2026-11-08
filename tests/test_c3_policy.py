@@ -5,6 +5,8 @@ from pathlib import Path
 
 from vinted_hunter.config import load_config
 from vinted_hunter.pipeline.gates import garment_reason, gate
+from vinted_hunter.pipeline.models import Listing
+from vinted_hunter.pipeline.run import enrichment_priority
 from vinted_hunter.sources.vinted.item import listing_from_item
 from vinted_hunter.sources.vinted.search import plan_searches
 
@@ -51,6 +53,27 @@ def test_catalog_size_fallback_cannot_confirm_a_detail_mismatch() -> None:
     assert reason is None and "size_unconfirmed" in passed
     assert gate(fallback.model_copy(update={"size_source": "detail"}), config.profiles[0],
                 config, detailed=True)[0] == "size"
+
+
+def test_enrichment_prioritizes_requested_size_without_discarding_unknowns() -> None:
+    config = load_config(ROOT)
+    now = datetime.now(UTC)
+    item = listing_from_item(
+        gzip.decompress((ROOT / "tests/recall/10690539539/item.html.gz").read_bytes()).decode(),
+        "https://www.vinted.es/items/10690539539-stone-island-sweater", now,
+    )
+    wanted = item.model_copy(update={"size_source": "catalog"})
+    unknown = item.model_copy(update={"size": None, "price": Decimal("30")})
+    mismatch = unknown.model_copy(update={"size": "M", "size_source": "catalog"})
+    profile = config.profiles[0]
+    def priority(listing: Listing) -> tuple:
+        return enrichment_priority(listing, profile, False, now)
+
+    assert priority(wanted) < priority(unknown) < priority(mismatch)
+    assert gate(unknown, profile, config)[0] is None
+    assert gate(mismatch, profile, config)[0] is None
+    # Las novedades conservan prioridad sobre el stock antiguo.
+    assert enrichment_priority(mismatch, profile, True, now) < priority(wanted)
 
 
 def test_existing_real_case_can_use_profile_specific_type_rules() -> None:

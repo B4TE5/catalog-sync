@@ -513,3 +513,17 @@
 - Comandos clave: API de run/jobs/logs y descarga/descifrado de instantánea → éxito. Auditoría de secretos en logs → sin coincidencias.
 - Evidencia: evidence/correction3-loop-validation.json. Se marca la casilla del bucle; las de talla de nube y recorrido completo permanecen pendientes hasta terminar sus fichas/páginas.
 - Problemas y cómo se resolvieron: durante las pasadas de mantenimiento, la exclusión mutua puede retrasar el comienzo real de una captura; se conservan por separado created_at y capture_start, sin inventar una cadencia ni contar las pasadas manuales como normales.
+
+## 2026-11-08 15:15 — C3.0/C3.4 · Talla buscada primero en la cola real
+- Objetivo: que la captura profunda no retrase los XL adecuados detrás de otras tallas más baratas.
+- Hecho: la instantánea real contiene 690 Stone Island pendientes, con 106 XL. Los doce primeros por la prioridad anterior eran M/L/S/XS de 30–33 EUR. Se añade preferencia de talla tras novedad y prioridad de perfil: coincidente, desconocida y distinta, manteniendo todas las candidatas y la confirmación en ficha para descartar.
+- Comandos clave: suite final → 132 aprobadas, cuatro excluidas, 14,74 s; Ruff limpio. La primera revisión de Ruff señaló una lambda asignada en el test; se cambió a función tipada.
+- Evidencia: tests/test_c3_policy.py y snapshot real data/c3-cloud-current.sqlite. El precio inclusivo de 60 y las prioridades entre novedades/perfiles se conservan.
+- Problemas y cómo se resolvieron: el backfill amplio hizo visible una cola que gastaba enriquecimiento en tallas distintas antes que los XL buscados. Se corrige el orden, sin añadir un gate que descarte datos de catálogo.
+
+## 2026-11-08 15:15 — C3 · Timeout real con estado conservado
+- Objetivo: comprobar la continuidad cuando una iteración falla.
+- Hecho: Snapshot 42488165596 terminó failure por catalog: Timeout y availability: Timeout. Aun así guardó la SQLite cifrada y desplegó Pages HTTP 200. El recorrido profundo alcanzó 150/150, 107 peticiones nuevas y 41 páginas posteriores omitidas tras vacíos reales.
+- Comandos clave: run_log real → 25 peticiones, catálogo 11, enriquecimiento 13, siete estados, 230,29 s; API/jobs/logs confirma guardado y deploy exitosos.
+- Evidencia: scratch/c3-actions-proof.json; no se oculta la pasada fallida entre las exitosas.
+- Problemas y cómo se resolvieron: no hubo 403/429 ni pérdida del avance. El coordinador sigue con la siguiente pasada y el mantenimiento pasa a reparar las 18 tallas restantes. Se exigirán dos iteraciones normales verdes con el ajuste final de prioridad.

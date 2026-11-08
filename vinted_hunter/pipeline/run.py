@@ -112,11 +112,15 @@ def enrichment_priority(
     profile: Profile,
     fresh: bool,
     now: datetime,
-) -> tuple[bool, int, bool, float, float]:
+) -> tuple[bool, int, int, bool, float, float]:
     age = listing.uploaded_at or listing.first_seen or now
+    size = normalize((listing.size or "").split(" / ")[0])
+    expected = normalize(profile.size or "")
+    size_priority = 0 if not expected or size == expected else 1 if not size else 2
     return (
         not fresh,
         profile.priority,
+        size_priority,
         listing.price < profile.price_floor,
         float(listing.price / profile.price_max),
         -age.timestamp(),
