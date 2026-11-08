@@ -37,6 +37,11 @@ def test_iphone_preserves_private_fragment_across_reload() -> None:
             page.frame_locator("iframe").locator("#cards").wait_for(timeout=30000)
             preserved = page.url == private
             assert preserved, "La recarga debe conservar el fragmento"
+            # Entrada desde el botón público: el respaldo restaura la URL completa.
+            page.goto(public, wait_until="domcontentloaded")
+            page.frame_locator("iframe").locator("#cards").wait_for(timeout=30000)
+            preserved = page.url == private
+            assert preserved, "La clave de respaldo debe restaurar el fragmento"
             # El enlace sigue funcionando aunque se pierda la copia de localStorage.
             page.evaluate("localStorage.clear()")
             page.reload(wait_until="domcontentloaded")

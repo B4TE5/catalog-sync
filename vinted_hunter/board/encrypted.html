@@ -37,6 +37,10 @@ button{position:fixed;top:1rem;right:1rem;padding:.7rem;border:1px solid #657477
     }, aes, bytes(envelope.data));
     if (supplied) {
       try { localStorage.setItem(storage, supplied); } catch {}
+    } else {
+      const complete = new URL(location.href);
+      complete.hash = "k=" + encodeURIComponent(key);
+      history.replaceState(null, "", complete.href);
     }
     const frame = document.createElement("iframe");
     frame.setAttribute("title", "Panel privado");

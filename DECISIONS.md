@@ -496,3 +496,7 @@ Se elige un override de perfil authenticity_mentioned=20: base 40 + muy bueno 10
 
 ## 2026-11-08T16:54:42+01:00 · C4.3 — Cobertura y conservación de talla
 La muestra histórica de treinta contiene 25 fichas disponibles sin size/size_familiar y cinco 404. Su denominador de tallas publicadas es cero: no se informa una cobertura ficticia del 100 % para esos accesorios. El control independiente de treinta pendientes actuales tiene talla publicada en 30/30 y coincidencia con itemBox/accessibilityLabel en 30/30. Se conserva la extracción de los campos reales ya verificados; no se inventan otros nombres. Se corrige la certeza prematura de absent en catálogo y la posibilidad de perder una talla almacenada al refrescar una tarjeta incompleta. Solo la ficha confirma ausencia.
+
+
+## 2026-11-08T17:09:15+01:00 · C4.1 — Recuperación del fragmento desde respaldo
+Cuando el botón público de ntfy abre el tablero sin fragmento, un respaldo válido restaura #k tras descifrar. Así Añadir a pantalla de inicio dispone también de la URL completa en esa ruta. Solo Olvidar elimina la clave explícitamente. No se cambia la clave ni se expone en el enlace de ntfy.

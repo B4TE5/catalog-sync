@@ -573,3 +573,11 @@
 - Comandos clave: sesiones anónimas por grupos de diez, máximo diez fichas y diez catálogos por grupo, pausas 3–8 s. Sin 403/429. Corrección: ausencia en tarjeta queda unknown hasta leer ficha; ni el almacenamiento ni el reingreso al pipeline borran una talla conocida por un campo ausente.
 - Evidencia: evidence/correction4-sizes.json y tests/test_sizes_c4.py. El estado actual original tenía cero de 1.192 pendientes sin talla; no se falsea una muestra actual inexistente.
 - Problemas y cómo se resolvieron: las ausencias históricas son accesorios/embalajes y no prendas con talla oculta. Se separa esa ausencia real del control positivo. Las rutas capaces de sobrescribir talla conocida se cubren con una variante controlada de modelos procedentes de fixtures reales; no se inventan respuestas HTTP.
+
+
+## 2026-11-08T17:09:15+01:00 — C4.1 · Fragmento también al recuperar el respaldo
+- Objetivo: que abrir desde el botón público de ntfy deje un enlace completo para pantalla de inicio.
+- Hecho: tras descifrar con el respaldo de localStorage, se restaura #k en la URL; si ya venía en el enlace se conserva. La prueba de iPhone cubre ahora también esa entrada pública, además de recarga, localStorage vacío y Olvidar.
+- Comandos clave: WebKit/iPhone sobre artefacto real → una aprobada en 5,59 s; Ruff 0; suite offline 144 aprobadas. La prueba de Pages anterior pasó el flujo de recarga; se repetirá el flujo ampliado tras publicar.
+- Evidencia: tests/browser/test_iphone.py y board/encrypted.html. Workflow 42497346203 ya confirmó ambos secrets presentes, shadow_mode=false y HTTP 200; recibo ntfy dqFXVsafVMlr.
+- Problemas y cómo se resolvieron: conservar el fragmento entrante no lo restauraba al entrar sin él desde ntfy; se cubre también esa ruta para que localStorage sea realmente respaldo del enlace completo.
