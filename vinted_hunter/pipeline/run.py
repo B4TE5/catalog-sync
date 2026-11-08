@@ -418,7 +418,7 @@ class Pipeline:
     ) -> dict[int, tuple[Listing, Profile, bool]]:
         source = VintedCatalog(client)
         cursor = int(self.store.setting("search_cursor", "0"))
-        state = prepare(self.store, self.config, self.now) if (
+        state = prepare(self.store, self.config, self.now, manual=daily_only) if (
             not selftest and os.environ.get("GITHUB_ACTIONS") == "true"
         ) else {}
         share = min(client.limits["catalog"], self.config.scoring.daily_backfill.catalog_share)

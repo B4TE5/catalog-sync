@@ -12,18 +12,23 @@ from vinted_hunter.storage.base import StateStore
 KEY = "daily_backfill"
 
 
-def prepare(store: StateStore, config: Config, now: datetime) -> dict[str, Any]:
+def prepare(
+    store: StateStore, config: Config, now: datetime, *, manual: bool = False,
+) -> dict[str, Any]:
     settings = config.scoring.daily_backfill
     state = json.loads(store.setting(KEY, "{}"))
     if state.get("jobs") and state.get("cursor", 0) < len(state["jobs"]):
         return state
-    if not settings.enabled or now.astimezone(ZoneInfo(settings.timezone)).hour < settings.hour:
+    local = now.astimezone(ZoneInfo(settings.timezone))
+    elapsed = (local.hour * 60 + local.minute - settings.hour * 60) % (24 * 60)
+    if not settings.enabled or not manual and elapsed >= settings.start_window_minutes:
         return {}
     previous = state.get("started_at")
     if previous and now-datetime.fromisoformat(previous) < timedelta(hours=settings.interval_hours):
         return {}
     state = {
-        "started_at": now.isoformat(), "cursor": 0, "requested": 0, "skipped_empty": 0,
+        "started_at": now.isoformat(), "manual": manual,
+        "cursor": 0, "requested": 0, "skipped_empty": 0,
         "jobs": [{"params": search.query(page),
                   "profiles": [profile.id for profile in search.profiles],
                   "expects_items": search.expects_items,

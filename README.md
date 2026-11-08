@@ -116,9 +116,12 @@ cifrados, usa el enlace privado que genera `vh board-url`.
 completa. Es privado y no se publica. Tras abrirlo una vez, el navegador recuerda
 la clave en localStorage y permite entrar desde el botón público de ntfy.
 
-Desde las 03:00 de Madrid se inicia un backfill diario reanudable de hasta diez
+Entre las 03:00 y las 05:00 de Madrid se inicia un backfill diario reanudable de hasta diez
 páginas por búsqueda, dentro de las cuotas y pausas de cada pasada. El cursor
-persiste junto a SQLite. Una página realmente vacía termina esa búsqueda.
+persiste junto a SQLite y puede reanudarse fuera de esa ventana. Una página
+realmente vacía termina esa búsqueda. Para comprobar el recorrido manualmente,
+usa el input daily_backfill_only del workflow; mantiene el mínimo de 24 horas
+entre inicios de recorridos completos.
 Negociables reúne anuncios activos de al menos siete días con su oferta sugerida.
 Vendidos conserva los cerrados y muestra el último precio anunciado observado.
 La duración hasta venderse se estima entre comprobaciones cuando existe una

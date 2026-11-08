@@ -42,6 +42,17 @@ def test_local_logistic_fit_is_finite_and_learns_signal() -> None:
     assert ((x @ weights + intercept >= 0) == y).mean() > 0.95
 
 
+def test_daily_starts_at_night_but_resumes_or_allows_manual_verification(tmp_path: Path) -> None:
+    config = load_config(ROOT)
+    afternoon = datetime(2026, 11, 8, 13, tzinfo=UTC)
+    with SQLiteStore(tmp_path / "state.sqlite") as store:
+        assert not prepare(store, config, afternoon)
+        plan = prepare(store, config, afternoon, manual=True)
+        assert plan["manual"] and plan["cursor"] == 0
+        advance(store, plan, empty=False, stop_on_empty=True, now=afternoon)
+        assert prepare(store, config, afternoon + timedelta(hours=1))["cursor"] == 1
+
+
 def test_tuning_requires_real_labels_and_never_applies_weights(tmp_path: Path) -> None:
     copytree(ROOT / "config", tmp_path / "config")
     from vinted_hunter.pipeline.models import Listing

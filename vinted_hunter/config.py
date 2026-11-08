@@ -113,6 +113,7 @@ class DailyBackfill(BaseModel):
     enabled: bool = True
     timezone: str = "Europe/Madrid"
     hour: int = Field(3, ge=0, le=23)
+    start_window_minutes: int = Field(120, ge=10, le=360)
     interval_hours: int = Field(24, ge=24)
     pages: int = Field(10, ge=1, le=10)
     catalog_share: int = Field(6, ge=1, le=11)

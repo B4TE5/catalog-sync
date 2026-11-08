@@ -99,6 +99,7 @@ daily_backfill:
   enabled: true
   timezone: Europe/Madrid
   hour: 3
+  start_window_minutes: 120
   interval_hours: 24
   pages: 10
   catalog_share: 6

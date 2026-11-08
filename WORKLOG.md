@@ -478,3 +478,10 @@
 - Comandos clave: ruff → 0; pytest final → 129 aprobadas, 4 excluidas, 13,74 s; pytest -m live → 4 aprobadas, 129 excluidas, 39,14 s; selftest → 8/8, 80,22 s, 13 peticiones. Doctor → todos verdes, parser 95, L 95 y XL 96. Replay prioritario → good 65 y simulación de aviso afirmativa.
 - Evidencia: TEST_REPORT.md regenerado por selftest --report. La QA pública completa aprobó también olvidar clave, purga de clave inválida y descifrado con localStorage bloqueado.
 - Problemas y cómo se resolvieron: ninguna incidencia de red. El fallback real de selftest se registra expresamente para no atribuir a la muestra live señales que proceden del caso capturado.
+
+## 2026-11-08 14:31 — C3.4 · Ventana nocturna de inicio
+- Objetivo: que el backfill automático se inicie de madrugada y no se desplace a la tarde tras instalar o reiniciar.
+- Hecho: ventana configurable de 120 minutos desde las 03:00 Madrid; un recorrido incompleto se reanuda a cualquier hora y la comprobación manual puede iniciarlo fuera de la ventana. Todos los inicios mantienen el mínimo de 24 h. El primer recorrido de instalación, ya iniciado por la versión anterior a las 14:18, se conserva y continúa sin reiniciarlo.
+- Comandos clave: test de tarde sin arranque automático, arranque manual y reanudación tras la ventana; suite completa → 130 aprobadas, 4 excluidas; Ruff limpio.
+- Evidencia: pipeline/daily.py, test_daily_tune.py y configuración start_window_minutes. El cursor real avanza sobre las quince búsquedas activas.
+- Problemas y cómo se resolvieron: comprobar únicamente hora >= 3 permitía arrancar por la tarde. Se limita la ventana de inicio sin bloquear la continuación ni alterar timestamps observados.
