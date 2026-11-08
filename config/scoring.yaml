@@ -1,5 +1,5 @@
-shadow_mode: true
-revision: correction-2.2
+shadow_mode: false
+revision: correction-3
 capture:
   catalog_limit: 12
   enrich_limit: 12
@@ -11,6 +11,10 @@ capture:
   cdn_timeout: 10
   seller_hours: 24
   unhealthy_after: 3
+  availability_limit: 15
+  availability_reserve_seconds: 85
+  preflight_valid_seconds: 2
+  size_repair_limit: 10
   backoff_seconds: 60
   max_backoff_seconds: 3600
 words:
@@ -85,8 +89,23 @@ pricing:
   minimum_samples: 30
   fresh_minutes: 60
   fresh_ratio: 0.80
-  negotiable_days: 5
+  negotiable_days: 7
   negotiable_ratio: 0.80
   default_ratio: 0.90
   round_euros: 5
 
+
+daily_backfill:
+  enabled: true
+  timezone: Europe/Madrid
+  hour: 3
+  interval_hours: 24
+  pages: 10
+  catalog_share: 6
+  stop_on_empty: true
+tuning:
+  min_labels: 50
+  validation_fraction: 0.2
+  learning_rate: 0.1
+  iterations: 1000
+  l2: 0.01

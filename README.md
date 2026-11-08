@@ -103,12 +103,32 @@ local `uv run vh board-url` prepara un enlace privado para abrir en el navegador
 La pantalla pública tiene metadatos genéricos y requiere la clave en el fragmento.
 
 En local, `uv run vh watch` usa los topics configurados en `.env`. En Actions,
-los mismos nombres se leen desde los secretos del repositorio. El modo sombra
-envía únicamente transiciones de salud. Para activar avisos de anuncios en una
-configuración futura, cambia `shadow_mode` a `false`. El comando `vh notify-test`
-envía un ejemplo a cada topic. El botón Tablero usa el enlace público de Pages
+los mismos nombres se leen desde los secretos del repositorio. Los avisos están
+activados (`shadow_mode: false`); cada perfil define su `notify_min_tier`.
+Antes de enviar se comprueba que la ficha sigue activa. Los anuncios con siete
+días o más solo avisan si bajan de precio. El comando `vh notify-test`
+envía un ejemplo a cada topic; `--announcements-only` limita la prueba a anuncios.
+El botón Tablero usa el enlace público de Pages
 del repositorio. `BOARD_URL` permite usar otro enlace HTTPS. Para abrir los datos
 cifrados, usa el enlace privado que genera `vh board-url`.
+
+`uv run vh board-url --qr` genera también `out/board-url.png` con la clave
+completa. Es privado y no se publica. Tras abrirlo una vez, el navegador recuerda
+la clave en localStorage y permite entrar desde el botón público de ntfy.
+
+Desde las 03:00 de Madrid se inicia un backfill diario reanudable de hasta diez
+páginas por búsqueda, dentro de las cuotas y pausas de cada pasada. El cursor
+persiste junto a SQLite. Una página realmente vacía termina esa búsqueda.
+Negociables reúne anuncios activos de al menos siete días con su oferta sugerida.
+Vendidos conserva los cerrados y muestra el último precio anunciado observado.
+La duración hasta venderse se estima entre comprobaciones cuando existe una
+observación activa anterior; el precio pagado y la hora exacta no son públicos.
+
+`vh label <id> fake` bloquea las fotos y al vendedor; `meh` revierte esa etiqueta
+y `good` añade confianza de vendedor. El tablero cuenta las etiquetas por tipo y
+marca. `vh tune` exige al menos 50 etiquetas utilizables y propone pesos mediante
+regresión logística local, con precisión y recall antes/después. Solo escribe
+`config/scoring.proposed.yaml`: nunca sustituye automáticamente la configuración.
 
 Los botones Fake, Buena y No me interesa abren una solicitud prellenada en
 GitHub. El flujo de feedback acepta solicitudes válidas del dueño del repositorio

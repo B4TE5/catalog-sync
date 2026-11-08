@@ -1,11 +1,17 @@
 import gzip
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from shutil import copytree
 
 import pytest
 
-from vinted_hunter.notify.ntfy import NtfyNotifier, notifier_for, post_message
+from vinted_hunter.notify.ntfy import (
+    NtfyNotifier,
+    notification_eligible,
+    notifier_for,
+    post_message,
+)
 from vinted_hunter.sources.vinted.catalog import parse_catalog
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
@@ -51,6 +57,7 @@ def test_listing_payload_and_deduplication(tmp_path: Path) -> None:
             shadow_mode=False,
             board_url="https://example.org/board?token=test#k=private",
             post=post,
+            check_active=lambda row: True,
         )
         summary = {"errors": [], "scored_ids": [item.id]}
         notifier.publish(summary)
@@ -93,6 +100,45 @@ def test_shadow_mode_only_sends_health_transitions(tmp_path: Path) -> None:
     assert len(sent) == 2
     assert all(payload["topic"] == "fake-health-topic" for payload in sent)
     assert "recuperado" in sent[1]["title"]
+
+
+@pytest.mark.parametrize("availability", ["sold", "reserved", "hidden", "gone"])
+def test_closed_listings_are_never_notified(tmp_path: Path, availability: str) -> None:
+    from vinted_hunter.replay import evaluate_fixture
+
+    row = evaluate_fixture(ROOT, ROOT / "tests/recall/10690539539")
+    row["body"]["availability"] = availability
+    assert not notification_eligible(row, "good")[0]
+    assert notification_eligible(row, "good", simulate_active=True,
+                                 at=datetime.fromisoformat(row["body"]["uploaded_at"]))[0]
+    sent = []
+    with SQLiteStore(tmp_path / "state.sqlite") as store:
+        notifier = NtfyNotifier(store, "fake-topic", None, shadow_mode=False,
+                                min_tiers={"stone-island": "good"},
+                                check_active=lambda row: True,
+                                post=lambda payload: sent.append(payload) or 200)
+        notifier.publish_listing(row)
+    assert sent == []
+
+
+def test_failed_delivery_retries_and_missing_live_check_denies(tmp_path: Path) -> None:
+    from vinted_hunter.pipeline.models import Listing
+    from vinted_hunter.replay import evaluate_fixture
+
+    row = evaluate_fixture(ROOT, ROOT / "tests/recall/10690539539")
+    item = Listing.model_validate(row["body"]).model_copy(update={"availability": "active"})
+    with SQLiteStore(tmp_path / "state.sqlite") as store:
+        store.save(item, row["profile"], row["tier"], row["score"], row["trace"], False)
+        notifier = NtfyNotifier(store, "fake-topic", None, shadow_mode=False,
+                                min_tiers={"stone-island": "good"}, post=lambda payload: 500,
+                                clock=lambda: datetime.fromisoformat(row["body"]["uploaded_at"]))
+        assert notifier.publish_listing(store.record(item.id)) is None
+        notifier.check_active = lambda row: True
+        assert notifier.publish_listing(store.record(item.id)) == 500
+        assert not store.setting(f"ntfy:listing:{item.id}")
+        notifier.post = lambda payload: 200
+        assert notifier.publish_listing(store.record(item.id)) == 200
+        assert store.setting(f"ntfy:listing:{item.id}") == str(item.price)
 
 
 def test_http_post_uses_json_and_never_follows_redirects(monkeypatch) -> None:

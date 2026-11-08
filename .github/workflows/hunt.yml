@@ -21,6 +21,9 @@ on:
       pending_only:
         type: boolean
         default: false
+      daily_backfill_only:
+        type: boolean
+        default: false
 concurrency:
   group: ${{ inputs.mode == 'iteration' && 'hunt' || format('hunt-wakeup-{0}', github.run_id) }}
   cancel-in-progress: false
@@ -111,9 +114,12 @@ jobs:
           NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
           BOARD_URL: ${{ vars.BOARD_URL }}
           PENDING_ONLY: ${{ inputs.pending_only }}
+          DAILY_BACKFILL_ONLY: ${{ inputs.daily_backfill_only }}
         shell: bash
         run: |
-          if [ "$PENDING_ONLY" = true ]; then
+          if [ "$DAILY_BACKFILL_ONLY" = true ]; then
+            uv run --no-sync vh run --daily-backfill-only
+          elif [ "$PENDING_ONLY" = true ]; then
             uv run --no-sync vh run --pending-only
           else
             uv run --no-sync vh run

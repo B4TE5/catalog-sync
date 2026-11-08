@@ -20,11 +20,12 @@ def test_sanitizer_removes_headers_opaque_tokens_and_nested_cookies() -> None:
     raw = json.dumps({
         "headers": {"Cookie": "private-cookie", "Authorization": "Bearer private-auth"},
         "access_token": "opaque-access", "cookies": [{"value": "cookie-value"}],
+        "token": "generic-opaque", "clientToken": "client-opaque",
         "value": 'Cookie: secret-line\nhttps://example.org/?token=secret-query&ok=1',
     }).encode()
     clean = sanitize_fixture(raw)
     for secret in (b"private-cookie", b"private-auth", b"opaque-access", b"cookie-value",
-                   b"secret-line", b"secret-query"):
+                   b"secret-line", b"secret-query", b"generic-opaque", b"client-opaque"):
         assert secret not in clean
     embedded = '<script>self.__next_f.push([1,' + json.dumps(raw.decode()) + '])</script>'
     for secret in (b"private-cookie", b"private-auth", b"opaque-access", b"cookie-value"):

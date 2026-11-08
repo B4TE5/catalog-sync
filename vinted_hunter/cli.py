@@ -52,9 +52,12 @@ def publish_notifications(result: dict) -> None:
 
 
 @app.command()
-def run(pending_only: Annotated[bool, typer.Option("--pending-only")] = False) -> None:
+def run(
+    pending_only: Annotated[bool, typer.Option("--pending-only")] = False,
+    daily_only: Annotated[bool, typer.Option("--daily-backfill-only")] = False,
+) -> None:
     """Realiza una pasada de captura."""
-    result = run_pass(ROOT, pending_only=pending_only)
+    result = run_pass(ROOT, pending_only=pending_only, notifications=True, daily_only=daily_only)
     ConsoleNotifier().publish(result)
     publish_notifications(result)
     if result["errors"]:
@@ -107,6 +110,13 @@ def replay_item(
     }
     show(f"{record['body']['title']} · {record['body']['price']} EUR")
     show(f"Resultado {record['tier']} · {record['score']} puntos")
+    notice = record.get("notification", {})
+    typer.echo(
+        f"Estado actual · {notice.get('actual_availability', 'unknown')} · "
+        + ("generaría aviso como anuncio nuevo y activo"
+           if notice.get("would_notify_as_new_active")
+           else "no generaría aviso con la política del perfil")
+    )
     for name in trace["gates_passed"]:
         typer.echo(f"✓ {labels.get(name, name)}")
     if trace["gate_rejected"]:
@@ -161,6 +171,10 @@ def stats() -> None:
     config = load_config(ROOT)
     with local_store() as store:
         records = store.records()
+        from vinted_hunter.pipeline.availability import sale_statistics
+
+        sales = sale_statistics(records)
+        labels = store.label_counts()
         recent = store.latest_backfill().get("funnel", {})
         for profile in config.profiles:
             market = market_for(store, profile, config)
@@ -173,6 +187,15 @@ def stats() -> None:
                 f"mediana {market.median or '—'} · p25 {market.p25 or '—'} · "
                 f"p10 {market.p10 or '—'}"
             )
+            show(f"  Etiquetas · {labels['by_profile'].get(profile.id, {})}")
+            if sale := sales.get(profile.id):
+                duration = f"{sale['mean_minutes']} min" if sale['mean_minutes'] is not None \
+                    else "sin intervalo observado"
+                show(f"  Vendidos observados {sale['count']} · media estimada {duration} · "
+                     f"{sale['timed_count']} transiciones medidas")
+                for price, values in sale["by_price"].items():
+                    show(f"    {price} EUR anunciados · {values['count']} vendidos · "
+                         f"media estimada {values['mean_minutes'] or '—'} min")
             for label, counts in (
                 ("Inventario", inventory),
                 ("Último backfill", recent.get(profile.id)),
@@ -195,6 +218,14 @@ def rescore_saved() -> None:
         count = rescore(ROOT, store)
     path = build(ROOT)
     typer.echo(f"{count} anuncios reevaluados sin red · {path}")
+
+
+@app.command()
+def tune() -> None:
+    """Propone pesos con 50 etiquetas; nunca modifica scoring.yaml."""
+    from vinted_hunter.tune import propose
+
+    typer.echo(json.dumps(propose(ROOT), ensure_ascii=False, indent=2))
 
 
 @app.command()
@@ -230,7 +261,7 @@ def watch(
     result = {"errors": []}
     try:
         while cycles is None or completed < cycles:
-            result = run_pass(ROOT)
+            result = run_pass(ROOT, notifications=True)
             ConsoleNotifier().publish(result)
             publish_notifications(result)
             build(ROOT)
@@ -292,21 +323,42 @@ def check_vision(
 
 
 @app.command("notify-test")
-def notify_test() -> None:
-    """Envía un ejemplo del tablero a los dos topics configurados."""
+def notify_test(
+    announcements_only: Annotated[bool, typer.Option("--announcements-only")] = False,
+) -> None:
+    """Envía un ejemplo del formato final con un anuncio confirmado activo."""
+    from vinted_hunter.pipeline.run import Pipeline
+    from vinted_hunter.sources.vinted.client import VintedClient
+
+    config = load_config(ROOT)
     with local_store() as store:
-        choices = [row for row in store.records(scored=True) if row["trace"].get("pricing")]
+        active_profiles = {profile.id for profile in config.profiles}
+        choices = [row for row in store.records(scored=True) if row["trace"].get("pricing")
+                   and row["profile"] in active_profiles]
         if not choices:
             typer.echo("El tablero carece de anuncios puntuados para la prueba", err=True)
             raise typer.Exit(1)
-        row = max(choices, key=lambda row: row["score"])
-        try:
-            statuses = notifier_for(ROOT, store).test(row)
-        except ValueError:
-            typer.echo("Configura los dos topics locales de ntfy", err=True)
-            raise typer.Exit(1) from None
-    typer.echo(f"ntfy anuncios · HTTP {statuses[0]} · ntfy salud · HTTP {statuses[1]}")
-    if statuses != (200, 200):
+        pipeline = Pipeline(ROOT, store, config, datetime.now(UTC))
+        with VintedClient(enrich_limit=config.scoring.capture.enrich_limit,
+                          wait=config.scoring.capture.wait) as client:
+            client.home()
+            notifier = notifier_for(ROOT, store, lambda row: pipeline.verify_active(client, row))
+            chosen = next((
+                row for row in sorted(choices, key=lambda r: r["score"], reverse=True)
+                if client.remaining("enrich") and pipeline.verify_active(client, row)
+            ), None)
+            if chosen is None:
+                typer.echo("Ningún anuncio confirmado activo para la prueba", err=True)
+                raise typer.Exit(1)
+            try:
+                statuses = notifier.test(chosen, announcements_only=announcements_only)
+            except ValueError as error:
+                typer.echo(str(error), err=True)
+                raise typer.Exit(1) from None
+    typer.echo(f"ntfy anuncios · HTTP {statuses[0]}" + (
+        f" · ntfy salud · HTTP {statuses[1]}" if statuses[1] is not None else ""
+    ))
+    if statuses[0] != 200 or not announcements_only and statuses[1] != 200:
         raise typer.Exit(1)
 
 

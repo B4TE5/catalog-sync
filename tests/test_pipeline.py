@@ -116,7 +116,9 @@ def test_price_speed_and_top_tier(config: Config, candidate: Listing) -> None:
     assert clock["hot"] and clock["age_minutes"] == 8
     price = price_signals(listing, profile, market, 8, False, config.scoring, seller_verified=True)
     assert price["buy_now"] and price["estimated"] and price["bargain"]
-    old = price_signals(listing, profile, summarize([]), 8000, False, config.scoring)
+    assert not price_signals(listing, profile, summarize([]), 8000, False,
+                             config.scoring)["negotiable"]
+    old = price_signals(listing, profile, summarize([]), 7 * 24 * 60, False, config.scoring)
     assert old["negotiable"] and old["offer"] == "30"
     seller = Seller(id=1, feedback_count=142, rating=4.9)
     result = score(listing, profile, seller, Evidence(qr="certilogo_ok"), config, [], price)

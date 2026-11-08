@@ -450,3 +450,10 @@
 - Comandos clave: Ruff → 0; pytest → 127 aprobadas, 4 excluidas, 14,42 s. Chromium móvil → 1 vendido, 15 negociables, 48/48 descartados con talla, sin overflow ni errores JavaScript. Aviso de prueba al topic de anuncios → HTTP 200, con estado activo comprobado antes de enviar.
 - Evidencia: scratch/c3-history.json, c3-live-features.json, c3-board-proof.json y recibo ntfy. El PNG privado se decodificó preservando #k= y permanece ignorado.
 - Problemas y cómo se resolvieron: la revisión automática rechazó la exportación de una copia cifrada a una rama nueva, al no estar autorizados expresamente esa exportación y destino. No se ejecutó. Se eliminó esa ruta; la fusión queda local y la nube recuperará stock antiguo por el backfill público real, conservando su propia SQLite. No se detuvo el bucle ni se subió una base local.
+
+## 2026-11-08 14:14 — C3.1/C3.3/C3.4/C3.5 · Aplicación lista para nube
+- Objetivo: publicar avisos con preflight, revisión de estados y backfill diario dentro del bucle existente.
+- Hecho: avisos activados por umbral de perfil, deduplicación tras HTTP 200, comprobación de ficha antes del envío; revisión acotada de estados; backfill diario con cursor persistente y sin reiniciar SQLite; pestañas Vendidos/Negociables, métricas y ajuste local de pesos preparado. README actualizado.
+- Comandos clave: ruff check → 0; pytest -q → 127 aprobadas, 4 excluidas, 14,53 s. Recibo ntfy HTTP 200 confirma foto, enlace a Vinted y Tablero público sin fragmento de clave.
+- Evidencia: scratch/c3-ntfy-proof.json, tests/test_ntfy.py, test_daily_tune.py y fixtures c3. La verificación de Actions se hará sobre el commit desplegado.
+- Problemas y cómo se resolvieron: el contrato público no expone importe pagado ni instante exacto de venta. La interfaz identifica precio anunciado e intervalo estimado; no produce medias con anuncios encontrados ya vendidos sin transición observada.

@@ -5,19 +5,16 @@ import re
 from typing import Any
 
 PUBLIC_JWT = re.compile(rb"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+")
-SENSITIVE = re.compile(
-    r"(?i)^(?:authorization|proxy-authorization|cookie|cookies|set-cookie|"
-    r"(?:access|refresh|session|csrf|auth|otel)[_-]?token|api[_-]?key|"
-    r"session[_-]?(?:id|key)|x-(?:csrf-token|session-id|auth-token))$"
+SENSITIVE_NAME = (
+    r"(?:authorization|proxy-authorization|cookies?|set-cookie|[a-z0-9_-]*token|"
+    r"[a-z0-9_-]*api[_-]?key|(?:x-)?session[_-]?(?:id|key)|password|secret)"
 )
+SENSITIVE = re.compile(r"(?i)^" + SENSITIVE_NAME + r"$")
 PUSH = re.compile(r"(self\.__next_f\.push\()(.+?)(\)\s*</script>)", re.DOTALL)
-SECRET_KEY = re.compile(
-    r'(?i)("(?:authorization|proxy-authorization|cookies?|set-cookie|'
-    r'(?:access|refresh|session|csrf|auth|otel)[_-]?token|api[_-]?key|'
-    r'session[_-]?(?:id|key)|x-(?:csrf-token|session-id|auth-token))"\s*:\s*)'
-)
+SECRET_KEY = re.compile(r'(?i)("' + SENSITIVE_NAME + r'"\s*:\s*)')
 HEADER = re.compile(
-    r"(?im)^((?:authorization|proxy-authorization|cookie|set-cookie|x-csrf-token):)[^\r\n]*"
+    r"(?im)^((?:authorization|proxy-authorization|cookie|set-cookie|"
+    r"x-csrf-token|x-session-id|x-auth-token|x-session-token):)[^\r\n]*"
 )
 URL_SECRET = re.compile(
     r"(?i)([?&](?:access_token|refresh_token|token|api_key|session_id|signature)=)[^&\s\"'<>\\]+"

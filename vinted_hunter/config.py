@@ -85,6 +85,11 @@ class Capture(BaseModel):
     cdn_timeout: float = Field(10, gt=0, le=30)
     seller_hours: int = 24
     unhealthy_after: int = 3
+    availability_limit: int = Field(15, ge=0, le=15)
+    availability_stale_minutes: int = Field(60, ge=10)
+    availability_reserve_seconds: float = Field(85, ge=0, le=150)
+    preflight_valid_seconds: float = Field(2, ge=0, le=5)
+    size_repair_limit: int = Field(10, ge=0, le=30)
     backoff_seconds: int = 60
     max_backoff_seconds: int = 3600
 
@@ -96,6 +101,24 @@ class Capture(BaseModel):
         return self
 
 
+class Tuning(BaseModel):
+    min_labels: int = Field(50, ge=50)
+    validation_fraction: float = Field(0.2, gt=0, lt=0.5)
+    learning_rate: float = Field(0.1, gt=0)
+    iterations: int = Field(1000, ge=1)
+    l2: float = Field(0.01, ge=0)
+
+
+class DailyBackfill(BaseModel):
+    enabled: bool = True
+    timezone: str = "Europe/Madrid"
+    hour: int = Field(3, ge=0, le=23)
+    interval_hours: int = Field(24, ge=24)
+    pages: int = Field(10, ge=1, le=10)
+    catalog_share: int = Field(6, ge=1, le=11)
+    stop_on_empty: bool = True
+
+
 class Scoring(BaseModel):
     shadow_mode: bool = True
     revision: str = "1"
@@ -104,6 +127,8 @@ class Scoring(BaseModel):
     weights: dict[str, int] = Field(default_factory=dict)
     thresholds: dict[str, float] = Field(default_factory=dict)
     pricing: dict[str, Decimal] = Field(default_factory=dict)
+    tuning: Tuning = Field(default_factory=Tuning)
+    daily_backfill: DailyBackfill = Field(default_factory=DailyBackfill)
 
 
 class Config(BaseModel):

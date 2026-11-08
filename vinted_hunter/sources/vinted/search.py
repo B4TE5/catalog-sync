@@ -63,6 +63,7 @@ def plan_searches(
     config: Config,
     cursor: int = 0,
     selftest: bool = False,
+    catalog_limit: int | None = None,
 ) -> tuple[list[Search], int]:
     if selftest:
         return [
@@ -70,7 +71,8 @@ def plan_searches(
             for p in config.profiles
         ], cursor
     combined, high, normal = search_groups(config)
-    cap = config.scoring.capture.catalog_limit
+    cap = min(config.scoring.capture.catalog_limit,
+              catalog_limit if catalog_limit is not None else config.scoring.capture.catalog_limit)
     required = (combined + high)[:cap]
     count = min(len(normal), cap - len(required))
     chosen = [normal[(cursor + i) % len(normal)] for i in range(count)]

@@ -13,6 +13,9 @@ from typing import Any
 from curl_cffi.requests import RequestsError
 
 from vinted_hunter.config import Config, Profile, load_config
+from vinted_hunter.pipeline.availability import check_listing
+from vinted_hunter.pipeline.daily import advance, prepare
+from vinted_hunter.pipeline.daily import summary as daily_summary
 from vinted_hunter.pipeline.dedupe import is_drop, photo_dedupe
 from vinted_hunter.pipeline.enrich import get_item, get_seller, image_bytes
 from vinted_hunter.pipeline.funnel import funnel
@@ -35,7 +38,7 @@ from vinted_hunter.sources.vinted.client import (
     VintedClient,
 )
 from vinted_hunter.sources.vinted.parse import ParseError
-from vinted_hunter.sources.vinted.search import plan_searches
+from vinted_hunter.sources.vinted.search import Search, plan_searches
 from vinted_hunter.storage.base import StateStore
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
@@ -130,6 +133,9 @@ class Pipeline:
         self.reasons: Counter[str] = Counter()
         self.fetched_details: set[int] = set()
         self.deadline: float | None = None
+        self.notifications = False
+        self.availability_ids: set[int] = set()
+        self.backfill_ids: set[int] = set()
         self.markets = {
             profile.id: market_for(store, profile, config) for profile in config.profiles
         }
@@ -161,6 +167,134 @@ class Pipeline:
         self.run["errors"].append(f"{phase}: {message}")
         self.emit("error", phase=phase, message=message)
 
+    def feedback_seller(self, listing: Listing) -> Seller | None:
+        if listing.seller_id and "fake" in self.store.seller_flags(listing.seller_id):
+            return Seller(id=listing.seller_id, blacklisted=True)
+        return None
+
+    def verify_active(self, client: VintedClient, row: dict) -> bool:
+        item = Listing.model_validate(row["body"])
+        capture = self.config.scoring.capture
+        if item.id not in self.availability_ids:
+            if len(self.availability_ids) >= capture.availability_limit:
+                return False
+            self.availability_ids.add(item.id)
+            self.run["availability_checks"] = len(self.availability_ids)
+        fresh = item.availability_checked_at is not None and (
+            datetime.now(UTC) - item.availability_checked_at
+        ).total_seconds() <= capture.preflight_valid_seconds
+        if not fresh:
+            if not client.remaining("enrich"):
+                return False
+            try:
+                previous = item.availability
+                item = check_listing(client, self.store, item, datetime.now(UTC))
+                if item.availability != previous:
+                    self.run.setdefault("availability_detected", Counter())[item.availability] += 1
+            except CircuitOpen:
+                raise
+            except REMOTE_ERRORS as error:
+                self.error(error, "notify_preflight")
+                return False
+        profile = next(p for p in self.config.profiles if p.id == row["profile"])
+        seller = (
+            Seller.model_validate(row["trace"]["seller"]) if row["trace"].get("seller") else None
+        )
+        if seller:
+            flags = self.store.seller_flags(seller.id)
+            seller = seller.model_copy(update={
+                "blacklisted": "fake" in flags, "trusted": "good" in flags,
+            })
+            cached = self.store.seller(seller.id, datetime.min.replace(tzinfo=UTC))
+            if cached:
+                seller.closet = cached.closet
+        evidence = Evidence.model_validate(row["trace"].get("evidence", {}))
+        reason, passed = gate(item, profile, self.config, seller, evidence, detailed=True)
+        if reason or item.availability == "active":
+            self.record(item, profile, passed, evidence, bool(row["backfill"]),
+                        seller, reason, enriched=True, count_event=False)
+        return item.availability == "active" and reason is None
+
+    def maybe_notify(self, listing_id: int, client: VintedClient) -> None:
+        if not self.notifications:
+            return
+        from vinted_hunter.notify.ntfy import notifier_for
+
+        row = self.store.record(listing_id)
+        if row is None:
+            return
+        notifier = notifier_for(self.root, self.store, lambda row: self.verify_active(client, row))
+        status = notifier.publish_listing(row)
+        if status is not None:
+            counts = self.run.setdefault("notifications", {"sent": 0, "failed": 0})
+            counts["sent" if status == 200 else "failed"] += 1
+            self.emit("notification", id=listing_id, status=status)
+            if status != 200:
+                self.error(f"ntfy HTTP {status}", "notify")
+
+    def refresh_states(self, client: VintedClient, *, repair_sizes: bool = False) -> None:
+        profiles = {p.id: p for p in self.config.profiles}
+        rows = self.store.records()
+        if repair_sizes:
+            rows = [r for r in rows if not r["body"].get("size")
+                    and r["body"].get("size_source", "unknown") == "unknown"]
+            cap = self.config.scoring.capture.size_repair_limit
+        else:
+            rows = [r for r in rows if r["profile"] in profiles
+                    and r["tier"] in {"top", "good", "maybe"}
+                    and r["id"] not in self.availability_ids
+                    and r["body"].get("availability") not in {"sold", "gone"}]
+            def state_priority(row: dict) -> tuple:
+                checked = row["body"].get("availability_checked_at")
+                stale = not checked or (datetime.now(UTC)-datetime.fromisoformat(checked)
+                    ).total_seconds() >= self.config.scoring.capture.availability_stale_minutes*60
+                return (-profiles[row["profile"]].priority, stale, row["score"] or 0,
+                        row["body"].get("uploaded_at") or "")
+            rows.sort(key=state_priority, reverse=True)
+            cap = max(0, self.config.scoring.capture.availability_limit-len(self.availability_ids))
+        counter = "size_repaired" if repair_sizes else "availability_checks"
+        self.run.setdefault(counter, 0)
+        self.run.setdefault("availability_detected", Counter())
+        for row in rows[:cap]:
+            if not client.remaining("enrich") or (
+                self.deadline is not None and time.monotonic() >= self.deadline
+            ):
+                break
+            item = Listing.model_validate(row["body"])
+            try:
+                current = check_listing(client, self.store, item, datetime.now(UTC))
+            except CircuitOpen:
+                raise
+            except REMOTE_ERRORS as error:
+                self.error(error, "availability")
+                continue
+            if repair_sizes:
+                self.run[counter] += 1
+            else:
+                self.availability_ids.add(current.id)
+                self.run[counter] = len(self.availability_ids)
+            if current.availability != item.availability:
+                self.run["availability_detected"][current.availability] += 1
+            if not repair_sizes and current.availability == "active":
+                trace = row["trace"]
+                seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
+                if seller:
+                    flags = self.store.seller_flags(seller.id)
+                    seller = seller.model_copy(update={
+                        "blacklisted": "fake" in flags, "trusted": "good" in flags,
+                    })
+                    cached = self.store.seller(seller.id, datetime.min.replace(tzinfo=UTC))
+                    if cached:
+                        seller.closet = cached.closet
+                evidence = Evidence.model_validate(trace.get("evidence", {}))
+                reason, passed = gate(current, profiles[row["profile"]], self.config,
+                                      seller, evidence, detailed=True)
+                self.record(current, profiles[row["profile"]], passed, evidence,
+                            bool(row["backfill"]), seller, reason, enriched=True)
+                if reason is None:
+                    self.maybe_notify(current.id, client)
+            self.store.flush()
+
     def record(
         self,
         listing: Listing,
@@ -172,6 +306,7 @@ class Pipeline:
         rejection: str | None = None,
         pending: bool = False,
         enriched: bool = False,
+        count_event: bool = True,
     ) -> None:
         clock = timing(listing, self.now, self.config.scoring)
         market = self.markets[profile.id]
@@ -209,6 +344,7 @@ class Pipeline:
                 rejection,
             )
         trace = {
+            "rules_revision": self.config.scoring.revision,
             "gates_passed": passed,
             "gate_rejected": rejection,
             "evidence": evidence.model_dump(mode="json"),
@@ -244,6 +380,15 @@ class Pipeline:
             "pending": pending,
             "enriched": enriched,
         }
+        latent = result if result and not rejection else score(
+            listing, profile, seller, evidence, self.config, passed, {"bargain": False}
+        )
+        trace["signals"] = {
+            key: value / self.config.scoring.weights.get(
+                "part" if key == "parts" else key, 1
+            ) if self.config.scoring.weights.get("part" if key == "parts" else key) else 1
+            for key, value in latent.points.items() if key not in {"base", "trusted_seller"}
+        }
         self.store.save(
             listing,
             profile.id,
@@ -253,7 +398,7 @@ class Pipeline:
             backfill,
         )
         self.store.save_photos(listing.id, evidence.hashes, evidence.primary_hash)
-        if result is None:
+        if result is None or not count_event:
             return
         self.run["tiers"][result.tier] += 1
         if rejection:
@@ -269,10 +414,22 @@ class Pipeline:
         client: VintedClient,
         pages: int,
         selftest: bool,
+        daily_only: bool = False,
     ) -> dict[int, tuple[Listing, Profile, bool]]:
         source = VintedCatalog(client)
         cursor = int(self.store.setting("search_cursor", "0"))
-        searches, cursor = plan_searches(self.config, cursor, selftest)
+        state = prepare(self.store, self.config, self.now) if (
+            not selftest and os.environ.get("GITHUB_ACTIONS") == "true"
+        ) else {}
+        share = min(client.limits["catalog"], self.config.scoring.daily_backfill.catalog_share)
+        searches, cursor = plan_searches(
+            self.config, cursor, selftest,
+            catalog_limit=max(1, client.limits["catalog"]-share) if state else None,
+        )
+        if state:
+            searches = [] if daily_only else searches[:max(1, client.limits["catalog"]-share)]
+        elif daily_only:
+            return {}
         if not selftest:
             self.store.set_setting("search_cursor", str(cursor))
             self.store.flush()
@@ -284,9 +441,14 @@ class Pipeline:
             jobs += [(search, 1) for search in searches if search is not primary]
         found: dict[int, tuple[Listing, Profile, bool]] = {}
         ids_seen = set()
-        for search, page in jobs[: client.limits["catalog"]]:
+        cache: dict[str, Any] = {}
+
+        def consume(search: Search, page: int, *, deep: bool = False) -> bool:
+            key = json.dumps(search.query(page), sort_keys=True)
             try:
-                result = source.search(search.query(page))
+                reused = key in cache
+                result = cache[key] if reused else source.search(search.query(page))
+                cache[key] = result
                 if page == 1 and search.expects_items and not result.listings:
                     raise ParseError("parser_suspect: 200 sin anuncios en una búsqueda habitual")
             except CircuitOpen:
@@ -295,7 +457,7 @@ class Pipeline:
                 if isinstance(error, ParseError) and "parser_suspect" not in str(error):
                     error = ParseError(f"parser_suspect: {error}")
                 self.error(error, "catalog")
-                continue
+                return False
             query_key = "query:" + json.dumps(search.params, sort_keys=True)
             known_search = self.baseline or bool(self.store.setting(query_key))
             if page == 1:
@@ -317,6 +479,34 @@ class Pipeline:
                     previous = found.get(listing.id)
                     if previous is None or known_search and not previous[2]:
                         found[listing.id] = (listing, profiles[0], known_search)
+                    if deep and previous is None:
+                        self.backfill_ids.add(listing.id)
+            if deep:
+                advance(self.store, state, empty=not result.listings,
+                        stop_on_empty=self.config.scoring.daily_backfill.stop_on_empty,
+                        now=datetime.now(UTC), reused=reused)
+                self.run["daily_backfill"] = daily_summary(state)
+            return True
+
+        for search, page in jobs[:client.limits["catalog"]]:
+            consume(search, page)
+        profiles = {profile.id: profile for profile in self.config.profiles}
+        deep_start = client.counts["catalog"]
+        deep_limit = client.limits["catalog"] if daily_only else share
+        while state and state["cursor"] < len(state["jobs"]) and (
+            client.remaining("catalog") > 0 and client.counts["catalog"]-deep_start < deep_limit
+        ):
+            job = state["jobs"][state["cursor"]]
+            related = [profiles[key] for key in job["profiles"] if key in profiles]
+            if not related:
+                state["cursor"] += 1
+                continue
+            params = {key: value for key, value in job["params"].items()
+                      if key not in {"page", "order"}}
+            if not consume(Search(related, params, job["expects_items"]), job["page"], deep=True):
+                break
+        if state:
+            self.run["daily_backfill"] = daily_summary(state)
         return found
 
     def candidate(
@@ -333,6 +523,10 @@ class Pipeline:
         settings = self.config.scoring.capture
         seller = None
         enriched = False
+        if blocked := self.feedback_seller(listing):
+            self.record(listing, profile, [], evidence, backfill, blocked,
+                        "seller_blacklisted")
+            return
         try:
             if not detail_loaded:
                 listing = get_item(client, listing, self.now)
@@ -401,6 +595,8 @@ class Pipeline:
             )
             return
         self.record(listing, profile, passed, evidence, backfill, seller, reason, enriched=enriched)
+        if reason is None:
+            self.maybe_notify(listing.id, client)
 
     def process(
         self,
@@ -411,6 +607,7 @@ class Pipeline:
     ) -> None:
         work = []
         for listing, profile, known_search in found.values():
+            item_backfill = backfill or listing.id in self.backfill_ids
             row = self.store.record(listing.id)
             previous = Listing.model_validate(row["body"]) if row else None
             listing.first_seen = (previous.first_seen if previous else None) or self.now
@@ -430,10 +627,12 @@ class Pipeline:
                 continue
             if not row:
                 self.run["discovered"] += 1
-            is_new = not backfill and (not row and known_search or dropped)
+            is_new = not item_backfill and (not row and known_search or dropped)
             if is_new:
                 self.run["new"] += 1
-            reason, passed = gate(listing, profile, self.config)
+            reason, passed = gate(
+                listing, profile, self.config, self.feedback_seller(listing)
+            )
             pending_drop = (
                 row is not None
                 and row["tier"] is None
@@ -445,18 +644,19 @@ class Pipeline:
                 profile,
                 passed,
                 evidence,
-                backfill,
+                item_backfill,
                 rejection=reason,
                 pending=reason is None,
             )
             if reason is None:
-                work.append((listing, profile, evidence, is_new, not row or dropped))
+                work.append((listing, profile, evidence, is_new,
+                             (not row or dropped) and not item_backfill, item_backfill))
         self.run["candidates"] = len(work)
         self.store.flush()
         words = self.config.scoring.words
 
-        def priority(job: tuple[Listing, Profile, Evidence, bool, bool]) -> tuple:
-            listing, profile, _, _, fresh = job
+        def priority(job: tuple[Listing, Profile, Evidence, bool, bool, bool]) -> tuple:
+            listing, profile, _, _, fresh, _ = job
             primary = enrichment_priority(listing, profile, fresh, self.now)
             if candidate_cap is None:
                 return primary
@@ -482,7 +682,7 @@ class Pipeline:
             profile = profiles[row["profile"]]
             work.append((listing, profile, Evidence.model_validate(
                 row["trace"].get("evidence", {})
-            ), False, False))
+            ), False, False, bool(row["backfill"])))
         self.run["candidates"] = len(work)
         work.sort(key=priority)
         ordered = work
@@ -496,14 +696,14 @@ class Pipeline:
                 else:
                     first_per_profile[profile_id] = job
             ordered = sorted([*first_per_profile.values(), *remaining], key=lambda job: not job[4])
-        for listing, profile, evidence, is_new, _ in ordered[:candidate_cap]:
+        for listing, profile, evidence, is_new, _, job_backfill in ordered[:candidate_cap]:
             if not client.remaining("enrich") or (
                 self.deadline is not None and time.monotonic() >= self.deadline
             ):
                 break
             self.emit("candidate", id=listing.id, profile=profile.id)
             started = time.monotonic()
-            self.candidate(client, listing, profile, backfill, evidence, is_new)
+            self.candidate(client, listing, profile, job_backfill, evidence, is_new)
             duration = round(time.monotonic() - started, 2)
             self.run["candidate_seconds"].append(duration)
             self.store.flush()
@@ -534,6 +734,12 @@ class Pipeline:
             listing = Listing.model_validate(row["body"])
             trace = row["trace"]
             seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
+            if seller:
+                flags = self.store.seller_flags(seller.id)
+                seller = seller.model_copy(update={
+                    "blacklisted": "fake" in flags, "trusted": "good" in flags,
+                })
+            seller = self.feedback_seller(listing) or seller
             evidence = Evidence.model_validate(trace.get("evidence", {}))
             enriched = trace.get("enriched", listing.category_id is not None)
             reason, passed = gate(
@@ -560,12 +766,16 @@ class Pipeline:
         return changed
 
     def execute(
-        self, pages: int, backfill: bool, selftest: bool, pending_only: bool = False
+        self, pages: int, backfill: bool, selftest: bool, pending_only: bool = False,
+        notifications: bool = False,
+        daily_only: bool = False,
     ) -> dict[str, Any]:
         capture = self.config.scoring.capture
+        self.notifications = notifications
+        self.run["notifications_handled"] = notifications
         self.run.update(
             pages=pages, backfill=backfill, selftest=selftest, pending_only=pending_only,
-            rules_revision=self.config.scoring.revision,
+            rules_revision=self.config.scoring.revision, daily_backfill_only=daily_only,
         )
         self.emit("run_start", pages=pages, backfill=backfill, selftest=selftest)
         started = time.monotonic()
@@ -597,11 +807,23 @@ class Pipeline:
                     client.home()
                     self.run["cookies"] = bool(client.session.cookies)
                     catalog_start = time.monotonic()
-                    found = {} if pending_only else self.catalog(client, pages, selftest)
+                    found = {} if pending_only else self.catalog(
+                        client, pages, selftest, daily_only=daily_only
+                    )
                     self.run["phases"]["catalog"] = round(time.monotonic() - catalog_start, 2)
                     pipeline_start = time.monotonic()
                     try:
-                        self.process(client, found, backfill, 3 if selftest else None)
+                        full_deadline = self.deadline
+                        if not selftest and self.deadline is not None:
+                            self.deadline -= capture.availability_reserve_seconds
+                        if pending_only:
+                            self.refresh_states(client, repair_sizes=True)
+                        self.process(client, found, backfill,
+                                     0 if daily_only else 3 if selftest else None)
+                        self.deadline = full_deadline
+                        if not selftest:
+                            self.refresh_states(client)
+                            self.refresh_states(client, repair_sizes=True)
                     finally:
                         if backfill:
                             self.run["funnel"] = self.backfill_funnel(found)
@@ -658,9 +880,11 @@ def run_pass(
     selftest: bool = False,
     database: str = "vh.sqlite",
     pending_only: bool = False,
+    notifications: bool = False,
+    daily_only: bool = False,
 ) -> dict[str, Any]:
     config = load_config(root)
     with SQLiteStore(root / "data" / database) as store:
         return Pipeline(root, store, config, datetime.now(UTC)).execute(
-            pages, backfill, selftest, pending_only
+            pages, backfill, selftest, pending_only, notifications, daily_only
         )

@@ -120,6 +120,21 @@ def replay(root: Path, url: str, save_fixture: str | None = None) -> dict[str, A
             "Compatibilidad con los filtros y el texto. La posición actual de un anuncio "
             "vendido y la coincidencia interna del buscador no se pueden reconstruir."
         )
+        from vinted_hunter.notify.ntfy import notification_eligible
+
+        record["notification"] = {
+            "would_notify_if_active": notification_eligible(
+                record, profile.notify_min_tier, simulate_active=True,
+                negotiable_days=int(config.scoring.pricing["negotiable_days"]),
+            )[0],
+            "minimum_tier": profile.notify_min_tier,
+            "actual_availability": record["body"].get("availability", "unknown"),
+            "would_notify_as_new_active": notification_eligible(
+                record, profile.notify_min_tier, simulate_active=True,
+                at=listing.uploaded_at or now,
+                negotiable_days=int(config.scoring.pricing["negotiable_days"]),
+            )[0],
+        }
         if save_fixture:
             destination = root / "tests" / save_fixture / str(listing.id)
             destination.mkdir(parents=True, exist_ok=True)

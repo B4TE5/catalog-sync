@@ -40,7 +40,7 @@ def sale_statistics(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     groups: dict[str, list[Listing]] = defaultdict(list)
     for row in rows:
         item = Listing.model_validate(row["body"])
-        if item.availability == "sold":
+        if item.availability == "sold" and row["tier"] in {"top", "good", "maybe", "low"}:
             groups[row["profile"]].append(item)
 
     def summarize(items: list[Listing]) -> dict[str, Any]:

@@ -37,6 +37,7 @@ profiles:
     price_max: 60
     certilogo: true          # usa la detección QR Certilogo como señal fuerte
     priority: 0
+    notify_min_tier: good
     seller_min_rating: 4.0   # recall verificado con 10690539539; la nota permanece visible
     text_queries:
       - { q: "stone island", priority: high }

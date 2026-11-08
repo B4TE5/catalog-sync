@@ -188,6 +188,34 @@ function decision(row) {
 }
 const euro = new Intl.NumberFormat("es-ES", {style:"currency", currency:"EUR"});
 const tierOf = row => row.tier || "pending";
+const closedLabels = {sold:"Vendido", reserved:"Reservado", gone:"Ya no disponible", hidden:"Oculto"};
+const closed = row => Object.hasOwn(closedLabels, row.body.availability);
+tiers.sold = "Vendidos";
+tiers.negotiable = "Negociables";
+const eligible = row => row.tier && row.tier !== "rejected";
+const negotiable = row => eligible(row) && row.body.availability === "active" &&
+  minutesSince(row.body.uploaded_at || row.body.first_seen) >= (data.negotiable_days || 7) * 1440;
+function matchesTab(row, id) {
+  if (id === "sold") return closed(row) && eligible(row);
+  if (closed(row) && eligible(row)) return false;
+  if (id === "all") return eligible(row);
+  if (id === "negotiable") return negotiable(row);
+  if (id === "top" || id === "good") return tierOf(row) === id && row.body.availability === "active";
+  return tierOf(row) === id;
+}
+const feedbackSummary = node("p", undefined, "muted");
+document.querySelector("#cards").before(feedbackSummary);
+const salesSummary = node("section");
+salesSummary.append(node("h2", "Ventas observadas"));
+for (const [profile, sale] of Object.entries(data.sales || {})) {
+  salesSummary.append(node("p", `${data.brands[profile] || profile} · ${sale.count} vendidos · ` +
+    (sale.mean_minutes == null ? "Duración sin intervalo observado" :
+      `Media estimada ${sale.mean_minutes} min (${sale.timed_count} transiciones)`), "muted"));
+  for (const [price, values] of Object.entries(sale.by_price))
+    salesSummary.append(node("p", `${euro.format(Number(price))} anunciados · ${values.count} vendidos · ` +
+      (values.mean_minutes == null ? "Sin duración medida" : `Media estimada ${values.mean_minutes} min`), "muted"));
+}
+document.querySelector("#more").after(salesSummary);
 let active = "all";
 const pageSize = 48;
 let limit = pageSize;
@@ -228,11 +256,24 @@ function card(row) {
   const content = node("div", undefined, "content");
   content.append(node("span", data.brands[row.profile] || item.brand, "eyebrow"));
   content.append(node("h2", item.title));
-  content.append(node("div", euro.format(Number(item.price)), "money"));
-  content.append(node("span", `${tiers[tierOf(row)]}${row.score == null ? "" : ` · ${row.score}/100`}`, "badge"));
+  const sizeLabel = item.size || ({absent:"No indicada",unavailable:"No disponible"}[item.size_source] || "Pendiente de comprobar");
+  content.append(node("p", `Talla · ${sizeLabel}`, "chip"));
+  if (!item.availability || item.availability === "unknown")
+    content.append(node("p", "Disponibilidad pendiente de comprobar", "muted"));
+  content.append(node("div", euro.format(Number(item.observed_sale_price || item.price)), "money"));
+  content.append(node("span", `${closed(row) ? closedLabels[item.availability] : tiers[tierOf(row)]}${row.score == null ? "" : ` · ${row.score}/100`}`, "badge"));
+  if (closed(row)) {
+    content.append(node("p", "Último precio anunciado observado", "muted"));
+    if (item.closed_observed_at) content.append(node("p", "Estado detectado: " + new Date(item.closed_observed_at).toLocaleString("es-ES"), "muted"));
+    if (item.availability === "sold") {
+      const lower = item.uploaded_at && item.last_active_at ? Math.max(0, Math.round((Date.parse(item.last_active_at)-Date.parse(item.uploaded_at))/60000)) : null;
+      const upper = lower != null ? Math.max(lower, Math.round((Date.parse(item.closed_observed_at)-Date.parse(item.uploaded_at))/60000)) : null;
+      content.append(node("p", lower == null ? "Duración hasta la venta sin intervalo observado" : `Venta entre ${lower} y ${upper} min desde la subida (estimado)`, "muted"));
+    }
+  }
   if (gate_rejected) {
     content.append(node("p", reasons[gate_rejected] || gate_rejected));
-  } else if (row.tier && pricing) {
+  } else if (row.tier && pricing && item.availability === "active") {
     content.append(node("p", `${pricing.estimated ? "Total estimado" : "Total"} · ${euro.format(Number(pricing.total))}`, "muted"));
     const medianDelta = row.display_under_median;
     if (medianDelta != null)
@@ -278,7 +319,9 @@ const cards = document.querySelector("#cards");
 const more = document.querySelector("#more");
 const sort = document.querySelector("#sort");
 function render() {
-  const filtered = data.listings.filter(row => (active === "all" ? row.tier && row.tier !== "rejected" : tierOf(row) === active) &&
+  const counts = brand.value ? data.feedback_counts?.by_profile?.[brand.value] : data.feedback_counts?.total;
+  feedbackSummary.textContent = `Etiquetas · Fake ${counts?.fake || 0} · Buenas ${counts?.good || 0} · Meh ${counts?.meh || 0}`;
+  const filtered = data.listings.filter(row => matchesTab(row, active) &&
     (!brand.value || row.profile === brand.value));
   const recent = row => Date.parse(row.body.uploaded_at || row.body.first_seen);
   filtered.sort((a, b) => sort.value === "recent" ? recent(b) - recent(a) :
@@ -290,7 +333,7 @@ function render() {
   if (!filtered.length) cards.append(node("p", "Aún no hay anuncios para estos filtros.", "empty"));
 }
 for (const [id, label] of Object.entries(tiers)) {
-  const count = data.listings.filter(row => id === "all" ? row.tier && row.tier !== "rejected" : tierOf(row) === id).length;
+  const count = data.listings.filter(row => matchesTab(row, id)).length;
   const button = node("button", `${label} · ${count}`);
   button.setAttribute("aria-pressed", String(active === id));
   button.onclick = () => {

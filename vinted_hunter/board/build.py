@@ -9,6 +9,7 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 
 from vinted_hunter.config import load_config
+from vinted_hunter.pipeline.availability import sale_statistics
 from vinted_hunter.pipeline.run import health, market_for
 from vinted_hunter.secrets import repository_name
 from vinted_hunter.storage.sqlite_store import SQLiteStore
@@ -23,7 +24,10 @@ def build(root: Path, database: str = "vh.sqlite", folder: str = "board") -> Pat
             "health": health(store, config),
             "feedback_repo": repository_name(root),
             "brands": {profile.id: profile.brand for profile in config.profiles},
+            "feedback_counts": store.label_counts(),
+            "negotiable_days": int(config.scoring.pricing["negotiable_days"]),
         }
+        payload["sales"] = sale_statistics(payload["listings"])
         markets = {profile.id: market_for(store, profile, config) for profile in config.profiles}
     cache = root / "data" / "images"
     for row in payload["listings"]:
