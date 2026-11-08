@@ -479,3 +479,7 @@ Se recalcula la oferta y la edad al construir el tablero. No se reescribe el tra
 
 ## 2026-11-08 · C3.0 — Prioridad de talla observada
 La cola real tenía 690 Stone Island, 106 XL y otras tallas en sus doce primeros puestos por precio. Se elige novedad → prioridad de perfil → talla coincidente/desconocida/distinta → suelo de precio → precio relativo → fecha. No se convierte una talla del catálogo en descarte confirmado: las fichas de todas las tallas siguen pendientes de enriquecimiento según cuota. Se descarta mantener el precio por delante de la talla buscada, que retrasaría innecesariamente los XL válidos en un backfill grande.
+
+
+## 2026-11-08T15:40:43.550211+01:00 · C3 — Resultado de nube y conservación
+SQL final de nube: {'total': 7938, 'missing': 35, 'unverified': 0, 'absent': 31, 'unavailable': 4, 'size_reject_missing': 0}; base local: {'total': 5196, 'missing': 104, 'unverified': 0, 'absent': 89, 'unavailable': 15, 'size_reject_missing': 0}. La comprobación conserva los 3610 IDs anteriores. Cero no-sudaderas identificables entre 1204 pendientes; siguen esperando enriquecimiento, no se presentan como aceptados. El backfill real completó 150 posiciones, 107 nuevas peticiones y 41 páginas omitidas por vacío real. Se mantiene separado del histórico local, sin exportar la SQLite local a una rama nueva. Evidencia: evidence/correction3-validation.json.

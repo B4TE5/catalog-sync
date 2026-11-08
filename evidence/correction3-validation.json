@@ -1,0 +1,628 @@
+{
+  "verified_at": "2026-11-08T15:40:43.550211+01:00",
+  "application_commit": "4e34ea7",
+  "normal_runs": [
+    {
+      "id": 42489721321,
+      "display_title": "Snapshot 42466277556-1-32",
+      "head_sha": "4e34ea75e838b0437f400698fdce6455f1ccc571",
+      "created_at": "2026-11-08T14:25:16Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        38,
+        820,
+        33
+      ],
+      "capture_start": "2026-11-08T14:29:08Z",
+      "deploy_success": true
+    },
+    {
+      "id": 42490550896,
+      "display_title": "Snapshot 42466277556-1-33",
+      "head_sha": "4e34ea75e838b0437f400698fdce6455f1ccc571",
+      "created_at": "2026-11-08T14:35:21Z",
+      "conclusion": "success",
+      "actor_bot": true,
+      "logs_http": 200,
+      "sensitive_match": false,
+      "restored": true,
+      "saved": true,
+      "sealed": true,
+      "accepted": false,
+      "rejected": false,
+      "pages": 200,
+      "metrics": [
+        39,
+        853,
+        12
+      ],
+      "capture_start": "2026-11-08T14:35:36Z",
+      "deploy_success": true
+    }
+  ],
+  "cloud": {
+    "total": 7938,
+    "missing": 35,
+    "unverified": 0,
+    "absent": 31,
+    "unavailable": 4,
+    "size_reject_missing": 0
+  },
+  "local": {
+    "total": 5196,
+    "missing": 104,
+    "unverified": 0,
+    "absent": 89,
+    "unavailable": 15,
+    "size_reject_missing": 0
+  },
+  "preserved_prior_cloud_ids": 3610,
+  "pending": 1204,
+  "non_garment_pending": 0,
+  "closed": {
+    "active": 176,
+    "unknown": 7729,
+    "sold": 28,
+    "gone": 5
+  },
+  "sales": {
+    "stone-island": {
+      "count": 1,
+      "timed_count": 0,
+      "mean_minutes": null,
+      "mean_lower_minutes": null,
+      "mean_upper_minutes": null,
+      "estimated": true,
+      "price_source": "displayed_at_detection",
+      "by_price": {
+        "60.00": {
+          "count": 1,
+          "timed_count": 0,
+          "mean_minutes": null,
+          "mean_lower_minutes": null,
+          "mean_upper_minutes": null,
+          "estimated": true,
+          "price_source": "displayed_at_detection"
+        }
+      }
+    }
+  },
+  "negotiable": 15,
+  "automatic_notifications": 5,
+  "test_notifications": 1,
+  "daily": {
+    "started_at": "2026-11-08T13:18:14.139097+00:00",
+    "completed_at": "2026-11-08T14:12:03.335419+00:00",
+    "cursor": 150,
+    "requested": 107,
+    "skipped_empty": 41
+  },
+  "planned": 150,
+  "queries": 15,
+  "max_pages": 10,
+  "run_metrics": [
+    {
+      "start": "2026-11-08T14:35:37.314910+00:00",
+      "end": "2026-11-08T14:39:24.200151+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 39,
+      "budget": {
+        "catalog": 12,
+        "enrich": 26
+      },
+      "seen": 853,
+      "new": 12,
+      "errors": [],
+      "duration": 226.85,
+      "availability_checks": 15,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": null,
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T14:29:09.010733+00:00",
+      "end": "2026-11-08T14:33:01.715851+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 820,
+      "new": 33,
+      "errors": [],
+      "duration": 232.68,
+      "availability_checks": 13,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": null,
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T14:24:41.483201+00:00",
+      "end": "2026-11-08T14:28:28.100804+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 39,
+      "budget": {
+        "catalog": 0,
+        "enrich": 38
+      },
+      "seen": 0,
+      "new": 0,
+      "errors": [],
+      "duration": 226.58,
+      "availability_checks": 14,
+      "availability_detected": {
+        "active": 8
+      },
+      "size_repaired": 8,
+      "notifications": null,
+      "daily_backfill": null,
+      "daily_backfill_only": false,
+      "pending_only": true
+    },
+    {
+      "start": "2026-11-08T14:19:44.191160+00:00",
+      "end": "2026-11-08T14:23:32.456934+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 40,
+      "budget": {
+        "catalog": 0,
+        "enrich": 39
+      },
+      "seen": 0,
+      "new": 0,
+      "errors": [],
+      "duration": 228.23,
+      "availability_checks": 15,
+      "availability_detected": {
+        "active": 10
+      },
+      "size_repaired": 10,
+      "notifications": null,
+      "daily_backfill": null,
+      "daily_backfill_only": false,
+      "pending_only": true
+    },
+    {
+      "start": "2026-11-08T14:14:57.676433+00:00",
+      "end": "2026-11-08T14:18:43.972163+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 37,
+      "budget": {
+        "catalog": 12,
+        "enrich": 24
+      },
+      "seen": 784,
+      "new": 7,
+      "errors": [],
+      "duration": 226.26,
+      "availability_checks": 14,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": null,
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T14:10:16.062375+00:00",
+      "end": "2026-11-08T14:14:06.380634+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 25,
+      "budget": {
+        "catalog": 11,
+        "enrich": 13
+      },
+      "seen": 679,
+      "new": 14,
+      "errors": [
+        "catalog: Timeout",
+        "availability: Timeout"
+      ],
+      "duration": 230.29,
+      "availability_checks": 7,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 150,
+        "requested": 107,
+        "skipped_empty": 41,
+        "completed_at": "2026-11-08T14:12:03.335419+00:00",
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T14:05:51.467875+00:00",
+      "end": "2026-11-08T14:09:38.413976+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 966,
+      "new": 0,
+      "errors": [],
+      "duration": 226.93,
+      "availability_checks": 15,
+      "availability_detected": {
+        "active": 8,
+        "sold": 2
+      },
+      "size_repaired": 10,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 139,
+        "requested": 102,
+        "skipped_empty": 35,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": true,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T14:00:50.308608+00:00",
+      "end": "2026-11-08T14:04:35.002125+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 432,
+      "new": 0,
+      "errors": [],
+      "duration": 224.66,
+      "availability_checks": 15,
+      "availability_detected": {
+        "sold": 3,
+        "active": 6,
+        "gone": 1
+      },
+      "size_repaired": 10,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 123,
+        "requested": 90,
+        "skipped_empty": 31,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": true,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:56:25.840304+00:00",
+      "end": "2026-11-08T14:00:14.787835+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 887,
+      "new": 11,
+      "errors": [],
+      "duration": 228.92,
+      "availability_checks": 13,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 97,
+        "requested": 78,
+        "skipped_empty": 17,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:51:34.554253+00:00",
+      "end": "2026-11-08T13:55:20.961608+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 39,
+      "budget": {
+        "catalog": 12,
+        "enrich": 26
+      },
+      "seen": 741,
+      "new": 26,
+      "errors": [],
+      "duration": 226.38,
+      "availability_checks": 15,
+      "availability_detected": {
+        "gone": 1
+      },
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 91,
+        "requested": 72,
+        "skipped_empty": 17,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:47:06.559974+00:00",
+      "end": "2026-11-08T13:50:55.375867+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 36,
+      "budget": {
+        "catalog": 12,
+        "enrich": 23
+      },
+      "seen": 1133,
+      "new": 0,
+      "errors": [],
+      "duration": 228.79,
+      "availability_checks": 15,
+      "availability_detected": {
+        "gone": 1,
+        "sold": 3,
+        "active": 4
+      },
+      "size_repaired": 8,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 79,
+        "requested": 66,
+        "skipped_empty": 11,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": true,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:42:06.180429+00:00",
+      "end": "2026-11-08T13:45:46.819670+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 1104,
+      "new": 0,
+      "errors": [],
+      "duration": 220.62,
+      "availability_checks": 15,
+      "availability_detected": {
+        "active": 7,
+        "sold": 2,
+        "gone": 1
+      },
+      "size_repaired": 10,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 67,
+        "requested": 54,
+        "skipped_empty": 11,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": true,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:37:14.185394+00:00",
+      "end": "2026-11-08T13:41:05.059216+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 40,
+      "budget": {
+        "catalog": 12,
+        "enrich": 27
+      },
+      "seen": 841,
+      "new": 11,
+      "errors": [],
+      "duration": 230.85,
+      "availability_checks": 14,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 55,
+        "requested": 42,
+        "skipped_empty": 11,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:32:30.443888+00:00",
+      "end": "2026-11-08T13:36:18.197469+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 927,
+      "new": 10,
+      "errors": [],
+      "duration": 227.73,
+      "availability_checks": 15,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 40,
+        "requested": 36,
+        "skipped_empty": 3,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:28:10.301664+00:00",
+      "end": "2026-11-08T13:31:50.454174+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 38,
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "seen": 960,
+      "new": 0,
+      "errors": [],
+      "duration": 220.13,
+      "availability_checks": 15,
+      "availability_detected": {
+        "active": 7,
+        "sold": 3
+      },
+      "size_repaired": 10,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 34,
+        "requested": 30,
+        "skipped_empty": 3,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": true,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:23:10.224414+00:00",
+      "end": "2026-11-08T13:26:58.069871+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 37,
+      "budget": {
+        "catalog": 12,
+        "enrich": 24
+      },
+      "seen": 990,
+      "new": 0,
+      "errors": [],
+      "duration": 227.83,
+      "availability_checks": 15,
+      "availability_detected": {
+        "active": 12,
+        "sold": 5,
+        "gone": 1
+      },
+      "size_repaired": 9,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 22,
+        "requested": 18,
+        "skipped_empty": 3,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": true,
+      "pending_only": false
+    },
+    {
+      "start": "2026-11-08T13:18:14.139097+00:00",
+      "end": "2026-11-08T13:22:01.897668+00:00",
+      "rules_revision": "correction-3",
+      "requests": 36,
+      "budget": {
+        "catalog": 12,
+        "enrich": 23
+      },
+      "seen": 972,
+      "new": 13,
+      "errors": [],
+      "duration": 227.74,
+      "availability_checks": 15,
+      "availability_detected": {
+        "sold": 1,
+        "active": 14
+      },
+      "size_repaired": 0,
+      "notifications": {
+        "sent": 5,
+        "failed": 0
+      },
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 7,
+        "requested": 6,
+        "skipped_empty": 0,
+        "completed_at": null,
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    }
+  ],
+  "failed_iterations": [
+    {
+      "start": "2026-11-08T14:10:16.062375+00:00",
+      "end": "2026-11-08T14:14:06.380634+00:00",
+      "rules_revision": "correction-3.1",
+      "requests": 25,
+      "budget": {
+        "catalog": 11,
+        "enrich": 13
+      },
+      "seen": 679,
+      "new": 14,
+      "errors": [
+        "catalog: Timeout",
+        "availability: Timeout"
+      ],
+      "duration": 230.29,
+      "availability_checks": 7,
+      "availability_detected": {},
+      "size_repaired": 0,
+      "notifications": null,
+      "daily_backfill": {
+        "started_at": "2026-11-08T13:18:14.139097+00:00",
+        "cursor": 150,
+        "requested": 107,
+        "skipped_empty": 41,
+        "completed_at": "2026-11-08T14:12:03.335419+00:00",
+        "planned": 150
+      },
+      "daily_backfill_only": false,
+      "pending_only": false
+    }
+  ],
+  "board_current": true,
+  "database_integrity": "ok",
+  "unavailable_exact_paid_price_and_sale_time": true
+}

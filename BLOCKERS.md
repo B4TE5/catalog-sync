@@ -18,7 +18,7 @@
 
 GitHub devolvió **HTTP 403** al crear el sitio con build_type workflow. El GET antes y después devolvió HTTP 404. Tras la activación manual por el dueño, la API de configuración devolvió HTTP 200 y `actions/deploy-pages` publicó el artefacto en la ejecución 42296435101. En Chromium, el HTML público coincidió con el artefacto. El enlace de `vh board-url` mostró 48 tarjetas y la URL pública mostró la pantalla neutra. [API oficial de Pages](https://docs.github.com/en/rest/pages/pages#create-a-apiname-pages-site)
 
-El botón Tablero deriva la dirección pública de Pages. Ambos avisos de prueba devolvieron HTTP 200 y la API de ntfy devolvió la acción con la URL sin clave en cada canal. El modo sombra sigue activo.
+El botón Tablero deriva la dirección pública de Pages. Ambos avisos de prueba devolvieron HTTP 200 y la API de ntfy devolvió la acción con la URL sin clave en cada canal. La prueba inicial usó modo sombra; CORRECCION_3 lo desactiva con preflight de estado.
 
 ## Resuelto · Cadencia mediante bucle de Actions
 
@@ -44,3 +44,7 @@ Implementado y probado: comprobaciones periódicas acotadas, estados persistidos
 ## C3 · Conservación local sin exportación nueva
 
 La revisión automática rechazó exportar una copia cifrada a una rama nueva porque la exportación y su destino no estaban autorizados expresamente. Ese intento no ejecutó escrituras remotas. Se eliminó la ruta y se usó una alternativa: unión aditiva solo local, conservación de la SQLite ya existente en nube y backfill real para recuperar stock público antiguo. No se requiere intervención para continuar con esta alternativa. La base local y la nube se informan por separado.
+
+
+## Resuelto · C3 tallas, bucle, backfill y acceso
+2026-11-08T15:40:43.550211+01:00. Nube 7938 registros, cero tallas sin comprobar y ningún descarte por talla ausente. Backfill 150/150 real; dos iteraciones finales normales en verde, SQLite guardada y Pages vigente. QR y reapertura desde la acción pública de ntfy verificados. La única casilla C3 parcialmente [!] es la precisión de precio pagado/hora de venta; el seguimiento está implementado. El timeout de la pasada 42488165596 se recuperó en 42488842985, con guardado y Pages también durante el fallo. El ajuste de pesos está preparado y espera etiquetas reales, sin activarse.

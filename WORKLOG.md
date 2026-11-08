@@ -527,3 +527,26 @@
 - Comandos clave: run_log real → 25 peticiones, catálogo 11, enriquecimiento 13, siete estados, 230,29 s; API/jobs/logs confirma guardado y deploy exitosos.
 - Evidencia: scratch/c3-actions-proof.json; no se oculta la pasada fallida entre las exitosas.
 - Problemas y cómo se resolvieron: no hubo 403/429 ni pérdida del avance. El coordinador sigue con la siguiente pasada y el mantenimiento pasa a reparar las 18 tallas restantes. Se exigirán dos iteraciones normales verdes con el ajuste final de prioridad.
+
+
+## 2026-11-08 15:30 — C3.2/C3.4 · Datos de nube completados
+- Objetivo: terminar el recorrido real y justificar todas las tallas ausentes.
+- Hecho: backfill 150/150 finalizado, 107 peticiones profundas nuevas, 41 páginas posteriores omitidas tras vacíos reales y dos respuestas reutilizadas. La nube conserva 7.899 anuncios; 0 tallas sin comprobar, 35 ausencias justificadas y 0 descartes por talla ausente. El recorrido no reinicia SQLite.
+- Comandos clave: Snapshot 42489652009 success, 39 peticiones, restaurado/guardado/sellado y Pages HTTP 200; snapshot cifrado descifrado localmente coincide con el tablero publicado. El mantenimiento deja de solicitar nuevas reparaciones al cumplir cero.
+- Evidencia: scratch/c3-actions-proof.json. Se marcan las casillas de talla y backfill; siguen pendientes las dos pasadas normales del último ajuste de prioridad y el informe final.
+- Problemas y cómo se resolvieron: las 35 ausencias no se rellenan con tallas inventadas. Se distingue la consulta vacía real de un parser roto; los vacíos solo omiten páginas posteriores de esa consulta.
+
+
+## 2026-11-08T15:40:43.550211+01:00 — C3 · Cierre de datos reales y Actions
+- Objetivo: cerrar todas las casillas con evidencia real y conservar el histórico.
+- Hecho: backfill 150/150, quince búsquedas, 107 peticiones nuevas y 41 páginas posteriores omitidas por vacío; nube 7938 registros con cero tallas sin comprobar. Se conserva el inventario previo. Dos pasadas normales del código final, [42489721321, 42490550896], guardaron estado y publicaron Pages. Avisos automáticos: 5, más una prueba.
+- Comandos clave: Ruff 0; pytest 132; live 4; selftest 8/8 real sin fallback; doctor verde; replay good 65. integrity_check ok, cero descartes por talla ausente y cero no-sudaderas identificables pendientes.
+- Evidencia: evidence/correction3-validation.json, TEST_REPORT.md y SESSION_REPORT.md. Todas las casillas C3 quedan [x] o [!].
+- Problemas y cómo se resolvieron: C3.3 conserva [!] solo por el importe pagado y el instante exacto de venta no públicos. Se exponen precio anunciado e intervalos estimados. La recuperación histórica local no se exportó a una rama nueva tras el rechazo automático; la alternativa fue el backfill real y la conservación de ambas bases. Se deja el coordinador activo.
+
+## 2026-11-08 15:42 — C3 · Revisión de informes y evidencia final
+- Objetivo: cerrar documentación y publicación sin confundir pruebas con datos observados.
+- Hecho: 27 casillas C3 [x] y una parcialmente [!] por precio pagado/hora exacta de venta no públicos. Las dos pasadas finales 42489721321 y 42490550896 comprobaron 13 y 15 estados. Nube final comprobada: 7.938 anuncios, 35 tallas ausentes justificadas (31 sin atributo, cuatro no disponibles), cero sin comprobar y cero descartes por talla ausente; 1.204 pendientes de enriquecimiento, ninguno identificable como no-sudadera.
+- Comandos clave: Ruff 0; revisión de casillas de todos los planes → ninguna pendiente; diff --check limpio. Doctor final → parser 96, L 96, XL 95 y salud healthy. Selftest final 8/8 con ficha live 10131292014; 132 offline y cuatro live.
+- Evidencia: SESSION_REPORT.md, TEST_REPORT.md y evidence/correction3-*.json. La comparación de prioridad sobre la misma instantánea pasa de 0/12 a 12/12 XL en sus primeros puestos.
+- Problemas y cómo se resolvieron: la preparación de una plantilla sustituyó también parte del identificador de selftest al cambiar el contador de pruebas. Se detectó antes de escribir los informes, se cotejó con el JSON real y se corrigió; no se publicó un identificador inventado. Los 95 resultados del último filtro XL se conservan tal como se observaron. Se registra también el timeout de nube y su recuperación, sin presentarlo como una pasada verde.

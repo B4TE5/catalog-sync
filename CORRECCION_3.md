@@ -19,14 +19,14 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 
 ## C3.2 — Tallas en todos los anuncios
 - [x] Hoy la talla se lee bien en top/good (que están enriquecidos), pero en descartados y en los no enriquecidos sale como desconocida, aunque el anuncio la muestre. Extrae la talla del `productItem` del catálogo (RSC: localiza el campo real con fixtures) para TODOS los anuncios, y de la ficha cuando se enriquece.
-- [ ] Re-evalúa la base: ningún anuncio con talla visible en Vinted debe quedar como desconocida (consulta SQL antes/después en DECISIONS.md). Revisa también si algún descarte fue por talla mal leída y corrígelo.
+- [x] Re-evalúa la base: ningún anuncio con talla visible en Vinted debe quedar como desconocida (consulta SQL antes/después en DECISIONS.md). Revisa también si algún descarte fue por talla mal leída y corrígelo.
 
 ## C3.3 — Vendidos
 - [!] En cada pasada, re-comprueba el estado de los anuncios top/good/revisar (máx. 15 por pasada, priorizando los mejores y los más recientes). Si están vendidos, reservados o borrados → estado `sold`/`reserved`/`gone`, fuera de las pestañas principales y dentro de una pestaña **Vendidos** con su precio final y cuánto duraron (subida → vendida).
 - [x] Usa esos datos de vendidos como señal de mercado: duración media hasta la venta por marca y precio. Mostrarla en `vh stats` y en el tablero.
 
 ## C3.4 — Histórico y stock que ya estaba subido
-- [ ] El tablero solo tiene lo visto desde el último reinicio de la base. Añade un **backfill profundo diario** en el bucle de la nube (de madrugada, una vez cada 24 h): páginas 1–10 de cada búsqueda activa, con el mismo presupuesto y las mismas pausas, para captar sudaderas que llevan semanas o meses subidas y siguen a la venta.
+- [x] El tablero solo tiene lo visto desde el último reinicio de la base. Añade un **backfill profundo diario** en el bucle de la nube (de madrugada, una vez cada 24 h): páginas 1–10 de cada búsqueda activa, con el mismo presupuesto y las mismas pausas, para captar sudaderas que llevan semanas o meses subidas y siguen a la venta.
 - [x] Los anuncios con ≥ 7 días subidos que pasen los filtros salen en una pestaña **Negociables**, con la oferta sugerida. No generan aviso salvo que tengan `price_drop`.
 - [x] Las pestañas Top y Buenas siguen siendo solo lo mejor y activo; el resto de datos se conserva (no borrar nada; histórico completo en SQLite).
 
@@ -52,4 +52,4 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 ## C3.8 — Verificación
 - [x] ruff, pytest (incluye recall/precision), `pytest -m live`, `vh selftest` 8/8 y `vh doctor` en verde.
 - [x] Push y 2 iteraciones del bucle verificadas en Actions (incluye la comprobación de vendidos).
-- [ ] SESSION_REPORT.md con resultados (tallas antes/después, vendidos detectados, avisos enviados) y BLOCKERS.md actualizado.
+- [x] SESSION_REPORT.md con resultados (tallas antes/después, vendidos detectados, avisos enviados) y BLOCKERS.md actualizado.
