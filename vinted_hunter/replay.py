@@ -51,6 +51,7 @@ class ReplayClient(VintedClient):
 def query_coverage(root: Path, record: dict[str, Any]) -> list[dict[str, Any]]:
     config = load_config(root)
     item = record["body"]
+    profile = next(p for p in config.profiles if p.id == record["profile"])
     searches, _ = plan_searches(config)
     covered = []
     text = f"{item['title']} {item.get('description') or ''}"
@@ -64,10 +65,7 @@ def query_coverage(root: Path, record: dict[str, Any]) -> list[dict[str, Any]]:
         expected = config.ids.size_ids.get(item.get("size"))
         size_match = size is None or str(expected) == size
         category = item.get("category_id")
-        category_match = category in {
-            config.ids.catalog_ids.get(key)
-            for key in ("sweatshirts", "zip_sweatshirts", "jumpers")
-        }
+        category_match = category in profile.categories.accept + profile.categories.conditional
         mismatches = []
         if not text_match:
             mismatches.append("El texto no contiene todos los términos de la consulta")

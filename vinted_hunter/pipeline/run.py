@@ -67,7 +67,7 @@ def market_for(store: StateStore, profile: Profile, config: Config) -> Market:
             profile.id,
             config.scoring.thresholds["plausible"],
             sweatshirt_categories(config, profile)
-            | {config.ids.catalog_ids["jumpers"]},
+            | set(profile.categories.conditional),
             profile.price_floor,
         )
     )

@@ -11,6 +11,20 @@ defaults:
   min_photos: 3
   domain: vinted.es
 
+  categories:
+    search: [79]
+    accept: [267, 1812]
+    conditional: [1811]
+    exclude: [1815]
+    exclude_reason: knitwear
+  type_keywords_include: ["sudadera", "hoodie", "hoody", "sweat", "sweatshirt", "crewneck", "felpa", "pull", "capuche", "kapuzenpullover", "sweatjacke", "kapuzenjacke", "sweater", "suéter", "trui", "katoenen trui", "sweatshirt de algodão", "moletom", "blusão de moletom", "camisola de algodão"]
+  type_keywords_exclude: ["camiseta", "camisetas", "t-shirt", "tshirt", "t shirt", "tee", "polo", "polos", "camisa", "chemise", "camicia", "hemd", "pantalón", "pantalones", "pantalon", "pantaloni", "pants", "trousers", "hose", "jogger", "joggers", "pantalón de chándal", "bas de survêtement", "shorts", "bermuda", "gafas", "sunglasses", "lunettes", "occhiali", "sonnenbrille", "pulsera", "bracelet", "bracciale", "armband", "collar", "necklace", "collier", "collana", "halskette", "anillo", "anelli", "ring", "bague", "pendiente", "pendientes", "earring", "orecchini", "ohrringe", "gorra", "cap", "beanie", "gorro", "bonnet", "cappellino", "berretto", "mütze", "calcetines", "socks", "chaussettes", "calzini", "socken", "bolso", "bag", "sac", "borsa", "tasche", "cartera", "wallet", "cinturón", "belt", "zapatillas", "sneakers", "baskets", "scarpe", "schuhe", "chaqueta", "jacket", "veste", "giacca", "jacke", "abrigo", "coat", "manteau", "cappotto", "mantel", "chaleco", "gilet", "weste", "schoenen", "schoen", "broek", "broeken", "spijkerbroek", "jeans", "overhemd", "zonnebril", "bril", "ketting", "oorbel", "muts", "pet", "sokken", "tas", "portemonnee", "riem", "jas", "sapatos", "calças", "calções", "óculos", "pulseira", "colar", "anel", "brincos", "boné", "meias", "mala", "carteira", "cinto", "ténis", "casaco", "colete", "vestido", "giubbotto", "giubbino", "pantaloncini", "maglietta", "tuta", "canottiera", "camisola sem mangas", "jaqueta", "calcão", "regata", "jasje", "shortje", "oorbellen", "laarzen", "horloge", "vestito", "croptop"]
+  type_keywords_explicit: ["sudadera", "sweatshirt", "sweat", "hoodie", "hoody", "crewneck", "crew neck", "felpa", "katoenen trui", "cotton sweater", "sweater de algodón", "moletom", "sweatshirt de algodão", "camisola de algodão"]
+  material_keywords_include: ["algodón", "cotton", "coton", "cotone", "baumwolle", "katoen", "algodão"]
+  material_keywords_exclude: ["punto", "de punto", "knit", "knitted", "wool", "lana", "laine", "maglia", "maglione", "strick", "wolle", "gebreid", "wol", "cárdigan", "cardigan", "cuello vuelto", "cuello alto", "turtleneck", "col roulé", "malha", "tricot", "gola alta"]
+  material_keywords_exclude_exact: ["lã"]
+  notify_min_tier: top
+
 profiles:
 
   - id: stone-island

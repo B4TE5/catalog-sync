@@ -4,8 +4,9 @@ from decimal import Decimal
 from pathlib import Path
 
 from vinted_hunter.config import load_config
-from vinted_hunter.pipeline.gates import gate
+from vinted_hunter.pipeline.gates import garment_reason, gate
 from vinted_hunter.sources.vinted.item import listing_from_item
+from vinted_hunter.sources.vinted.search import plan_searches
 
 ROOT = Path(__file__).parents[1]
 
@@ -28,3 +29,27 @@ def test_active_profiles_only_accept_the_three_allowed_conditions() -> None:
     allowed = {"new_without_tags", "very_good", "new_with_tags"}
     assert config.profiles
     assert all(set(profile.allowed_status) == allowed for profile in config.profiles)
+
+
+def test_existing_real_case_can_use_profile_specific_type_rules() -> None:
+    config = load_config(ROOT)
+    item = listing_from_item(
+        gzip.decompress((ROOT / "tests/precision/10683026176/item.html.gz").read_bytes()).decode(),
+        "https://www.vinted.es/items/10683026176", datetime.now(UTC),
+    )
+    original = next(p for p in config.profiles if p.id == "twojeys")
+    assert garment_reason(item, original, config, detailed=True) == "not_sweatshirt"
+    assert item.category_id is not None
+    categories = original.categories.model_copy(update={
+        "search": [item.category_id], "accept": [item.category_id],
+        "conditional": [], "exclude": [],
+    })
+    configured = original.model_copy(update={
+        "categories": categories, "type_keywords_exclude": [],
+        "material_keywords_exclude": [], "material_keywords_exclude_exact": [],
+        "hood": None, "size": None,
+    })
+    configured_config = config.model_copy(update={"profiles": [configured]})
+    assert garment_reason(item, configured, configured_config, detailed=True) is None
+    queries, _ = plan_searches(configured_config)
+    assert queries and all(q.params["catalog[]"] == str(item.category_id) for q in queries)

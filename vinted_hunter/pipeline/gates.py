@@ -14,8 +14,7 @@ def needs_confirmed_detail(reason: str | None, profile: Profile) -> bool:
 
 
 def sweatshirt_categories(config: Config, profile: Profile) -> set[int]:
-    keys = ("sweatshirts", "zip_sweatshirts", profile.hood)
-    return {config.ids.catalog_ids[key] for key in keys if key in config.ids.catalog_ids}
+    return set(profile.categories.accept)
 
 
 def garment_mismatch(listing: Listing, profile: Profile, config: Config) -> bool:
@@ -25,28 +24,27 @@ def garment_mismatch(listing: Listing, profile: Profile, config: Config) -> bool
 def garment_reason(
     listing: Listing, profile: Profile, config: Config, *, detailed: bool = False
 ) -> str | None:
-    words = config.scoring.words
     text = f"{listing.title} {listing.description or ''}"
-    if matches(listing.title, words["garment_negative"]):
+    if matches(listing.title, profile.type_keywords_exclude):
         return "not_sweatshirt"
     if (
-        listing.category_id == config.ids.catalog_ids.get("knitted")
+        listing.category_id in profile.categories.exclude
         or any(
-            matches(value, words.get("knitwear", []))
-            or matches(value, words.get("knitwear_exact", []), accent_sensitive=True)
+            matches(value, profile.material_keywords_exclude)
+            or matches(value, profile.material_keywords_exclude_exact, accent_sensitive=True)
             for value in (text, listing.material or "")
         )
     ):
-        return "knitwear"
+        return profile.categories.exclude_reason
     categories = sweatshirt_categories(config, profile)
     if listing.category_id is None or listing.category_id in categories:
         return None
-    if listing.category_id == config.ids.catalog_ids.get("jumpers"):
+    if listing.category_id in profile.categories.conditional:
         if listing.material is None and not detailed:
             return None
-        explicit = matches(text, words.get("sweatshirt_explicit", []))
-        cotton = matches(listing.material or "", words.get("cotton", []))
-        generic = matches(text, words["garment_positive"])
+        explicit = matches(text, profile.type_keywords_explicit)
+        cotton = matches(listing.material or "", profile.material_keywords_include)
+        generic = matches(text, profile.type_keywords_include)
         if explicit or cotton and generic:
             return None
     return "not_sweatshirt"
@@ -76,7 +74,7 @@ def gate(
         None,
     )
     hood = category_hood or hood_signal(text, words)
-    expected_size = normalize(profile.size)
+    expected_size = normalize(profile.size or "")
     explicit_sizes = stated_sizes(listing.title, words.get("size_labels", []))
     size = normalize((listing.size or "").split(" / ")[0])
     tests = {
@@ -101,11 +99,15 @@ def gate(
             else None,
         }
         for reason, valid in attributes.items():
+            if (reason == "size" and profile.size is None) or (
+                reason == "hood" and profile.hood is None
+            ):
+                continue
             if valid is False:
                 return reason, passed
             if reason != "color" or profile.color:
                 passed.append(reason if valid else f"{reason}_unconfirmed")
-    elif hood is None:
+    elif hood is None and profile.hood is not None:
         passed.append("hood_unconfirmed")
     if detailed and len(listing.photos) < profile.min_photos:
         return "photos", passed

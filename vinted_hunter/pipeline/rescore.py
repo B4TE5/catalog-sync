@@ -45,7 +45,7 @@ def rescore(root: Path, store: SQLiteStore) -> int:
         trace = row["trace"]
         enriched = trace.get("enriched", listing.category_id is not None)
         if (
-            listing.category_id == config.ids.catalog_ids.get("jumpers")
+            listing.category_id in profile.categories.conditional
             and listing.material is None and trace.get("gate_rejected") == "not_sweatshirt"
         ):
             enriched = False

@@ -400,3 +400,10 @@
 - Comandos clave: Ruff → 0; pytest → 110 aprobadas, 4 excluidas, 8,49 s. Un catálogo real conserva exactamente todos los anuncios/campos tras el saneado. Tests de cabeceras y cookies anidadas dentro de RSC aprobados.
 - Evidencia: sanitize.py, tests/test_sanitize.py y .gitignore.
 - Problemas y cómo se resolvieron: Ruff detectó imports sobrantes al extraer el sanitizador; se corrigieron. Se reforzó el primer patrón para redactar también cookies representadas como arrays/objetos, no solo strings. El CI de gitleaks se implementará como la siguiente parte de seguridad.
+
+## 2026-11-08 02:32 — C3.9 · Reglas de producto por perfil
+- Objetivo: permitir futuros productos mediante YAML conservando los casos actuales de sudaderas.
+- Hecho: categorías de búsqueda/aceptación/condicionales/exclusión y palabras de tipo/material trasladadas a defaults de profiles.yaml. Gates, búsquedas, replay, precios y rescore usan cada perfil. Talla y capucha pueden ser null para un futuro perfil que no las necesite. No se añadió ningún perfil activo ni producto.
+- Comandos clave: Ruff → 0; pytest → 111 aprobadas, 4 excluidas, 10,74 s, incluidos todos los casos reales de recall/precision. Un caso real de precisión comprueba que la misma ficha puede evaluarse con reglas de tipo distintas por configuración, sin cambiar el código ni guardar un perfil nuevo.
+- Evidencia: config.py, profiles.yaml, scoring.yaml, search.py, gates.py y tests/test_c3_policy.py.
+- Problemas y cómo se resolvieron: Ruff detectó dos líneas largas al refactorizar; se ajustaron. Las listas se trasladaron conservando todos sus valores, incluidas las exclusiones de material y la tilde de lã.

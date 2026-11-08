@@ -46,8 +46,8 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 - [x] Saca de Git los scripts de `scratch/` que no hagan falta (y añade scratch/ a .gitignore salvo lo imprescindible).
 
 ## C3.9 — Preparado para otros productos de Vinted (sin añadir ninguno)
-- [ ] Hoy la lógica de "es sudadera" (categorías, palabras de tipo, punto) está pensada solo para sudaderas. Muévela a configuración **por perfil** (`categories`, `type_keywords_include`, `type_keywords_exclude`) con los valores actuales como valores por defecto de los perfiles de sudaderas. Objetivo: que en el futuro añadir otro producto de Vinted sea solo añadir un perfil en YAML. No añadas perfiles nuevos ahora.
-- [ ] Todos los tests de recall/precision siguen en verde tras el cambio.
+- [x] Hoy la lógica de "es sudadera" (categorías, palabras de tipo, punto) está pensada solo para sudaderas. Muévela a configuración **por perfil** (`categories`, `type_keywords_include`, `type_keywords_exclude`) con los valores actuales como valores por defecto de los perfiles de sudaderas. Objetivo: que en el futuro añadir otro producto de Vinted sea solo añadir un perfil en YAML. No añadas perfiles nuevos ahora.
+- [x] Todos los tests de recall/precision siguen en verde tras el cambio.
 
 ## C3.8 — Verificación
 - [ ] ruff, pytest (incluye recall/precision), `pytest -m live`, `vh selftest` 8/8 y `vh doctor` en verde.

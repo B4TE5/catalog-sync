@@ -21,13 +21,29 @@ class BrandRule(BaseModel):
     reason: str
 
 
+class Categories(BaseModel):
+    search: list[int]
+    accept: list[int]
+    conditional: list[int] = Field(default_factory=list)
+    exclude: list[int] = Field(default_factory=list)
+    exclude_reason: str = "knitwear"
+
+
 class Profile(BaseModel):
     id: str
     enabled: bool
     priority: int = 10
     brand: str
-    size: str
-    hood: Literal["with", "without"]
+    size: str | None = None
+    hood: Literal["with", "without"] | None = None
+    categories: Categories
+    type_keywords_include: list[str] = Field(default_factory=list)
+    type_keywords_exclude: list[str] = Field(default_factory=list)
+    type_keywords_explicit: list[str] = Field(default_factory=list)
+    material_keywords_include: list[str] = Field(default_factory=list)
+    material_keywords_exclude: list[str] = Field(default_factory=list)
+    material_keywords_exclude_exact: list[str] = Field(default_factory=list)
+    notify_min_tier: Literal["good", "top"] = "top"
     price_floor: Decimal
     price_max: Decimal
     allowed_status: list[str]

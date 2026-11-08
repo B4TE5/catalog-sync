@@ -421,3 +421,7 @@ Tres índices consecutivos del coordinador y sus tiempos: 42427270371, 424280592
 ## C3 · Orden de implementación y disponibilidad real
 
 La prioridad es conservar el recall de Stone Island de 60 EUR. Primero se fijan los tests de precio/estado y el contrato real de talla/disponibilidad; después se aplican la configuración por perfil y el sanitizador común, y a continuación las funciones que dependen de ellos. shadow_mode se desactiva cuando la comprobación previa al envío ya impide avisos de vendidos/reservados/ocultos. No se infiere vendido de can_buy=false por sí solo: el anuncio real 10690539539 expone además un banner visible Vendido, mientras una ficha activa expone can_buy=true y item-buy-button. Las traducciones embebidas no son evidencia de venta.
+
+## C3.9 · Configuración de producto y compatibilidad
+
+categories define search, accept, conditional y exclude con IDs reales procedentes de la evidencia existente. Las palabras type_keywords_include/exclude/explicit y material_keywords_include/exclude/exclude_exact viven en los defaults de profiles.yaml y se pueden sustituir por perfil. Se descarta mantener una condición hardcodeada de sudadera en los gates o búsquedas: la ampliación futura debe poder hacerse con YAML. Hood y size null desactivan sus restricciones cuando un producto futuro carezca de ellas; no se añade ningún perfil nuevo en esta sesión.

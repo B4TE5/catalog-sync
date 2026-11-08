@@ -17,43 +17,59 @@ class Search:
         return {"order": "newest_first", "page": str(page), **self.params}
 
 
-def plan_searches(
-    config: Config,
-    cursor: int = 0,
-    selftest: bool = False,
-) -> tuple[list[Search], int]:
-    category = config.ids.catalog_ids["sweatshirts_parent"]
-    parent = {"catalog[]": str(category)}
-    if selftest:
-        return [
-            Search([p], {**parent, "search_text": p.text_queries[0].q})
-            for p in config.profiles
-        ], cursor
-    grouped: dict[tuple[str, int], list[Profile]] = defaultdict(list)
+def category_params(profile: Profile) -> QueryParams:
+    categories = [str(value) for value in profile.categories.search]
+    if not categories:
+        return {}
+    return {"catalog[]": categories[0] if len(categories) == 1 else categories}
+
+
+def search_groups(config: Config) -> tuple[list[Search], list[Search], list[Search]]:
+    grouped: dict[tuple[str | None, tuple[int, ...]], list[Profile]] = defaultdict(list)
     high = []
     normal = []
     ids = config.ids
     for profile in config.profiles:
-        if profile.brand in ids.brand_ids and category:
-            grouped[profile.size, category].append(profile)
+        if profile.brand in ids.brand_ids:
+            grouped[profile.size, tuple(profile.categories.search)].append(profile)
         for query in profile.text_queries:
             search = Search(
-                [profile], {**parent, "search_text": query.q}, query.q == "stone island"
+                [profile], {**category_params(profile), "search_text": query.q},
+                query.q == "stone island",
             )
             (high if query.priority == "high" else normal).append(search)
     combined = [
         Search(
             profiles,
             {
-                "catalog[]": str(category),
+                **category_params(profiles[0]),
                 "brand_ids[]": [
                     str(brand_id) for p in profiles for brand_id in ids.brand_ids[p.brand]
                 ],
                 **({"size_ids[]": str(ids.size_ids[size])} if size in ids.size_ids else {}),
             },
         )
-        for (size, category), profiles in grouped.items()
+        for (size, _), profiles in grouped.items()
     ]
+    return combined, high, normal
+
+
+def all_searches(config: Config) -> list[Search]:
+    """Todas las búsquedas activas, sin perder consultas de la rotación."""
+    return [search for group in search_groups(config) for search in group]
+
+
+def plan_searches(
+    config: Config,
+    cursor: int = 0,
+    selftest: bool = False,
+) -> tuple[list[Search], int]:
+    if selftest:
+        return [
+            Search([p], {**category_params(p), "search_text": p.text_queries[0].q})
+            for p in config.profiles
+        ], cursor
+    combined, high, normal = search_groups(config)
     cap = config.scoring.capture.catalog_limit
     required = (combined + high)[:cap]
     count = min(len(normal), cap - len(required))

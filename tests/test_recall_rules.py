@@ -68,8 +68,9 @@ def test_nl_and_pt_signals_have_word_boundaries() -> None:
     assert matches("kassabon en factuur", words["proof"])
     assert matches("recibo e fatura", words["proof"])
     assert not matches("equatorial", words["authenticity_mentioned"])
-    assert matches("de la tienda", words["knitwear_exact"], accent_sensitive=True) == []
-    assert matches("La\u0303 merino", words["knitwear_exact"], accent_sensitive=True) == ["lã"]
+    exact = load_config(ROOT).profiles[0].material_keywords_exclude_exact
+    assert matches("de la tienda", exact, accent_sensitive=True) == []
+    assert matches("La\u0303 merino", exact, accent_sensitive=True) == ["lã"]
 
 
 def test_priority_prefers_fresh_then_stone_then_relative_price() -> None:
