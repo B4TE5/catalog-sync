@@ -2,7 +2,7 @@
 
 import json
 import sqlite3
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from types import TracebackType
@@ -34,6 +34,14 @@ CREATE TABLE price_stats (profile TEXT PRIMARY KEY, body TEXT NOT NULL);
 CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 PRAGMA user_version = 1;
 """
+MIGRATION_2 = """
+CREATE TABLE listing_events (
+    id INTEGER PRIMARY KEY, listing_id INTEGER NOT NULL, captured TEXT NOT NULL,
+    kind TEXT NOT NULL, body TEXT NOT NULL
+);
+CREATE INDEX listing_events_item ON listing_events(listing_id, captured);
+PRAGMA user_version = 2;
+"""
 
 
 class SQLiteStore(StateStore):
@@ -45,7 +53,10 @@ class SQLiteStore(StateStore):
         version = self.db.execute("PRAGMA user_version").fetchone()[0]
         if version == 0:
             self.db.executescript("BEGIN IMMEDIATE;\n" + MIGRATION_1 + "\nCOMMIT;")
-        elif version != 1:
+            version = 1
+        if version == 1:
+            self.db.executescript("BEGIN IMMEDIATE;\n" + MIGRATION_2 + "\nCOMMIT;")
+        elif version != 2:
             self.db.close()
             raise RuntimeError(f"Versión de base de datos no compatible: {version}")
 
@@ -91,6 +102,22 @@ class SQLiteStore(StateStore):
         trace: dict[str, Any],
         backfill: bool,
     ) -> None:
+        old = self.listing(listing.id)
+        if old and listing.availability == "unknown" and old.availability != "unknown":
+            listing = listing.model_copy(update={
+                key: getattr(old, key) for key in (
+                    "availability", "availability_checked_at", "last_active_at",
+                    "closed_observed_at", "observed_sale_price",
+                )
+            })
+        if old and old.availability != listing.availability:
+            self.db.execute(
+                "INSERT INTO listing_events(listing_id,captured,kind,body) VALUES (?,?,?,?)",
+                (listing.id, datetime.now(UTC).isoformat(), "availability", json.dumps({
+                    "from": old.availability, "to": listing.availability,
+                    "price": str(listing.price), "estimated_sale_time": True,
+                })),
+            )
         self.db.execute(
             "INSERT INTO listings VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET "
             "profile=excluded.profile,seller_id=excluded.seller_id,body=excluded.body,"
@@ -194,6 +221,45 @@ class SQLiteStore(StateStore):
         self.db.execute(
             "INSERT OR REPLACE INTO labels VALUES (?,?,?)", (listing_id, label, captured)
         )
+        self.db.execute(
+            "INSERT INTO listing_events(listing_id,captured,kind,body) VALUES (?,?,?,?)",
+            (listing_id, captured, "label", json.dumps({"label": label})),
+        )
+
+    def seller_flags(self, seller_id: int) -> set[str]:
+        return {row[0] for row in self.db.execute(
+            "SELECT DISTINCT label FROM labels JOIN listings ON listings.id=labels.listing_id "
+            "WHERE listings.seller_id=?", (seller_id,),
+        )}
+
+    def label_counts(self) -> dict[str, Any]:
+        result: dict[str, Any] = {"total": {}, "by_profile": {}}
+        for row in self.db.execute(
+            "SELECT profile,label,count(*) AS n FROM labels "
+            "JOIN listings ON listings.id=labels.listing_id GROUP BY profile,label"
+        ):
+            result["by_profile"].setdefault(row["profile"], {})[row["label"]] = row["n"]
+            total = result["total"]
+            total[row["label"]] = total.get(row["label"], 0) + row["n"]
+        return result
+
+    def update_listing(self, listing: Listing, at: datetime) -> None:
+        old = self.listing(listing.id)
+        if old is None:
+            raise ValueError("Anuncio desconocido")
+        if old.availability != listing.availability:
+            self.db.execute(
+                "INSERT INTO listing_events(listing_id,captured,kind,body) VALUES (?,?,?,?)",
+                (listing.id, at.isoformat(), "availability", json.dumps({
+                    "from": old.availability, "to": listing.availability,
+                    "price": str(listing.price), "estimated_sale_time": True,
+                    "last_active_at": old.last_active_at.isoformat()
+                    if old.last_active_at else None,
+                })),
+            )
+        self.db.execute("UPDATE listings SET body=?,seller_id=? WHERE id=?", (
+            listing.model_dump_json(), listing.seller_id, listing.id,
+        ))
 
     def setting(self, key: str, default: str = "") -> str:
         row = self.db.execute("SELECT value FROM settings WHERE key=?", (key,)).fetchone()

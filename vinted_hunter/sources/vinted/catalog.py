@@ -27,6 +27,9 @@ def product_listing(product: dict[str, Any], base: str) -> Listing:
     size, _, condition = (box.get("secondLine") or "").partition(" · ")
     if not condition and size in STATUS:
         size, condition = "", size
+    if not size and (label := box.get("accessibilityLabel")):
+        visible = re.search(r"Tamaño:\s*([^,]+)", label)
+        size = visible[1].strip() if visible else ""
     photos = [photo["url"] for photo in product.get("photos", []) if photo.get("url")]
     if not photos and product.get("thumbnailUrl"):
         photos.append(product["thumbnailUrl"])
@@ -49,6 +52,7 @@ def product_listing(product: dict[str, Any], base: str) -> Listing:
         seller_id=(product.get("user") or {}).get("id"),
         brand=box.get("firstLine"),
         size=size or None,
+        size_source="catalog" if size else "absent" if box.get("secondLine") else "unknown",
         status=STATUS.get(condition),
         favourites=product.get("favouriteCount"),
         protected_total=(product.get("totalItemPrice") or {}).get("amount"),

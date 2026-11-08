@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, HttpUrl
 
 Tier = Literal["top", "good", "maybe", "low", "rejected"]
 QR = Literal["certilogo_ok", "qr_detected_unreadable", "qr_foreign_domain", "none"]
+Availability = Literal["active", "sold", "reserved", "hidden", "gone", "unknown"]
 
 
 class Listing(BaseModel):
@@ -20,6 +21,7 @@ class Listing(BaseModel):
     seller_id: int | None = None
     brand: str | None = None
     size: str | None = None
+    size_source: Literal["catalog", "detail", "absent", "unavailable", "unknown"] = "unknown"
     status: str | None = None
     category_id: int | None = None
     color: str | None = None
@@ -31,6 +33,11 @@ class Listing(BaseModel):
     views: int | None = None
     protected_total: Decimal | None = None
     shipping: Decimal | None = None
+    availability: Availability = "unknown"
+    availability_checked_at: datetime | None = None
+    last_active_at: datetime | None = None
+    closed_observed_at: datetime | None = None
+    observed_sale_price: Decimal | None = None
 
 
 class Seller(BaseModel):
@@ -44,6 +51,8 @@ class Seller(BaseModel):
     active_count: int | None = None
     professional: bool | None = None
     closet: list[Listing] | None = None
+    blacklisted: bool = False
+    trusted: bool = False
 
 
 class Evidence(BaseModel):

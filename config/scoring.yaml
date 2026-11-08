@@ -24,6 +24,7 @@ words:
   grey: ["gris", "grey", "gray", "grigio", "grau", "grijs", "grijze", "cinza", "cinzento"]
   authenticity_mentioned: ["QR", "QR-code", "Certilogo", "código de autenticidad", "authenticity code", "code d’authenticité", "codice di autenticità", "authentizitätscode", "authenticiteitscontrole", "authenticiteitscode", "código de autenticidade"]
 weights:
+  trusted_seller: 10
   base: 40
   certilogo_ok: 35
   qr_detected_unreadable: 15

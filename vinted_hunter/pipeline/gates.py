@@ -60,6 +60,8 @@ def gate(
     detailed: bool = False,
 ) -> tuple[str | None, list[str]]:
     passed = []
+    if seller and seller.blacklisted:
+        return "seller_blacklisted", passed
     garment = garment_reason(listing, profile, config, detailed=detailed)
     if garment:
         return garment, passed

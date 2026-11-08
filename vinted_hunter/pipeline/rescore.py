@@ -50,6 +50,14 @@ def rescore(root: Path, store: SQLiteStore) -> int:
         ):
             enriched = False
         seller = Seller.model_validate(trace["seller"]) if trace.get("seller") else None
+        if listing.seller_id:
+            flags = store.seller_flags(listing.seller_id)
+            if "fake" in flags and seller is None:
+                seller = Seller(id=listing.seller_id, blacklisted=True)
+            if seller:
+                seller = seller.model_copy(update={
+                    "blacklisted": "fake" in flags, "trusted": "good" in flags,
+                })
         if seller is not None:
             cached = store.seller(seller.id, datetime.min.replace(tzinfo=UTC))
             if cached:

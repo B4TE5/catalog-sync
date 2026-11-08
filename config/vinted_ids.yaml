@@ -17,6 +17,9 @@ size_ids:
   L: 209  # https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=209
   XL: 210  # https://www.vinted.es/catalog?catalog%5B%5D=267&brand_ids%5B%5D=73306&size_ids%5B%5D=210
 # Los IDs en atributos de tipo faq identifican la interfaz, con valores distintos.
+# Las fichas también usan code=size_familiar, data.value; su id=0 NO es filtro.
+# Evidencia: tests/fixtures/c3/item-size-10705167057.html.gz (M),
+# https://www.vinted.es/items/10705167057 y ficha 10706690299 (S).
 # https://www.vinted.es/items/10682766478-felpa-stone-ilsland-uomo
 # https://www.vinted.es/items/10682608341-sudadera-rhude-talla-s-oversize
 detail_attribute_ids:

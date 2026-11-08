@@ -1,0 +1,39 @@
+{
+  "captured": "2026-11-08T01:24:22.028571+00:00",
+  "items": [
+    {
+      "id": 10690539539,
+      "url": "https://www.vinted.es/items/10690539539-stone-island-sweater",
+      "status": 200,
+      "fixture": "item-sold.html.gz"
+    },
+    {
+      "id": 10710511451,
+      "url": "https://www.vinted.es/items/10710511451-sweat-stone-island-noir",
+      "status": 200,
+      "fixture": "item-active.html.gz"
+    },
+    {
+      "id": 10705167057,
+      "url": "https://www.vinted.es/items/10705167057-red-stone-island-sweatshirt-new-without-tags-size-m",
+      "status": 200,
+      "fixture": "item-size-10705167057.html.gz",
+      "captured": "2026-11-08T01:46:19.970131+00:00"
+    },
+    {
+      "id": 10706690299,
+      "url": "https://www.vinted.es/items/10706690299-stone-island",
+      "status": 200,
+      "fixture": "item-size-10706690299.html.gz",
+      "captured": "2026-11-08T01:46:24.737615+00:00"
+    },
+    {
+      "id": 10653233816,
+      "url": "https://www.vinted.es/items/10653233816-rude-x-kith-black-hoodie-maat-l",
+      "status": 200,
+      "fixture": "item-size-10653233816.html.gz",
+      "captured": "2026-11-08T01:46:32.127727+00:00"
+    }
+  ],
+  "catalog_url": "https://www.vinted.es/catalog?catalog%5B%5D=79&brand_ids%5B%5D=73306&size_ids%5B%5D=210&order=newest_first"
+}

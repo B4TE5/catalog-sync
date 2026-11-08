@@ -28,6 +28,7 @@ def score(
             reasons.append(reason)
 
     add(evidence.qr, "Certilogo ✓" if evidence.qr == "certilogo_ok" else "QR sin lectura")
+    add("trusted_seller", "Vendedor de confianza por feedback", bool(seller and seller.trusted))
     if seller and seller.feedback_count is not None:
         feedback = seller.feedback_count
         reputation = seller.rating or 0

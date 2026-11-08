@@ -10,6 +10,14 @@ from vinted_hunter.pipeline.models import Listing, Seller
 
 class StateStore(ABC):
     @abstractmethod
+    def seller_flags(self, seller_id: int) -> set[str]:
+        """Feedback vigente agregado por vendedor."""
+
+    @abstractmethod
+    def update_listing(self, listing: Listing, at: datetime) -> None:
+        """Actualiza los datos sin eliminar el rastro y guarda sus transiciones."""
+
+    @abstractmethod
     def listing(self, listing_id: int) -> Listing | None:
         """Devuelve la última versión conocida del anuncio."""
 

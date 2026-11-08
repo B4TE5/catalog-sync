@@ -2,7 +2,7 @@
 
 import hashlib
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from urllib.parse import urlsplit
@@ -17,7 +17,7 @@ from vinted_hunter.storage.base import StateStore
 
 def get_item(client: VintedClient, listing: Listing, now: datetime) -> Listing:
     response = client.get(str(listing.url), "enrich")
-    return parse_item(response.text, listing, now)
+    return parse_item(response.text, listing, datetime.now(UTC))
 
 
 def get_seller(
@@ -27,9 +27,12 @@ def get_seller(
     now: datetime,
     settings: Capture,
 ) -> Seller:
+    flags = store.seller_flags(seller_id)
+    if "fake" in flags:
+        return Seller(id=seller_id, blacklisted=True)
     seller = store.seller(seller_id, now - timedelta(hours=settings.seller_hours))
     if seller and seller.closet is not None:
-        return seller
+        return seller.model_copy(update={"blacklisted": False, "trusted": "good" in flags})
     if seller is None:
         response = client.get(f"/api/v2/users/{seller_id}", "enrich")
         seller = parse_user(response.text, seller_id)
@@ -37,7 +40,7 @@ def get_seller(
     response = client.get(f"/member/{seller_id}", "enrich")
     seller.closet = parse_wardrobe(response.text, client.base)
     store.cache_seller(seller, now)
-    return seller
+    return seller.model_copy(update={"blacklisted": False, "trusted": "good" in flags})
 
 
 def image_path(cache: Path, url: str) -> Path:

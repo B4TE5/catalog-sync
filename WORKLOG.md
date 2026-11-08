@@ -421,3 +421,18 @@
 - Comandos clave: API Actions → HTTP 200, completed/success. Guardia de reintroducción real → salida 1 esperada. Suite local de la base funcional → 116 aprobadas y 4 excluidas en 10,09 s.
 - Evidencia: .github/workflows/secrets.yml y run 42434802591.
 - Problemas y cómo se resolvieron: se conservan únicamente las doce excepciones históricas auditadas; no se permite omitir fixtures comprimidos del escaneo.
+
+## 2026-11-08 03:31 — C3.2 · Auditoría real de las 75 tallas
+- Objetivo: recuperar tallas visibles y distinguir ausencia real de dato pendiente.
+- Hecho: 75 fichas comprobadas con el cliente real, en ocho pasadas locales de máximo 10 fichas. Se recuperaron 40 tallas; 32 fichas no publican talla y tres devuelven 404. Cero casos sin comprobar. size y size_familiar se leen de la ficha; el catálogo usa itemBox.secondLine y accessibilityLabel como respaldo. Las tarjetas muestran talla incluso en descartados.
+- Comandos clave: SQL antes → 75 sin talla y 75 sin comprobar; después → 35 sin talla, de ellas 32 ausentes y 3 no disponibles, 0 sin comprobar. Ningún descarte por talla tenía el valor ausente. 83 peticiones incluidas ocho portadas, con pausas y cuotas, sin incidentes.
+- Evidencia: scratch/c3-size-repair.json; fixtures reales c3/item-size-10705167057.html.gz (M) y 10706690299 (S); config/vinted_ids.yaml.
+- Problemas y cómo se resolvieron: la ficha usaba size_familiar y la lectura anterior borraba la talla previa del catálogo. Se acepta el código real alternativo y se conserva el valor conocido cuando la ficha no lo expone. Falta cotejar la persistencia y UI finales en Actions.
+
+## 2026-11-08 03:31 — C3.3/C3.5 · Disponibilidad y feedback persistidos
+- Objetivo: conservar transiciones de estado y hacer efectivo el feedback en otros anuncios del vendedor.
+- Hecho: migración SQLite 2 con eventos de disponibilidad/etiqueta; estados activo, vendido, reservado, oculto y borrado. Sold requiere banner visible, reservado/oculto flags reales; no se deduce vendido de can_buy=false. Fake bloquea vendedor y fotos; meh lo revierte y good suma confianza de 10 puntos. Los precios de vendidos son los anunciados observados; los intervalos de venta se estiman entre comprobaciones, sin inventar hora ni precio pagado.
+- Comandos clave: suite completa → 126 aprobadas y 4 excluidas en 13,75 s. Fixtures activos/vendidos y atributos alternativos reales aprobados; tests de eventos, blacklist/reversión/confianza, límites diarios y regresión local aprobados.
+- Evidencia: tests/fixtures/c3, tests/test_availability_feedback.py y tests/test_daily_tune.py. Los avisos tienen preflight compartiendo sesión y cuota, tope de 15 anuncios únicos comprobados y estado HTTP exitoso antes de deduplicar.
+- Problemas y cómo se resolvieron: un test de la regla antigua de cinco días falló al aplicar los siete días pedidos; se actualizó el límite y el test de frontera. Se reservará tiempo para estados tras atender candidatos nuevos. Las horas de venta y el precio negociado exactos no aparecen en el contrato público observado; se mantendrán explícitos sus límites.
+- Intento de commit: el primer stage parcial del peso de confianza falló por convertir los bytes CRLF/UTF-8 del diff en texto de Windows. El índice no cambió. Se repitió preservando los bytes exactos antes de hacer el commit.
