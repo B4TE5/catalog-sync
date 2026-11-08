@@ -20,14 +20,8 @@ button{position:fixed;top:1rem;right:1rem;padding:.7rem;border:1px solid #657477
   const supplied = new URLSearchParams(location.hash.slice(1)).get("k");
   let key = supplied;
   try {
-    if (supplied) localStorage.setItem(storage, supplied);
-    else key = localStorage.getItem(storage);
+    if (!supplied) key = localStorage.getItem(storage);
   } catch {}
-  if (supplied) {
-    const clean = new URL(location.href);
-    clean.hash = "";
-    history.replaceState(null, "", clean.href);
-  }
   if (!key) return;
   try {
     const envelope = JSON.parse(document.querySelector("#payload").textContent);
@@ -41,6 +35,9 @@ button{position:fixed;top:1rem;right:1rem;padding:.7rem;border:1px solid #657477
     const result = await crypto.subtle.decrypt({
       name:"AES-GCM", iv:bytes(envelope.nonce), additionalData:utf.encode("catalog-sync:board:v1")
     }, aes, bytes(envelope.data));
+    if (supplied) {
+      try { localStorage.setItem(storage, supplied); } catch {}
+    }
     const frame = document.createElement("iframe");
     frame.setAttribute("title", "Panel privado");
     frame.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
@@ -50,7 +47,9 @@ button{position:fixed;top:1rem;right:1rem;padding:.7rem;border:1px solid #657477
     forget.hidden = false;
     forget.onclick = () => {
       try { localStorage.removeItem(storage); } catch {}
-      location.reload();
+      const clean = new URL(location.href);
+      clean.hash = "";
+      location.replace(clean.href);
     };
     document.body.replaceChildren(frame, forget);
   } catch {

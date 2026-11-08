@@ -483,3 +483,8 @@ La cola real tenía 690 Stone Island, 106 XL y otras tallas en sus doce primeros
 
 ## 2026-11-08T15:40:43.550211+01:00 · C3 — Resultado de nube y conservación
 SQL final de nube: {'total': 7938, 'missing': 35, 'unverified': 0, 'absent': 31, 'unavailable': 4, 'size_reject_missing': 0}; base local: {'total': 5196, 'missing': 104, 'unverified': 0, 'absent': 89, 'unavailable': 15, 'size_reject_missing': 0}. La comprobación conserva los 3610 IDs anteriores. Cero no-sudaderas identificables entre 1204 pendientes; siguen esperando enriquecimiento, no se presentan como aceptados. El backfill real completó 150 posiciones, 107 nuevas peticiones y 41 páginas omitidas por vacío real. Se mantiene separado del histórico local, sin exportar la SQLite local a una rama nueva. Evidencia: evidence/correction3-validation.json.
+
+## 2026-11-08 · C4 — iPhone y muestra de tallas real
+Se prioriza el fragmento visible como transporte de la clave y localStorage solo como respaldo. Se mantiene el borrado explícito al pulsar Olvidar. No hay manifest generado, por lo que no se añade start_url. La prueba usa WebKit con el descriptor iPhone 13 y se hará también contra Pages real.
+
+El estado actual de nube contiene 1.192 pendientes, todos con talla. No se inventan treinta ausencias actuales: se han localizado 37 IDs realmente pendientes sin talla en snapshots históricos y se auditan treinta, con un control adicional de treinta pendientes actuales que sí muestran talla. Se informarán por separado.

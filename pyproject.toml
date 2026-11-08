@@ -43,5 +43,8 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-m 'not live'"
-markers = ["live: consulta Vinted real sin iniciar sesión"]
+addopts = "-m 'not live and not browser'"
+markers = [
+    "live: consulta Vinted real sin iniciar sesión",
+    "browser: WebKit con emulación de iPhone contra Pages real",
+]

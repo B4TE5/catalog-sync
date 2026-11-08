@@ -550,3 +550,10 @@
 - Comandos clave: Ruff 0; revisión de casillas de todos los planes → ninguna pendiente; diff --check limpio. Doctor final → parser 96, L 96, XL 95 y salud healthy. Selftest final 8/8 con ficha live 10131292014; 132 offline y cuatro live.
 - Evidencia: SESSION_REPORT.md, TEST_REPORT.md y evidence/correction3-*.json. La comparación de prioridad sobre la misma instantánea pasa de 0/12 a 12/12 XL en sus primeros puestos.
 - Problemas y cómo se resolvieron: la preparación de una plantilla sustituyó también parte del identificador de selftest al cambiar el contador de pruebas. Se detectó antes de escribir los informes, se cotejó con el JSON real y se corrigió; no se publicó un identificador inventado. Los 95 resultados del último filtro XL se conservan tal como se observaron. Se registra también el timeout de nube y su recuperación, sin presentarlo como una pasada verde.
+
+## 2026-11-08 16:48 — C4.1 · URL privada persistente en iPhone
+- Objetivo: conservar #k= al descifrar y recargar para el enlace de pantalla de inicio.
+- Hecho: eliminado el borrado automático del fragmento; localStorage solo guarda la clave tras descifrar con éxito. Olvidar clave sigue quitando explícitamente fragmento y respaldo. No existe manifest ni start_url en la aplicación. Se añade prueba optativa WebKit/iPhone 13 y marcador browser.
+- Comandos clave: pytest offline → 132 aprobadas, cinco excluidas; WebKit/iPhone sobre el artefacto cifrado con datos reales → una aprobada, tres recargas incluyendo localStorage vacío. La verificación de Pages se repetirá tras el despliegue.
+- Evidencia: tests/browser/test_iphone.py y board/encrypted.html; navegador instalado solo en scratch/.playwright.
+- Problemas y cómo se resolvieron: WebKit no alcanzó el servidor local y la excepción original incluyó el enlace privado en la salida de la herramienta. Se corrigió el fallo controlado fuera del bloque except para suprimir la cadena que contenía la URL. No se guarda esa URL en fixtures, informes ni Git; la prueba alternativa usa el artefacto real mediante file:// y se completa contra HTTPS tras publicar. No se modifica la clave ya configurada ni se repite su valor.
