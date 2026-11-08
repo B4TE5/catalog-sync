@@ -42,8 +42,8 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 
 ## C3.7 — Seguridad y limpieza
 - [ ] gitleaks en CI en cada push (falla si detecta secretos).
-- [ ] Sanitizador obligatorio al guardar fixtures (JWT, cookies, tokens, cabeceras de sesión), con test.
-- [ ] Saca de Git los scripts de `scratch/` que no hagan falta (y añade scratch/ a .gitignore salvo lo imprescindible).
+- [x] Sanitizador obligatorio al guardar fixtures (JWT, cookies, tokens, cabeceras de sesión), con test.
+- [x] Saca de Git los scripts de `scratch/` que no hagan falta (y añade scratch/ a .gitignore salvo lo imprescindible).
 
 ## C3.9 — Preparado para otros productos de Vinted (sin añadir ninguno)
 - [ ] Hoy la lógica de "es sudadera" (categorías, palabras de tipo, punto) está pensada solo para sudaderas. Muévela a configuración **por perfil** (`categories`, `type_keywords_include`, `type_keywords_exclude`) con los valores actuales como valores por defecto de los perfiles de sudaderas. Objetivo: que en el futuro añadir otro producto de Vinted sea solo añadir un perfil en YAML. No añadas perfiles nuevos ahora.

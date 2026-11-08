@@ -2,7 +2,6 @@
 
 import gzip
 import json
-import re
 import shutil
 import sqlite3
 from contextlib import closing
@@ -21,18 +20,18 @@ from vinted_hunter.pipeline.models import Evidence
 from vinted_hunter.pipeline.run import Pipeline, select_profiles
 from vinted_hunter.pipeline.text import matches, normalize
 from vinted_hunter.pipeline.vision import inspect_photos
+from vinted_hunter.sanitize import PUBLIC_JWT as PUBLIC_JWT
+from vinted_hunter.sanitize import sanitize_fixture
 from vinted_hunter.sources.vinted.client import Budget, VintedClient
 from vinted_hunter.sources.vinted.item import listing_from_item
 from vinted_hunter.sources.vinted.search import plan_searches
 from vinted_hunter.sources.vinted.user import parse_user, parse_wardrobe
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
-PUBLIC_JWT = re.compile(rb"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+")
-
 
 def fixture_body(body: bytes) -> bytes:
-    """Elimina el JWT público de telemetría, ajeno al parser de anuncios."""
-    return PUBLIC_JWT.sub(b"REDACTED", body)
+    """Punto único obligatorio para guardar una captura HTTP de regresión."""
+    return sanitize_fixture(body)
 
 
 class ReplayClient(VintedClient):

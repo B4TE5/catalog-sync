@@ -393,3 +393,10 @@
 - Comandos clave: Ruff → 0; pytest → 108 aprobadas, 4 excluidas, 8,30 s. Captura real de home/catálogo/ficha vendida/ficha activa → HTTP 200; catálogo 96/96 tallas conocidas. SQL local inicial → 3.210 anuncios, 75 sin talla, todos descartados.
 - Evidencia: tests/test_c3_policy.py, data/c3-probes y ficha 10690539539. Su can_buy es false y el HTML visible dice Vendido; la ficha activa tiene can_buy true y botón item-buy-button.
 - Problemas y cómo se resolvieron: el primer comando SQL inline falló por comillas de PowerShell, sin modificar datos. Se usó un script de inspección. Los avisos se activarán tras implementar la comprobación de disponibilidad. La talla ya se parseaba del secondLine real; se auditará su conservación y presentación.
+
+## 2026-11-08 02:28 — C3.7 · Capturas saneadas y scripts fuera de Git
+- Objetivo: exigir la anonimización antes de persistir fixtures y dejar los scripts de investigación en local.
+- Hecho: sanitize_fixture procesa JSON y cadenas RSC, redacta JWT, valores opacos de token, cookies anidadas, cabeceras de sesión y parámetros sensibles de URL. replay usa ese punto único. scratch completo queda ignorado; probe.py se conserva localmente pero sale del índice.
+- Comandos clave: Ruff → 0; pytest → 110 aprobadas, 4 excluidas, 8,49 s. Un catálogo real conserva exactamente todos los anuncios/campos tras el saneado. Tests de cabeceras y cookies anidadas dentro de RSC aprobados.
+- Evidencia: sanitize.py, tests/test_sanitize.py y .gitignore.
+- Problemas y cómo se resolvieron: Ruff detectó imports sobrantes al extraer el sanitizador; se corrigieron. Se reforzó el primer patrón para redactar también cookies representadas como arrays/objetos, no solo strings. El CI de gitleaks se implementará como la siguiente parte de seguridad.
