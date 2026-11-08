@@ -51,5 +51,5 @@ Solo Vinted. Nada de Wallapop ni otras fuentes. Estados válidos: Nuevo sin etiq
 
 ## C3.8 — Verificación
 - [x] ruff, pytest (incluye recall/precision), `pytest -m live`, `vh selftest` 8/8 y `vh doctor` en verde.
-- [ ] Push y 2 iteraciones del bucle verificadas en Actions (incluye la comprobación de vendidos).
+- [x] Push y 2 iteraciones del bucle verificadas en Actions (incluye la comprobación de vendidos).
 - [ ] SESSION_REPORT.md con resultados (tallas antes/después, vendidos detectados, avisos enviados) y BLOCKERS.md actualizado.

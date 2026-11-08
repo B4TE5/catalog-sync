@@ -1,0 +1,76 @@
+[
+  {
+    "id": 42486671324,
+    "display_title": "Snapshot 42466277556-1-28",
+    "head_sha": "47819da940b0e552f13eca17be2255156e9c21b1",
+    "created_at": "2026-11-08T13:48:05Z",
+    "conclusion": "success",
+    "actor_bot": true,
+    "logs_http": 200,
+    "sensitive_match": false,
+    "restored": true,
+    "saved": true,
+    "sealed": true,
+    "accepted": false,
+    "rejected": false,
+    "pages": 200,
+    "metrics": [
+      39,
+      741,
+      26
+    ],
+    "capture_start": "2026-11-08T13:51:34Z",
+    "deploy_success": true,
+    "pipeline": {
+      "start": "2026-11-08T13:51:34.554253+00:00",
+      "rules_revision": "correction-3.1",
+      "budget": {
+        "catalog": 12,
+        "enrich": 26
+      },
+      "availability_checks": 15,
+      "availability_detected": {
+        "gone": 1
+      },
+      "notifications": null,
+      "errors": [],
+      "duration": 226.38
+    }
+  },
+  {
+    "id": 42487303619,
+    "display_title": "Snapshot 42466277556-1-29",
+    "head_sha": "47819da940b0e552f13eca17be2255156e9c21b1",
+    "created_at": "2026-11-08T13:56:06Z",
+    "conclusion": "success",
+    "actor_bot": true,
+    "logs_http": 200,
+    "sensitive_match": false,
+    "restored": true,
+    "saved": true,
+    "sealed": true,
+    "accepted": false,
+    "rejected": false,
+    "pages": 200,
+    "metrics": [
+      38,
+      887,
+      11
+    ],
+    "capture_start": "2026-11-08T13:56:25Z",
+    "deploy_success": true,
+    "pipeline": {
+      "start": "2026-11-08T13:56:25.840304+00:00",
+      "rules_revision": "correction-3.1",
+      "budget": {
+        "catalog": 12,
+        "enrich": 25
+      },
+      "availability_checks": 13,
+      "availability_detected": {},
+      "notifications": null,
+      "errors": [],
+      "duration": 228.92
+    }
+  }
+]

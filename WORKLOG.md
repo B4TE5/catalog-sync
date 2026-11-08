@@ -499,3 +499,17 @@
 - Comandos clave: selftest --report → 8/8, 76,73 s, 13 peticiones, 480 vistos, tres fichas, una visión y un score; pytest → 131 aprobadas en 13,95 s; live → cuatro en 39,78 s. Doctor → parser 96, filtros L/XL 96/96, salud healthy. Replay → good 65, sold, generaría aviso como nuevo activo.
 - Evidencia: TEST_REPORT.md, data/c3-final-selftest.log, c3-final-doctor.log y c3-final-replay.log; Secrets run 42486169696 success para 47819da.
 - Problemas y cómo se resolvieron: una utilidad de lectura intentó cerrar SQLiteStore con close(), método inexistente; el proceso terminó sin mutaciones y se repitió cerrando db.close(). Se mantiene el cierre contextual de la aplicación. El bucle y el backfill siguen serializados: durante mantenimiento pueden encolarse pasadas normales; se distinguen los tiempos de dispatch y de captura.
+
+## 2026-11-08 15:03 — C3.2 · Reevaluación local con la política final
+- Objetivo: aplicar también a la unión local la distinción final entre talla de catálogo y talla confirmada.
+- Hecho: vh rescore reevaluó 4.323 registros de perfiles activos sin red; los 5.196 IDs totales se conservan, incluidos los perfiles desactivados. El prioritario sigue good 65 y sold. Se regeneró el tablero local con las ofertas vigentes.
+- Comandos clave: rescore → salida 0; integrity_check → ok; tallas sin comprobar → 0. Las dos iteraciones normales finales 42486671324 y 42487303619 ya están comprobadas en verde.
+- Evidencia: data/vh.sqlite y out/board/index.html, ambos ignorados; pruebas de Actions en scratch/c3-actions-proof.json.
+- Problemas y cómo se resolvieron: no hubo pérdida de histórico ni peticiones adicionales a Vinted. La auditoría de tallas de nube continúa dentro de las cuotas.
+
+## 2026-11-08 15:08 — C3.8 · Dos iteraciones normales con la aplicación final
+- Objetivo: acreditar el requisito del bucle con pasadas automáticas, separadas de las de mantenimiento.
+- Hecho: 42486671324 y 42487303619, identidad github-actions[bot], código 47819da, completaron success. Se cruzó el inicio del step con run_log de la SQLite real. Ambas revisaron estados dentro del máximo de 15, sin errores, con guardado cifrado, artefacto y Pages HTTP 200.
+- Comandos clave: API de run/jobs/logs y descarga/descifrado de instantánea → éxito. Auditoría de secretos en logs → sin coincidencias.
+- Evidencia: evidence/correction3-loop-validation.json. Se marca la casilla del bucle; las de talla de nube y recorrido completo permanecen pendientes hasta terminar sus fichas/páginas.
+- Problemas y cómo se resolvieron: durante las pasadas de mantenimiento, la exclusión mutua puede retrasar el comienzo real de una captura; se conservan por separado created_at y capture_start, sin inventar una cadencia ni contar las pasadas manuales como normales.
