@@ -565,3 +565,11 @@
 - Comandos clave: Ruff 0; pytest 139 aprobadas, cinco excluidas, 19,21 s. Recall prioritario top 75, otro recall good 70 y seis precision rejected 0. Los tests niegan preflight/envío a otros perfiles y a good.
 - Evidencia: evidence/correction4-calibration.json, tests/test_notifications_c4.py y configuración. La entrega real de Actions se verificará tras publicar.
 - Problemas y cómo se resolvieron: se conserva el bonus global de 10 para otras marcas y no se añade una excepción por ID. La entrada anterior C4.1 se escribió con hora 16:48 por error; el comando observado era 16:40:58. Se deja esta rectificación sin reescribir la bitácora.
+
+
+## 2026-11-08T16:54:42+01:00 — C4.3 · Auditoría real de sesenta fichas
+- Objetivo: contrastar treinta ausencias reales y la cobertura de talla en prendas pendientes.
+- Hecho: treinta pendientes históricos sin talla, 25 HTTP 200 sin atributo de talla y cinco 404; quince reaparecen en la búsqueda de catálogo. Controles: treinta pendientes actuales, treinta HTTP 200, talla publicada y concordancia catálogo/ficha en 30/30 (100 %). Se capturaron tres fichas y tres catálogos representativos sanitizados en tests/fixtures/c4; el resto queda en scratch ignorado.
+- Comandos clave: sesiones anónimas por grupos de diez, máximo diez fichas y diez catálogos por grupo, pausas 3–8 s. Sin 403/429. Corrección: ausencia en tarjeta queda unknown hasta leer ficha; ni el almacenamiento ni el reingreso al pipeline borran una talla conocida por un campo ausente.
+- Evidencia: evidence/correction4-sizes.json y tests/test_sizes_c4.py. El estado actual original tenía cero de 1.192 pendientes sin talla; no se falsea una muestra actual inexistente.
+- Problemas y cómo se resolvieron: las ausencias históricas son accesorios/embalajes y no prendas con talla oculta. Se separa esa ausencia real del control positivo. Las rutas capaces de sobrescribir talla conocida se cubren con una variante controlada de modelos procedentes de fixtures reales; no se inventan respuestas HTTP.

@@ -615,6 +615,10 @@ class Pipeline:
             item_backfill = backfill or listing.id in self.backfill_ids
             row = self.store.record(listing.id)
             previous = Listing.model_validate(row["body"]) if row else None
+            if previous and previous.size and not listing.size:
+                listing = listing.model_copy(update={
+                    "size": previous.size, "size_source": previous.size_source,
+                })
             listing.first_seen = (previous.first_seen if previous else None) or self.now
             previous_price = self.store.observe_price(listing, profile.id, self.now.isoformat())
             dropped = is_drop(listing, previous_price)

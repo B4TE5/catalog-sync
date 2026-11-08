@@ -103,6 +103,8 @@ class SQLiteStore(StateStore):
         backfill: bool,
     ) -> None:
         old = self.listing(listing.id)
+        if old and old.size and not listing.size:
+            listing = listing.model_copy(update={"size": old.size, "size_source": old.size_source})
         if old and listing.availability == "unknown" and old.availability != "unknown":
             listing = listing.model_copy(update={
                 key: getattr(old, key) for key in (

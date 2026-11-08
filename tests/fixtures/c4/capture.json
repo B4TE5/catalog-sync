@@ -1,0 +1,44 @@
+{
+  "saved_at": "2026-11-08T15:51:32.937641+00:00",
+  "source": "Vinted público real, sesiones anónimas con pausas 3–8 s",
+  "catalogs": [
+    {
+      "fixture": "catalog-legacy-10676665225.html.gz",
+      "http": 200
+    },
+    {
+      "fixture": "catalog-control-0-1.html.gz",
+      "http": 200
+    },
+    {
+      "fixture": "catalog-control-1-1.html.gz",
+      "http": 200
+    }
+  ],
+  "items": [
+    {
+      "id": 10676665225,
+      "url": "https://www.vinted.es/items/10676665225-cadre-stone-island",
+      "http": 200,
+      "fixture": "item-10676665225.html.gz",
+      "detail_size": null,
+      "detail_source": "absent"
+    },
+    {
+      "id": 10702399009,
+      "url": "https://www.vinted.es/items/10702399009-pull-noir-xl-stone-island",
+      "http": 200,
+      "fixture": "item-10702399009.html.gz",
+      "detail_size": "XL",
+      "detail_source": "detail"
+    },
+    {
+      "id": 10280710315,
+      "url": "https://www.vinted.es/items/10280710315-rhude-trui-maat-l",
+      "http": 200,
+      "fixture": "item-10280710315.html.gz",
+      "detail_size": "L",
+      "detail_source": "detail"
+    }
+  ]
+}

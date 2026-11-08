@@ -33,3 +33,8 @@ catalog_ids:
   zip_sweatshirts: 1812  # catalogTree, https://www.vinted.es/catalog/267-hoodies-and-sweaters
 status_ids: {}
 color_ids: {}
+
+# C4: treinta controles actuales con talla publicada, 30/30 coinciden entre
+# itemBox.secondLine / accessibilityLabel y size / size_familiar de ficha.
+# Evidencia: tests/fixtures/c4/capture.json y evidence/correction4-sizes.json.
+# Los treinta pendientes históricos sin talla eran 25 fichas sin atributo y cinco 404.

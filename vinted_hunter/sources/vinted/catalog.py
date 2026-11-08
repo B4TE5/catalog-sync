@@ -52,7 +52,8 @@ def product_listing(product: dict[str, Any], base: str) -> Listing:
         seller_id=(product.get("user") or {}).get("id"),
         brand=box.get("firstLine"),
         size=size or None,
-        size_source="catalog" if size else "absent" if box.get("secondLine") else "unknown",
+        # Una tarjeta sin talla no confirma que la ficha carezca del atributo.
+        size_source="catalog" if size else "unknown",
         status=STATUS.get(condition),
         favourites=product.get("favouriteCount"),
         protected_total=(product.get("totalItemPrice") or {}).get("amount"),
