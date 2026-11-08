@@ -126,6 +126,7 @@ def replay(root: Path, url: str, save_fixture: str | None = None) -> dict[str, A
             "would_notify_if_active": notification_eligible(
                 record, profile.notify_min_tier, simulate_active=True,
                 negotiable_days=int(config.scoring.pricing["negotiable_days"]),
+                enabled=profile.notify_enabled,
             )[0],
             "minimum_tier": profile.notify_min_tier,
             "actual_availability": record["body"].get("availability", "unknown"),
@@ -133,6 +134,7 @@ def replay(root: Path, url: str, save_fixture: str | None = None) -> dict[str, A
                 record, profile.notify_min_tier, simulate_active=True,
                 at=listing.uploaded_at or now,
                 negotiable_days=int(config.scoring.pricing["negotiable_days"]),
+                enabled=profile.notify_enabled,
             )[0],
         }
         if save_fixture:

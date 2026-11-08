@@ -27,7 +27,7 @@ from vinted_hunter.pipeline.gates import (
 )
 from vinted_hunter.pipeline.models import Evidence, Listing, Seller
 from vinted_hunter.pipeline.pricing import Market, price_signals, summarize, timing
-from vinted_hunter.pipeline.score import score
+from vinted_hunter.pipeline.score import score, weights_for
 from vinted_hunter.pipeline.text import hood_signal, matches, normalize
 from vinted_hunter.pipeline.vision import inspect_photos
 from vinted_hunter.sources.vinted.catalog import VintedCatalog
@@ -387,10 +387,11 @@ class Pipeline:
         latent = result if result and not rejection else score(
             listing, profile, seller, evidence, self.config, passed, {"bargain": False}
         )
+        weights = weights_for(profile, self.config)
         trace["signals"] = {
-            key: value / self.config.scoring.weights.get(
+            key: value / weights.get(
                 "part" if key == "parts" else key, 1
-            ) if self.config.scoring.weights.get("part" if key == "parts" else key) else 1
+            ) if weights.get("part" if key == "parts" else key) else 1
             for key, value in latent.points.items() if key not in {"base", "trusted_seller"}
         }
         self.store.save(

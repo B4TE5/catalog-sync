@@ -104,7 +104,8 @@ La pantalla pública tiene metadatos genéricos y requiere la clave en el fragme
 
 En local, `uv run vh watch` usa los topics configurados en `.env`. En Actions,
 los mismos nombres se leen desde los secretos del repositorio. Los avisos están
-activados (`shadow_mode: false`); cada perfil define su `notify_min_tier`.
+activados (`shadow_mode: false`); solo el perfil con `notify_enabled: true`
+envía anuncios y exige nivel `top`. Los demás siguen apareciendo en el tablero.
 Antes de enviar se comprueba que la ficha sigue activa. Los anuncios con siete
 días o más solo avisan si bajan de precio. El comando `vh notify-test`
 envía un ejemplo a cada topic; `--announcements-only` limita la prueba a anuncios.
@@ -115,6 +116,18 @@ cifrados, usa el enlace privado que genera `vh board-url`.
 `uv run vh board-url --qr` genera también `out/board-url.png` con la clave
 completa. Es privado y no se publica. Tras abrirlo una vez, el navegador recuerda
 la clave en localStorage y permite entrar desde el botón público de ntfy.
+El enlace conserva `#k=` al descifrar y recargar; localStorage es un respaldo.
+No se genera un manifest que cambie la URL al añadir el enlace a pantalla de inicio.
+Olvidar clave elimina tanto el respaldo como el fragmento del enlace actual.
+
+Los pesos específicos de un perfil se definen en `scoring_weights`; los globales
+siguen en `scoring.yaml`. El ajuste local respeta esos pesos al comparar métricas.
+El input manual `notify_test` de Actions comprueba ambos secrets de ntfy y envía
+un mensaje técnico, claramente identificado, sin simular un anuncio activo.
+
+La comprobación de iPhone usa WebKit: instala su navegador con
+`uv run playwright install webkit` y ejecuta `uv run pytest -m browser`.
+El comando abre el tablero configurado con la clave local, sin imprimirla.
 
 Entre las 03:00 y las 05:00 de Madrid se inicia un backfill diario reanudable de hasta diez
 páginas por búsqueda, dentro de las cuotas y pausas de cada pasada. El cursor

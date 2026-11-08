@@ -5,6 +5,10 @@ from vinted_hunter.pipeline.models import Evidence, Listing, ScoreResult, Seller
 from vinted_hunter.pipeline.text import matches, normalize
 
 
+def weights_for(profile: Profile, config: Config) -> dict[str, int]:
+    return {**config.scoring.weights, **profile.scoring_weights}
+
+
 def score(
     listing: Listing,
     profile: Profile,
@@ -18,7 +22,7 @@ def score(
     if rejected:
         return ScoreResult(tier="rejected", reasons=[rejected])
     scoring = config.scoring
-    weights, limits = scoring.weights, scoring.thresholds
+    weights, limits = weights_for(profile, config), scoring.thresholds
     reasons = []
     points = {"base": weights["base"]}
 

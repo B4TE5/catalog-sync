@@ -557,3 +557,11 @@
 - Comandos clave: pytest offline → 132 aprobadas, cinco excluidas; WebKit/iPhone sobre el artefacto cifrado con datos reales → una aprobada, tres recargas incluyendo localStorage vacío. La verificación de Pages se repetirá tras el despliegue.
 - Evidencia: tests/browser/test_iphone.py y board/encrypted.html; navegador instalado solo en scratch/.playwright.
 - Problemas y cómo se resolvieron: WebKit no alcanzó el servidor local y la excepción original incluyó el enlace privado en la salida de la herramienta. Se corrigió el fallo controlado fuera del bloque except para suprimir la cadena que contenía la URL. No se guarda esa URL en fixtures, informes ni Git; la prueba alternativa usa el artefacto real mediante file:// y se completa contra HTTPS tras publicar. No se modifica la clave ya configurada ni se repite su valor.
+
+
+## 2026-11-08T16:49:24+01:00 — C4.2 · Avisos exclusivamente Stone Island top
+- Objetivo: restringir el envío y elevar el recall prioritario sin alterar precision.
+- Hecho: notify_enabled false por defecto y true solo para stone-island; umbral top. Peso de autenticación mencionada 20 solo en ese perfil, con normalización de señales y métricas de tune que respetan el override. El resto mantiene captura/tablero. Se añade input notify_test para verificar ambos secrets y shadow_mode=false con un mensaje técnico explícito, sin anuncio ficticio.
+- Comandos clave: Ruff 0; pytest 139 aprobadas, cinco excluidas, 19,21 s. Recall prioritario top 75, otro recall good 70 y seis precision rejected 0. Los tests niegan preflight/envío a otros perfiles y a good.
+- Evidencia: evidence/correction4-calibration.json, tests/test_notifications_c4.py y configuración. La entrega real de Actions se verificará tras publicar.
+- Problemas y cómo se resolvieron: se conserva el bonus global de 10 para otras marcas y no se añade una excepción por ID. La entrada anterior C4.1 se escribió con hora 16:48 por error; el comando observado era 16:40:58. Se deja esta rectificación sin reescribir la bitácora.

@@ -2,8 +2,8 @@
 
 - [x] Conservar #k= al descifrar/recargar; sin manifest que sustituya la URL; localStorage de respaldo. WebKit/iPhone con tablero real local.
 - [ ] Verificar también Pages publicado con Playwright/iPhone.
-- [ ] Avisos únicamente Stone Island top; otros perfiles permanecen en tablero.
-- [ ] Recall 10690539539 top ≥75 con pesos del perfil; precision continúa descartada.
+- [x] Avisos únicamente Stone Island top; otros perfiles permanecen en tablero.
+- [x] Recall 10690539539 top ≥75 con pesos del perfil; precision continúa descartada.
 - [ ] Prueba workflow_dispatch: secrets presentes, shadow_mode=false y ntfy HTTP 200.
 - [ ] Auditar 30 pendientes reales sin talla; distinguir históricos de estado actual y contrastar ficha/catálogo.
 - [ ] Control de prendas actuales: ≥95 % con talla cuando la ficha la publica; fixtures y regresiones.

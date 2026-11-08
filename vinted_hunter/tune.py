@@ -7,7 +7,7 @@ from typing import Any
 import numpy as np
 import yaml
 
-from vinted_hunter.config import Tuning, load_config, read_yaml
+from vinted_hunter.config import Config, Tuning, load_config, read_yaml
 from vinted_hunter.storage.sqlite_store import SQLiteStore
 
 
@@ -45,6 +45,22 @@ def weighted_scores(
     return np.clip(base + np.sum(contributions, axis=1), 0, 100)
 
 
+def profile_scores(
+    features: np.ndarray, rows: list[dict[str, Any]], keys: list[str], config: Config,
+    global_weights: dict[str, int],
+) -> np.ndarray:
+    profiles = {p.id: p for p in config.profiles}
+    scores = []
+    for index, row in enumerate(rows):
+        profile = profiles.get(row["profile"])
+        weights = {**global_weights, **(profile.scoring_weights if profile else {})}
+        coefficients = np.array([weights.get("part" if key == "parts" else key, 0)
+                                 for key in keys])
+        scores.append(weighted_scores(features[index:index+1], coefficients,
+                      weights["base"], keys, weights["max_part_points"])[0])
+    return np.array(scores)
+
+
 def propose(root: Path) -> dict[str, Any]:
     config = load_config(root)
     with SQLiteStore(root / "data/vh.sqlite") as store:
@@ -74,15 +90,15 @@ def propose(root: Path) -> dict[str, Any]:
     train = np.array([i for i in range(len(usable)) if i not in validation], dtype=int)
     fitted, intercept = fit_logistic(features[train], targets[train], config.scoring.tuning)
     threshold = config.scoring.thresholds["good"]
-    old = np.array([config.scoring.weights.get("part" if key == "parts" else key, 0)
-                    for key in keys])
-    old_scores = weighted_scores(features[test], old, config.scoring.weights["base"], keys,
-                                 config.scoring.weights["max_part_points"])
+    test_rows = [usable[index][0] for index in test]
+    old_scores = profile_scores(features[test], test_rows, keys, config, config.scoring.weights)
     # Diez puntos por unidad logit conservan el umbral good como probabilidad 0,5.
     proposed = np.rint(fitted * 10).astype(int)
     base = int(round(threshold + intercept * 10))
-    new_scores = weighted_scores(features[test], proposed, base, keys,
-                                 config.scoring.weights["max_part_points"])
+    proposed_weights = {**config.scoring.weights, "base": base}
+    proposed_weights.update({"part" if key == "parts" else key: int(value)
+                             for key, value in zip(keys, proposed, strict=True)})
+    new_scores = profile_scores(features[test], test_rows, keys, config, proposed_weights)
     report = {"ready": True, "usable": len(usable), "train": len(train), "validation": len(test),
               "classes": counts, "before": metrics(targets[test], old_scores >= threshold),
               "after": metrics(targets[test], new_scores >= threshold),

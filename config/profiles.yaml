@@ -24,6 +24,7 @@ defaults:
   material_keywords_exclude: ["punto", "de punto", "knit", "knitted", "wool", "lana", "laine", "maglia", "maglione", "strick", "wolle", "gebreid", "wol", "cárdigan", "cardigan", "cuello vuelto", "cuello alto", "turtleneck", "col roulé", "malha", "tricot", "gola alta"]
   material_keywords_exclude_exact: ["lã"]
   notify_min_tier: top
+  notify_enabled: false
 
 profiles:
 
@@ -37,7 +38,10 @@ profiles:
     price_max: 60
     certilogo: true          # usa la detección QR Certilogo como señal fuerte
     priority: 0
-    notify_min_tier: good
+    notify_min_tier: top
+    notify_enabled: true
+    scoring_weights:
+      authenticity_mentioned: 20
     seller_min_rating: 4.0   # recall verificado con 10690539539; la nota permanece visible
     text_queries:
       - { q: "stone island", priority: high }

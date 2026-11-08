@@ -37,9 +37,10 @@ def test_notifications_are_enabled_with_the_requested_profile_thresholds() -> No
     config = load_config(ROOT)
     assert config.scoring.shadow_mode is False
     assert {p.id: p.notify_min_tier for p in config.profiles} == {
-        "stone-island": "good", "twojeys": "top", "yzy-gap": "top",
+        "stone-island": "top", "twojeys": "top", "yzy-gap": "top",
         "heron-preston": "top", "rhude": "top",
     }
+    assert {p.id for p in config.profiles if p.notify_enabled} == {"stone-island"}
 
 
 def test_catalog_size_fallback_cannot_confirm_a_detail_mismatch() -> None:

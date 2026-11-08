@@ -44,6 +44,8 @@ class Profile(BaseModel):
     material_keywords_exclude: list[str] = Field(default_factory=list)
     material_keywords_exclude_exact: list[str] = Field(default_factory=list)
     notify_min_tier: Literal["good", "top"] = "top"
+    notify_enabled: bool = False
+    scoring_weights: dict[str, int] = Field(default_factory=dict)
     price_floor: Decimal
     price_max: Decimal
     allowed_status: list[str]

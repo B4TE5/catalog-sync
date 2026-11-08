@@ -25,7 +25,10 @@ def notification_eligible(
     row: dict[str, Any], minimum: str = "top", *, simulate_active: bool = False,
     negotiable_days: int = 7,
     at: datetime | None = None,
+    enabled: bool = True,
 ) -> tuple[bool, str]:
+    if not enabled:
+        return False, "avisos_desactivados_para_el_perfil"
     if TIER_RANK.get(row["tier"], -1) < TIER_RANK[minimum]:
         return False, "tier_inferior_al_perfil"
     trace = row["trace"]
@@ -119,6 +122,7 @@ class NtfyNotifier(Notifier):
         check_active: CheckActive | None = None,
         negotiable_days: int = 7,
         clock: Callable[[], datetime] | None = None,
+        enabled_profiles: set[str] | None = None,
     ) -> None:
         self.store = store
         self.topic = topic_name(topic)
@@ -132,6 +136,7 @@ class NtfyNotifier(Notifier):
         self.check_active = check_active
         self.negotiable_days = negotiable_days
         self.clock = clock or (lambda: datetime.now(UTC))
+        self.enabled_profiles = enabled_profiles
 
     def publish(self, summary: dict[str, Any]) -> None:
         if not summary.get("deferred") and not summary.get("interrupted"):
@@ -179,6 +184,8 @@ class NtfyNotifier(Notifier):
     def publish_listing(self, row: dict[str, Any]) -> int | None:
         if self.shadow_mode or not self.topic:
             return None
+        if self.enabled_profiles is not None and row["profile"] not in self.enabled_profiles:
+            return None
         minimum = self.min_tiers.get(row["profile"], "top")
         if not notification_eligible(row, minimum, negotiable_days=self.negotiable_days,
                                      at=self.clock())[0]:
@@ -186,6 +193,8 @@ class NtfyNotifier(Notifier):
         if self.check_active is None or not self.check_active(row):
             return None
         row = self.store.record(row["id"]) or row
+        if self.enabled_profiles is not None and row["profile"] not in self.enabled_profiles:
+            return None
         if not notification_eligible(row, minimum, negotiable_days=self.negotiable_days,
                                      at=self.clock())[0]:
             return None
@@ -215,6 +224,10 @@ class NtfyNotifier(Notifier):
     ) -> tuple[int, int | None]:
         if not self.topic or not announcements_only and not self.health_topic:
             raise ValueError("Faltan los topics de prueba")
+        if self.enabled_profiles is not None and row["profile"] not in self.enabled_profiles:
+            raise ValueError("El perfil tiene los avisos desactivados")
+        if TIER_RANK.get(row["tier"], -1) < TIER_RANK[self.min_tiers.get(row["profile"], "top")]:
+            raise ValueError("El anuncio no alcanza el tier de aviso del perfil")
         if self.check_active is None or not self.check_active(row):
             raise ValueError("La prueba requiere un anuncio confirmado activo")
         row = self.store.record(row["id"]) or row
@@ -228,6 +241,24 @@ class NtfyNotifier(Notifier):
                 {**payload, "topic": self.health_topic, "title": "Prueba de salud · " + title}
             ),
         )
+
+
+    def test_configuration(self) -> int:
+        """Control explícito de entrega; no representa un anuncio ni simula disponibilidad."""
+        if not self.topic or not self.health_topic or self.shadow_mode:
+            raise ValueError("La prueba requiere ambos secrets de ntfy y shadow_mode=false")
+        if self.enabled_profiles != {"stone-island"} or self.min_tiers.get("stone-island") != "top":
+            raise ValueError("La prueba requiere la política Stone Island exclusivamente top")
+        message: dict[str, Any] = {
+            "topic": self.topic, "title": "Prueba · Stone Island top",
+            "message": "Prueba técnica de entrega desde Actions. No es un anuncio. "
+                       "Política desplegada: solo Stone Island top; shadow_mode=false.",
+            "priority": 3,
+        }
+        if self.board_url and https_url(self.board_url):
+            public = urlsplit(self.board_url)._replace(query="", fragment="").geturl()
+            message["actions"] = [{"action": "view", "label": "Tablero", "url": public}]
+        return self.post(message)
 
 
 def notifier_for(
@@ -244,4 +275,5 @@ def notifier_for(
         min_tiers={p.id: p.notify_min_tier for p in config.profiles},
         check_active=check_active,
         negotiable_days=int(config.scoring.pricing["negotiable_days"]),
+        enabled_profiles={p.id for p in config.profiles if p.notify_enabled},
     )

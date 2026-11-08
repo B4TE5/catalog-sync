@@ -325,6 +325,7 @@ def check_vision(
 @app.command("notify-test")
 def notify_test(
     announcements_only: Annotated[bool, typer.Option("--announcements-only")] = False,
+    configuration_only: Annotated[bool, typer.Option("--configuration-only")] = False,
 ) -> None:
     """Envía un ejemplo del formato final con un anuncio confirmado activo."""
     from vinted_hunter.pipeline.run import Pipeline
@@ -332,9 +333,24 @@ def notify_test(
 
     config = load_config(ROOT)
     with local_store() as store:
-        active_profiles = {profile.id for profile in config.profiles}
+        if configuration_only:
+            notifier = notifier_for(ROOT, store)
+            typer.echo(f"NTFY_TOPIC presente: {bool(notifier.topic)} · "
+                       f"NTFY_HEALTH_TOPIC presente: {bool(notifier.health_topic)} · "
+                       f"shadow_mode={str(notifier.shadow_mode).lower()}")
+            try:
+                status = notifier.test_configuration()
+            except ValueError as error:
+                typer.echo(str(error), err=True)
+                raise typer.Exit(1) from None
+            typer.echo(f"ntfy prueba de configuración · HTTP {status}")
+            if status != 200:
+                raise typer.Exit(1)
+            return
+        active_profiles = {profile.id for profile in config.profiles if profile.notify_enabled}
         choices = [row for row in store.records(scored=True) if row["trace"].get("pricing")
-                   and row["profile"] in active_profiles]
+                   and row["profile"] in active_profiles
+                   and row["tier"] == "top"]
         if not choices:
             typer.echo("El tablero carece de anuncios puntuados para la prueba", err=True)
             raise typer.Exit(1)

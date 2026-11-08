@@ -488,3 +488,7 @@ SQL final de nube: {'total': 7938, 'missing': 35, 'unverified': 0, 'absent': 31,
 Se prioriza el fragmento visible como transporte de la clave y localStorage solo como respaldo. Se mantiene el borrado explícito al pulsar Olvidar. No hay manifest generado, por lo que no se añade start_url. La prueba usa WebKit con el descriptor iPhone 13 y se hará también contra Pages real.
 
 El estado actual de nube contiene 1.192 pendientes, todos con talla. No se inventan treinta ausencias actuales: se han localizado 37 IDs realmente pendientes sin talla en snapshots históricos y se auditan treinta, con un control adicional de treinta pendientes actuales que sí muestran talla. Se informarán por separado.
+
+
+## 2026-11-08T16:49:24+01:00 · C4.2 — Peso de autenticación y política de envío
+Se elige un override de perfil authenticity_mentioned=20: base 40 + muy bueno 10 + mención de autenticación 20 + cinco fotos 5 = 75. No se afirma lectura de QR ni se cambia el umbral global top=75. El resto de perfiles conserva el peso 10 y todos los gates se mantienen; seis casos reales de precision continúan rechazados. notify_enabled=false para los demás evita su preflight y envío, manteniendo el tablero. La prueba manual de Actions es un diagnóstico explícito de secrets/entrega, sin click a un anuncio ni una disponibilidad simulada. Se evita usar el recall vendido como aviso real.

@@ -20,5 +20,7 @@ def test_priority_listing_preserves_material_and_authenticity_signal() -> None:
     result = evaluate_fixture(ROOT, ROOT / "tests/recall/10690539539")
     assert result["body"]["category_id"] == 1811
     assert result["body"]["material"] == "Algodón"
-    assert result["trace"]["score"]["points"]["authenticity_mentioned"] == 10
+    assert result["trace"]["score"]["points"]["authenticity_mentioned"] == 20
+    assert result["tier"] == "top" and result["score"] >= 75
+    assert result["trace"]["signals"]["authenticity_mentioned"] == 1
     assert result["trace"]["evidence"]["catalog_photo_count"] == 0

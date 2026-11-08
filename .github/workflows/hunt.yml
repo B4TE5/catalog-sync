@@ -24,6 +24,9 @@ on:
       daily_backfill_only:
         type: boolean
         default: false
+      notify_test:
+        type: boolean
+        default: false
 concurrency:
   group: ${{ inputs.mode == 'iteration' && 'hunt' || format('hunt-wakeup-{0}', github.run_id) }}
   cancel-in-progress: false
@@ -124,6 +127,13 @@ jobs:
           else
             uv run --no-sync vh run
           fi
+      - name: Verify notification delivery
+        if: always() && inputs.notify_test && steps.restore.outcome == 'success'
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
+          BOARD_URL: ${{ vars.BOARD_URL }}
+        run: uv run --no-sync vh notify-test --configuration-only --announcements-only
       - name: Save encrypted state
         id: save
         if: always() && steps.restore.outcome == 'success'

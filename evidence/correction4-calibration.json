@@ -1,0 +1,83 @@
+[
+  {
+    "set": "recall",
+    "id": 10653233816,
+    "profile": "rhude",
+    "tier": "good",
+    "score": 70,
+    "rejection": null,
+    "points": {
+      "base": 40,
+      "seller_high": 20,
+      "very_good": 10
+    }
+  },
+  {
+    "set": "recall",
+    "id": 10690539539,
+    "profile": "stone-island",
+    "tier": "top",
+    "score": 75,
+    "rejection": null,
+    "points": {
+      "base": 40,
+      "very_good": 10,
+      "authenticity_mentioned": 20,
+      "many_photos": 5
+    }
+  },
+  {
+    "set": "precision",
+    "id": 10683026176,
+    "profile": "twojeys",
+    "tier": "rejected",
+    "score": 0,
+    "rejection": "not_sweatshirt",
+    "points": {}
+  },
+  {
+    "set": "precision",
+    "id": 10685333948,
+    "profile": "palm-angels",
+    "tier": "rejected",
+    "score": 0,
+    "rejection": "too_cheap_for_brand",
+    "points": {}
+  },
+  {
+    "set": "precision",
+    "id": 10705854921,
+    "profile": "palm-angels",
+    "tier": "rejected",
+    "score": 0,
+    "rejection": "not_sweatshirt",
+    "points": {}
+  },
+  {
+    "set": "precision",
+    "id": 10706300170,
+    "profile": "stone-island",
+    "tier": "rejected",
+    "score": 0,
+    "rejection": "not_sweatshirt",
+    "points": {}
+  },
+  {
+    "set": "precision",
+    "id": 10706307595,
+    "profile": "stone-island",
+    "tier": "rejected",
+    "score": 0,
+    "rejection": "knitwear",
+    "points": {}
+  },
+  {
+    "set": "precision",
+    "id": 10706427918,
+    "profile": "stone-island",
+    "tier": "rejected",
+    "score": 0,
+    "rejection": "not_sweatshirt",
+    "points": {}
+  }
+]
